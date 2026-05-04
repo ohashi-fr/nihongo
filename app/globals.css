@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-jp: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
+}
+
+html,
+body {
+  background: #faf8f5;
+  color: #1a1a1a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Subtle paper texture */
+body {
+  background-image: radial-gradient(
+      rgba(0, 0, 0, 0.018) 1px,
+      transparent 1px
+    ),
+    radial-gradient(rgba(0, 0, 0, 0.012) 1px, transparent 1px);
+  background-position: 0 0, 12px 12px;
+  background-size: 24px 24px;
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors;
+  }
+  .btn-primary {
+    @apply btn bg-ink text-paper hover:bg-sumi;
+  }
+  .btn-accent {
+    @apply btn bg-accent text-paper hover:opacity-90;
+  }
+  .btn-ghost {
+    @apply btn text-ink hover:bg-soft;
+  }
+  .btn-outline {
+    @apply btn border border-border text-ink hover:bg-soft;
+  }
+  .input {
+    @apply w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-ink focus:ring-2 focus:ring-ink/10;
+  }
+  .label {
+    @apply block text-xs font-medium uppercase tracking-wide text-muted;
+  }
+  .card-tile {
+    @apply block rounded-lg border border-border bg-white p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-md;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full border border-border bg-soft px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-muted;
+  }
+}
+
+.jp {
+  font-family: var(--font-jp);
+}
