@@ -18,6 +18,13 @@ type Card = {
   created_at: string;
 };
 
+// Same regex as supabase/migrate_script_field.sql so admin and DB stay in sync.
+const KATAKANA_RE = /[゠-ヿ]/;
+
+function detectScript(japanese: string): "hiragana" | "katakana" {
+  return KATAKANA_RE.test(japanese) ? "katakana" : "hiragana";
+}
+
 export default function LevelEditor({
   moduleType,
   level,
@@ -146,6 +153,13 @@ function AddCardForm({
   const [a, setA] = useState("");
   const [b, setB] = useState("");
   const [c, setC] = useState("");
+  const [script, setScript] = useState<"hiragana" | "katakana">("hiragana");
+  const [scriptManual, setScriptManual] = useState(false);
+
+  function onJapaneseChange(v: string) {
+    setB(v);
+    if (!scriptManual) setScript(detectScript(v));
+  }
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
@@ -153,7 +167,7 @@ function AddCardForm({
     setLoading(true);
     const fields =
       moduleType === "quiz"
-        ? { english: a.trim(), japanese: b.trim() }
+        ? { english: a.trim(), japanese: b.trim(), script }
         : { verb: a.trim(), form: b.trim(), answer: c.trim() };
     const supabase = createClient();
     const { error } = await supabase
@@ -164,6 +178,8 @@ function AddCardForm({
     setA("");
     setB("");
     setC("");
+    setScript("hiragana");
+    setScriptManual(false);
     router.refresh();
   }
 
@@ -185,9 +201,28 @@ function AddCardForm({
             <input
               required
               value={b}
-              onChange={(e) => setB(e.target.value)}
+              onChange={(e) => onJapaneseChange(e.target.value)}
               className="input mt-1 jp"
             />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="label">Script</label>
+            <select
+              value={script}
+              onChange={(e) => {
+                setScriptManual(true);
+                setScript(e.target.value as "hiragana" | "katakana");
+              }}
+              className="input mt-1"
+            >
+              <option value="hiragana">hiragana</option>
+              <option value="katakana">katakana</option>
+            </select>
+            <p className="mt-1 text-xs text-muted">
+              {scriptManual
+                ? "Set manually."
+                : "Auto-detected from Japanese — change if needed."}
+            </p>
           </div>
         </>
       ) : (
@@ -271,9 +306,15 @@ function BulkImport({
           setError(`Line ${i + 1}: expected "english,japanese"`);
           return;
         }
+        const japanese = parts[1];
         rows.push({
           level_id: levelId,
-          fields: { english: parts[0], japanese: parts[1] },
+          fields: {
+            english: parts[0],
+            japanese,
+            // Auto-detect script from the Japanese text.
+            script: detectScript(japanese),
+          },
         });
       } else {
         if (parts.length < 3) {
@@ -362,6 +403,7 @@ function CardsTable({
             <tr>
               <th className="px-2 py-2">English</th>
               <th className="px-2 py-2">Japanese</th>
+              <th className="px-2 py-2">Script</th>
               <th></th>
             </tr>
           ) : (
@@ -408,6 +450,15 @@ function CardRow({
     moduleType === "quiz" ? card.fields.japanese ?? "" : card.fields.form ?? ""
   );
   const [c, setC] = useState(card.fields.answer ?? "");
+  const initialScript: "hiragana" | "katakana" =
+    card.fields.script === "katakana" ? "katakana" : "hiragana";
+  const [script, setScript] = useState<"hiragana" | "katakana">(initialScript);
+  const [scriptManual, setScriptManual] = useState(false);
+
+  function onJapaneseChange(v: string) {
+    setB(v);
+    if (!scriptManual) setScript(detectScript(v));
+  }
 
   if (!editing) {
     return (
@@ -416,6 +467,9 @@ function CardRow({
           <>
             <td className="px-2 py-2">{card.fields.english}</td>
             <td className="jp px-2 py-2">{card.fields.japanese}</td>
+            <td className="px-2 py-2 text-xs text-muted">
+              {card.fields.script ?? "—"}
+            </td>
           </>
         ) : (
           <>
@@ -450,9 +504,22 @@ function CardRow({
           <td className="px-2 py-2">
             <input
               value={b}
-              onChange={(e) => setB(e.target.value)}
+              onChange={(e) => onJapaneseChange(e.target.value)}
               className="input jp"
             />
+          </td>
+          <td className="px-2 py-2">
+            <select
+              value={script}
+              onChange={(e) => {
+                setScriptManual(true);
+                setScript(e.target.value as "hiragana" | "katakana");
+              }}
+              className="input"
+            >
+              <option value="hiragana">hiragana</option>
+              <option value="katakana">katakana</option>
+            </select>
           </td>
         </>
       ) : (
@@ -485,7 +552,7 @@ function CardRow({
           onClick={() => {
             const fields: Record<string, string> =
               moduleType === "quiz"
-                ? { english: a.trim(), japanese: b.trim() }
+                ? { english: a.trim(), japanese: b.trim(), script }
                 : { verb: a.trim(), form: b.trim(), answer: c.trim() };
             onSave(fields);
             setEditing(false);

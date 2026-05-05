@@ -12,6 +12,14 @@ type Props = {
 };
 
 type Status = "asking" | "correct" | "wrong";
+type Phase = "prep" | "playing" | "done";
+type ScriptFilter = "hiragana" | "katakana" | "both";
+
+const FILTER_LABELS: Record<ScriptFilter, { jp: string; en: string }> = {
+  hiragana: { jp: "ひらがな", en: "Hiragana only" },
+  katakana: { jp: "カタカナ", en: "Katakana only" },
+  both: { jp: "両方", en: "Both" },
+};
 
 function shuffle<T>(arr: T[]): T[] {
   const a = arr.slice();
@@ -26,19 +34,57 @@ function normalize(s: string): string {
   return s.trim().normalize("NFC").toLowerCase();
 }
 
-export default function QuizClient({ cards, moduleType, levelId }: Props) {
-  const [order, setOrder] = useState<Card[]>(() => shuffle(cards));
+function applyFilter(cards: Card[], filter: ScriptFilter): Card[] {
+  if (filter === "both") return cards;
+  return cards.filter((c) => (c.fields as any).script === filter);
+}
+
+// Show the toggle UI only if cards expose a per-card script (vocabulary-style),
+// AND the module is the simple quiz type. Conjugation prompts use other clients.
+function cardsHaveScripts(cards: Card[]): boolean {
+  return cards.some((c) => Boolean((c.fields as any)?.script));
+}
+
+export default function QuizClient({
+  cards,
+  moduleType,
+  levelId,
+  script,
+}: Props) {
+  const showFilter = moduleType === "quiz" && cardsHaveScripts(cards);
+
+  // Default the filter to the level's own script when sensible.
+  const initialFilter: ScriptFilter =
+    showFilter && (script === "hiragana" || script === "katakana")
+      ? script
+      : "both";
+
+  const [phase, setPhase] = useState<Phase>(showFilter ? "prep" : "playing");
+  const [scriptFilter, setScriptFilter] = useState<ScriptFilter>(initialFilter);
+  const [order, setOrder] = useState<Card[]>(() =>
+    showFilter ? [] : shuffle(cards)
+  );
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState("");
   const [status, setStatus] = useState<Status>("asking");
   const [firstTryThisCard, setFirstTryThisCard] = useState(true);
   const [correctFirstTry, setCorrectFirstTry] = useState(0);
-  const [done, setDone] = useState(false);
   const [savedSession, setSavedSession] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const total = order.length;
   const card = order[index];
+
+  const counts = useMemo(
+    () => ({
+      hiragana: cards.filter((c) => (c.fields as any).script === "hiragana")
+        .length,
+      katakana: cards.filter((c) => (c.fields as any).script === "katakana")
+        .length,
+      both: cards.length,
+    }),
+    [cards]
+  );
 
   const prompt = useMemo(() => {
     if (!card) return { primary: "", secondary: "" };
@@ -55,14 +101,14 @@ export default function QuizClient({ cards, moduleType, levelId }: Props) {
     return moduleType === "quiz" ? f.japanese ?? "" : f.answer ?? "";
   }, [card, moduleType]);
 
-  // Re-focus input when a new card comes up.
+  // Re-focus input on each new card.
   useEffect(() => {
-    if (status === "asking") inputRef.current?.focus();
-  }, [status, index]);
+    if (phase === "playing" && status === "asking") inputRef.current?.focus();
+  }, [phase, status, index]);
 
   // Save the session once we hit the end screen.
   useEffect(() => {
-    if (!done || savedSession) return;
+    if (phase !== "done" || savedSession) return;
     (async () => {
       try {
         const supabase = createClient();
@@ -76,7 +122,21 @@ export default function QuizClient({ cards, moduleType, levelId }: Props) {
         // Don't block the UI on a failed save.
       }
     })();
-  }, [done, savedSession, levelId, total, correctFirstTry]);
+  }, [phase, savedSession, levelId, total, correctFirstTry]);
+
+  function startQuiz(filter: ScriptFilter) {
+    const filtered = applyFilter(cards, filter);
+    if (filtered.length === 0) return;
+    setScriptFilter(filter);
+    setOrder(shuffle(filtered));
+    setIndex(0);
+    setAnswer("");
+    setStatus("asking");
+    setFirstTryThisCard(true);
+    setCorrectFirstTry(0);
+    setSavedSession(false);
+    setPhase("playing");
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -85,7 +145,6 @@ export default function QuizClient({ cards, moduleType, levelId }: Props) {
     if (normalize(answer) === normalize(expected)) {
       setStatus("correct");
       if (firstTryThisCard) setCorrectFirstTry((n) => n + 1);
-      // Auto-advance.
       window.setTimeout(() => advance(), 1100);
     } else {
       setStatus("wrong");
@@ -108,24 +167,62 @@ export default function QuizClient({ cards, moduleType, levelId }: Props) {
     setStatus("asking");
     setFirstTryThisCard(true);
     if (index + 1 >= total) {
-      setDone(true);
+      setPhase("done");
     } else {
       setIndex((i) => i + 1);
     }
   }
 
-  function reset() {
-    setOrder(shuffle(cards));
+  function reshuffle() {
+    setOrder((o) => shuffle(o));
     setIndex(0);
     setAnswer("");
     setStatus("asking");
     setFirstTryThisCard(true);
-    setCorrectFirstTry(0);
-    setDone(false);
+  }
+
+  function backToPrep() {
+    setPhase(showFilter ? "prep" : "playing");
     setSavedSession(false);
   }
 
-  if (done) {
+  // ─── PREP screen ──────────────────────────────────────────────────────
+  if (phase === "prep") {
+    return (
+      <div className="mx-auto max-w-md rounded-lg border border-border bg-white p-8 shadow-card">
+        <div className="text-center">
+          <div className="jp text-4xl">どれを練習する？</div>
+          <h2 className="mt-3 text-xl font-semibold">Pick a script</h2>
+          <p className="mt-2 text-sm text-muted">
+            Filter the deck before you start.
+          </p>
+        </div>
+        <div className="mt-6 flex flex-col gap-2">
+          <FilterButton
+            filter="hiragana"
+            count={counts.hiragana}
+            selected={scriptFilter === "hiragana"}
+            onClick={() => startQuiz("hiragana")}
+          />
+          <FilterButton
+            filter="katakana"
+            count={counts.katakana}
+            selected={scriptFilter === "katakana"}
+            onClick={() => startQuiz("katakana")}
+          />
+          <FilterButton
+            filter="both"
+            count={counts.both}
+            selected={scriptFilter === "both"}
+            onClick={() => startQuiz("both")}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // ─── DONE screen ──────────────────────────────────────────────────────
+  if (phase === "done") {
     const pct = total === 0 ? 0 : Math.round((correctFirstTry / total) * 100);
     return (
       <div className="mx-auto max-w-md rounded-lg border border-border bg-white p-8 text-center shadow-card">
@@ -135,11 +232,16 @@ export default function QuizClient({ cards, moduleType, levelId }: Props) {
           {correctFirstTry} / {total} correct on first try
         </p>
         <div className="my-6 text-4xl font-semibold">{pct}%</div>
-        <div className="flex justify-center gap-3">
-          <button onClick={reset} className="btn-primary">
-            Restart
+        <div className="flex flex-col items-center gap-2">
+          {showFilter && (
+            <button onClick={backToPrep} className="btn-primary">
+              Pick another script
+            </button>
+          )}
+          <button onClick={() => startQuiz(scriptFilter)} className="btn-outline">
+            Restart this set
           </button>
-          <a href="./" className="btn-outline">
+          <a href="./" className="btn-ghost">
             Back to levels
           </a>
         </div>
@@ -147,15 +249,52 @@ export default function QuizClient({ cards, moduleType, levelId }: Props) {
     );
   }
 
+  // ─── PLAYING screen ───────────────────────────────────────────────────
+  if (!card) {
+    // Edge case: filter produced 0 cards somehow. Send the user back to prep.
+    return (
+      <div className="mx-auto max-w-md rounded-lg border border-dashed border-border bg-white/50 p-6 text-center text-muted">
+        No cards match this filter.
+        {showFilter && (
+          <div className="mt-3">
+            <button onClick={backToPrep} className="btn-primary">
+              Pick another script
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-xl">
       <div className="mb-4 flex items-center justify-between text-sm text-muted">
-        <span>
-          Card {index + 1} / {total}
-        </span>
-        <button onClick={reset} className="hover:text-ink underline-offset-2 hover:underline">
-          Reshuffle
-        </button>
+        <div className="flex items-center gap-3">
+          <span>
+            Card {index + 1} / {total}
+          </span>
+          {showFilter && (
+            <span className="badge jp">
+              {FILTER_LABELS[scriptFilter].jp}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={reshuffle}
+            className="hover:text-ink underline-offset-2 hover:underline"
+          >
+            Reshuffle
+          </button>
+          {showFilter && (
+            <button
+              onClick={backToPrep}
+              className="hover:text-ink underline-offset-2 hover:underline"
+            >
+              Change filter
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="rounded-lg border border-border bg-white p-8 shadow-card">
@@ -188,7 +327,11 @@ export default function QuizClient({ cards, moduleType, levelId }: Props) {
             placeholder={moduleType === "quiz" ? "日本語で…" : "answer"}
             className={`input jp text-center text-2xl ${
               status === "wrong" ? "border-accent ring-2 ring-accent/20" : ""
-            } ${status === "correct" ? "border-green-600 ring-2 ring-green-600/20" : ""}`}
+            } ${
+              status === "correct"
+                ? "border-green-600 ring-2 ring-green-600/20"
+                : ""
+            }`}
           />
 
           {status === "asking" && (
@@ -230,5 +373,36 @@ export default function QuizClient({ cards, moduleType, levelId }: Props) {
         </form>
       </div>
     </div>
+  );
+}
+
+function FilterButton({
+  filter,
+  count,
+  selected,
+  onClick,
+}: {
+  filter: ScriptFilter;
+  count: number;
+  selected: boolean;
+  onClick: () => void;
+}) {
+  const disabled = count === 0;
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={`btn justify-between ${
+        selected ? "bg-ink text-paper" : "btn-outline"
+      } ${disabled ? "opacity-40" : ""}`}
+    >
+      <span className="flex items-center gap-3">
+        <span className="jp text-base">{FILTER_LABELS[filter].jp}</span>
+        <span className="text-xs">{FILTER_LABELS[filter].en}</span>
+      </span>
+      <span className="text-xs opacity-70">
+        {count} {count === 1 ? "card" : "cards"}
+      </span>
+    </button>
   );
 }
