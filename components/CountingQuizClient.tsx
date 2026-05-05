@@ -95,6 +95,8 @@ export default function CountingQuizClient({
   const [done, setDone] = useState(false);
   const [savedSession, setSavedSession] = useState(false);
 
+  const [cheatOpen, setCheatOpen] = useState(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
 
   const total = order.length;
@@ -115,6 +117,32 @@ export default function CountingQuizClient({
   useEffect(() => {
     if (status === "asking") inputRef.current?.focus();
   }, [status, index]);
+
+  // Cheat-sheet content: same cards already loaded for the quiz, sorted by
+  // numeric value with question (?) cards at the end.
+  const cheatSheet = useMemo(() => {
+    const list = order.map((c) => ({ card: c, fields: parseFields(c) }));
+    return list.sort((a, b) => {
+      const aIsQ = a.fields.is_question_card || a.fields.value === "?";
+      const bIsQ = b.fields.is_question_card || b.fields.value === "?";
+      if (aIsQ && bIsQ) return 0;
+      if (aIsQ) return 1;
+      if (bIsQ) return -1;
+      const av = typeof a.fields.value === "number" ? a.fields.value : Number(a.fields.value);
+      const bv = typeof b.fields.value === "number" ? b.fields.value : Number(b.fields.value);
+      return av - bv;
+    });
+  }, [order]);
+
+  // Dismiss cheat sheet on Escape.
+  useEffect(() => {
+    if (!cheatOpen) return;
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") setCheatOpen(false);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [cheatOpen]);
 
   useEffect(() => {
     if (!done || savedSession) return;
@@ -251,13 +279,28 @@ export default function CountingQuizClient({
         <span>
           Card {index + 1} / {total}
         </span>
-        <button
-          onClick={reset}
-          className="hover:text-ink underline-offset-2 hover:underline"
-        >
-          {isFinalBoss ? "New 10" : "Reshuffle"}
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={reset}
+            className="hover:text-ink underline-offset-2 hover:underline"
+          >
+            {isFinalBoss ? "New 10" : "Reshuffle"}
+          </button>
+          <button
+            onClick={() => setCheatOpen(true)}
+            className="rounded-md border border-border bg-white px-2.5 py-1 text-xs font-medium text-ink shadow-card hover:bg-soft"
+          >
+            Cheat Sheet
+          </button>
+        </div>
       </div>
+
+      <CheatSheetPanel
+        open={cheatOpen}
+        onClose={() => setCheatOpen(false)}
+        items={cheatSheet}
+      />
+
 
       <div className="rounded-lg border border-border bg-white p-8 shadow-card">
         {/* Emoji canvas */}
@@ -408,5 +451,110 @@ export default function CountingQuizClient({
         </form>
       </div>
     </div>
+  );
+}
+
+// =============================================================
+// Cheat Sheet panel — slides in from the right, overlays content.
+// =============================================================
+function CheatSheetPanel({
+  open,
+  onClose,
+  items,
+}: {
+  open: boolean;
+  onClose: () => void;
+  items: { card: Card; fields: Fields }[];
+}) {
+  return (
+    <>
+      {/* Click-away overlay */}
+      <div
+        onClick={onClose}
+        aria-hidden={!open}
+        className={`fixed inset-0 z-40 bg-black/20 transition-opacity duration-200 ${
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        }`}
+      />
+
+      {/* Slide-in panel */}
+      <aside
+        role="dialog"
+        aria-label="Cheat Sheet"
+        aria-hidden={!open}
+        className={`fixed right-0 top-0 z-50 flex h-screen w-full max-w-[320px] flex-col border-l border-border bg-white shadow-[-8px_0_24px_rgba(0,0,0,0.06)] transition-transform duration-300 ease-out ${
+          open ? "translate-x-0" : "translate-x-full"
+        }`}
+      >
+        <header className="flex items-center justify-between border-b border-border px-5 py-4">
+          <h2 className="text-base font-semibold tracking-tight">
+            Cheat Sheet
+          </h2>
+          <button
+            onClick={onClose}
+            aria-label="Close cheat sheet"
+            className="rounded-md px-2 py-1 text-lg leading-none text-muted hover:bg-soft hover:text-ink"
+          >
+            ×
+          </button>
+        </header>
+
+        <div className="flex-1 overflow-y-auto px-5 py-4">
+          {items.length === 0 ? (
+            <p className="text-sm text-muted">Nothing to show.</p>
+          ) : (
+            <ul className="space-y-3">
+              {items.map(({ card, fields: f }) => {
+                const isPeople = f.counter_type === "nin_mei";
+                let reading = "";
+                if (isPeople) {
+                  reading = f.is_question_card
+                    ? `${f.question_word_standard ?? ""} / ${f.question_word_honorific ?? ""}`
+                    : `${f.standard_reading ?? ""} / ${f.honorific_reading ?? ""}`;
+                } else {
+                  reading = f.is_question_card
+                    ? f.question_word ?? ""
+                    : f.reading ?? "";
+                }
+
+                // Show one emoji + ×N instead of repeating it.
+                // The stored emoji is N copies of the same grapheme, so we
+                // can slice cleanly using string-length / value, which avoids
+                // grapheme-splitting issues with VS16 / ZWJ sequences.
+                const numericValue =
+                  typeof f.value === "number"
+                    ? f.value
+                    : Number.isFinite(Number(f.value))
+                      ? Number(f.value)
+                      : 0;
+                const showCount =
+                  !f.is_question_card && numericValue > 0 && f.emoji.length > 0;
+                const singleEmoji = showCount
+                  ? f.emoji.slice(0, f.emoji.length / numericValue)
+                  : f.emoji;
+
+                return (
+                  <li
+                    key={card.id}
+                    className="flex items-center gap-3 text-sm leading-relaxed"
+                  >
+                    <span className="shrink-0 whitespace-nowrap text-xl leading-none">
+                      <span className="align-middle">{singleEmoji}</span>
+                      {showCount && (
+                        <span className="ml-1 align-middle text-sm text-muted">
+                          ×{numericValue}
+                        </span>
+                      )}
+                    </span>
+                    <span className="text-muted">→</span>
+                    <span className="jp">{reading}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+      </aside>
+    </>
   );
 }
