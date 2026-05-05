@@ -27,7 +27,7 @@ That's it. No global tools required.
 ### b. Run the SQL
 1. In your Supabase dashboard, open **SQL Editor → New query**.
 2. Paste the contents of `supabase/schema.sql` and run it. This creates the four tables and the row-level security policies.
-3. (Optional but recommended) Open another query, paste `supabase/seed.sql`, and run it. This adds the **Vocabulaire → Niveau 1** module with all 73 starter cards.
+3. (Optional but recommended) Open another query, paste `supabase/seed.sql`, and run it. This adds the **Vocabulary → Level 1** module with all 73 starter cards. To also load the conjugation module, paste `supabase/seed_conjugation.sql` and run it.
 
 ### c. Get your keys
 1. In the dashboard go to **Project Settings → API**.
@@ -58,7 +58,7 @@ npm run dev
 
 Then open <http://localhost:3000>.
 
-- Public app: `/` → `/modules/vocabulaire` → click a level → quiz.
+- Public app: `/` → `/modules/vocabulary` → click a level → quiz.
 - Admin: `/admin` → log in with the user you created above.
 
 ---
@@ -105,7 +105,8 @@ lib/
 middleware.ts             Protects /admin/* via Supabase session
 supabase/
   schema.sql              Tables + RLS policies
-  seed.sql                Vocabulaire / Niveau 1 starter cards
+  seed.sql                Vocabulary / Level 1 starter cards
+  seed_conjugation.sql    Conjugation module + 2 levels of verb/word-type cards
 ```
 
 ## Notes

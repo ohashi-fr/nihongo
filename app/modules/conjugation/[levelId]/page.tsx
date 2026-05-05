@@ -7,7 +7,7 @@ import type { Card } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-export default async function ConjugaisonQuizPage({
+export default async function ConjugationQuizPage({
   params,
 }: {
   params: { levelId: string };
@@ -17,7 +17,7 @@ export default async function ConjugaisonQuizPage({
   const { data: mod } = await supabase
     .from("modules")
     .select("id, name, slug")
-    .eq("slug", "conjugaison")
+    .eq("slug", "conjugation")
     .maybeSingle();
   if (!mod) notFound();
 

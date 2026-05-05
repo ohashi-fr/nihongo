@@ -140,7 +140,7 @@ export default function LevelManager({
             required
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Niveau 1"
+            placeholder="Level 1"
             className="input mt-1"
           />
         </div>

@@ -26,12 +26,14 @@ const FORM_KEYS: FormKey[] = [
   "volitional",
 ];
 
-const FORM_LABELS: Record<FormKey, { jp: string; en: string }> = {
-  affirmative_present: { jp: "〜ます", en: "affirmative present" },
-  negative_present: { jp: "〜ません", en: "negative present" },
-  affirmative_past: { jp: "〜ました", en: "affirmative past" },
-  negative_past: { jp: "〜ませんでした", en: "negative past" },
-  volitional: { jp: "〜ましょう", en: "volitional" },
+const FORM_LABELS: Record<FormKey, string> = {
+  affirmative_present: "Affirmative present",
+  negative_present: "Negative present",
+  affirmative_past: "Affirmative past",
+  negative_past: "Negative past",
+  // Internal data key stays "volitional" (existing seeded rows use that key);
+  // user-facing label is "Suggestive form".
+  volitional: "Suggestive form",
 };
 
 const WORD_TYPES: { key: string; jp: string; en: string }[] = [
@@ -113,6 +115,24 @@ export default function ConjugationQuizClient({ cards, levelId }: Props) {
   const card = order[index] ? asCardData(order[index]) : null;
   const firstInputRef = useRef<HTMLInputElement>(null);
 
+  // All five fields are always shown. For cards where a field has no
+  // expected value (e.g. nouns/adjectives have no suggestive form), the
+  // expected answer is the empty string — the user is meant to leave that
+  // input blank. The validation in checkConjugation handles this naturally.
+  const activeFormKeys: FormKey[] = useMemo(
+    () => (card ? FORM_KEYS.slice() : []),
+    [card]
+  );
+
+  // Defensive: whenever we move to a new card, hard-blank every input.
+  // This prevents any DOM/state holdover from leaving values pre-filled.
+  useEffect(() => {
+    setInputs(blankInputs());
+    setResults(null);
+    setSubmitted(false);
+    setFirstSubmitAllCorrect(null);
+  }, [index]);
+
   useEffect(() => {
     if (phase === "conjugate") firstInputRef.current?.focus();
   }, [phase, index]);
@@ -177,7 +197,8 @@ export default function ConjugationQuizClient({ cards, levelId }: Props) {
       volitional: false,
     };
     let allCorrect = true;
-    for (const k of FORM_KEYS) {
+    // Only validate the keys this card actually has.
+    for (const k of activeFormKeys) {
       const ok = normalize(inputs[k]) === normalize(card.forms[k]);
       r[k] = ok;
       if (!ok) allCorrect = false;
@@ -311,7 +332,9 @@ export default function ConjugationQuizClient({ cards, levelId }: Props) {
           />
         ) : (
           <ConjugateSection
+            key={`conjugate-${index}`}
             card={card}
+            activeFormKeys={activeFormKeys}
             inputs={inputs}
             results={results}
             submitted={submitted}
@@ -404,6 +427,7 @@ function ClassifySection({
 
 function ConjugateSection({
   card,
+  activeFormKeys,
   inputs,
   results,
   submitted,
@@ -414,6 +438,7 @@ function ConjugateSection({
   onSkip,
 }: {
   card: CardData;
+  activeFormKeys: FormKey[];
   inputs: Record<FormKey, string>;
   results: Record<FormKey, boolean> | null;
   submitted: boolean;
@@ -423,19 +448,25 @@ function ConjugateSection({
   onCheck: (e: React.FormEvent) => void;
   onSkip: () => void;
 }) {
+  const total = activeFormKeys.length;
+  const correctCount = activeFormKeys.filter(
+    (k) => results?.[k] === true
+  ).length;
   return (
-    <form onSubmit={onCheck} className="space-y-3">
-      {FORM_KEYS.map((k, i) => {
+    <form onSubmit={onCheck} className="space-y-3" autoComplete="off">
+      {activeFormKeys.map((k, i) => {
         const ok = results?.[k];
         const showWrong = results !== null && ok === false;
         const showRight = results !== null && ok === true;
+        const expectedBlank = !card.forms[k];
+        const isSuggestive = k === "volitional";
         return (
-          <div key={k} className="grid grid-cols-[140px_1fr] items-center gap-3">
-            <label className="text-right">
-              <div className="jp text-base">{FORM_LABELS[k].jp}</div>
-              <div className="text-[11px] uppercase tracking-wide text-muted">
-                {FORM_LABELS[k].en}
-              </div>
+          <div
+            key={k}
+            className="grid grid-cols-[160px_1fr] items-start gap-3"
+          >
+            <label className="pt-2 text-right text-xs font-medium uppercase tracking-wide">
+              {FORM_LABELS[k]}
             </label>
             <div>
               <input
@@ -448,10 +479,19 @@ function ConjugateSection({
                   showWrong ? "border-accent ring-2 ring-accent/20" : ""
                 } ${showRight ? "border-green-600 ring-2 ring-green-600/20" : ""}`}
               />
+              {isSuggestive && (
+                <div className="mt-1 text-xs text-muted">
+                  (Leave blank if none)
+                </div>
+              )}
               {showWrong && (
                 <div className="mt-1 text-sm">
                   <span className="text-muted">Answer: </span>
-                  <span className="jp text-accent">{card.forms[k]}</span>
+                  {expectedBlank ? (
+                    <span className="text-accent">— (leave blank)</span>
+                  ) : (
+                    <span className="jp text-accent">{card.forms[k]}</span>
+                  )}
                 </div>
               )}
             </div>
@@ -471,13 +511,15 @@ function ConjugateSection({
       )}
 
       {results !== null && firstSubmitAllCorrect && (
-        <div className="text-center text-green-700">All five correct! 🌸</div>
+        <div className="text-center text-green-700">
+          All {total} correct! 🌸
+        </div>
       )}
 
       {results !== null && !firstSubmitAllCorrect && (
         <div className="rounded-md border border-accent/30 bg-accent/5 p-4">
           <div className="text-center text-sm">
-            {Object.values(results).filter(Boolean).length} / 5 correct.{" "}
+            {correctCount} / {total} correct.{" "}
             {submitted && (
               <span className="text-muted">
                 Adjust the wrong fields and check again, or move on.

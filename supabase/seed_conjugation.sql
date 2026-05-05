@@ -1,36 +1,36 @@
 -- =========================================================
--- Nihongo — Conjugaison module seed
+-- Nihongo — Conjugation module seed
 -- Run after schema.sql. Idempotent: safe to re-run.
--- Adds: module "Conjugaison" + 2 levels + their cards.
+-- Adds: module "Conjugation" + 2 levels + their cards.
 -- =========================================================
 
 -- 1) Module
 insert into modules (name, slug, description, type)
 values (
-  'Conjugaison',
-  'conjugaison',
+  'Conjugation',
+  'conjugation',
   'Verb forms, tenses, and word-type practice.',
   'quiz'
 )
 on conflict (slug) do nothing;
 
 -- =========================================================
--- Level A: Tense Test Niveau 1 (translation quiz)
+-- Level A: Tense Test Level 1 (translation quiz)
 -- Cards have english + japanese (long form) + short_form + word_type.
 -- =========================================================
 
-with m as (select id from modules where slug = 'conjugaison')
+with m as (select id from modules where slug = 'conjugation')
 insert into module_levels (module_id, name, order_index, script)
-select m.id, 'Tense Test Niveau 1', 1, 'hiragana' from m
+select m.id, 'Tense Test Level 1', 1, 'hiragana' from m
 where not exists (
   select 1 from module_levels lv
-  where lv.module_id = (select id from m) and lv.name = 'Tense Test Niveau 1'
+  where lv.module_id = (select id from m) and lv.name = 'Tense Test Level 1'
 );
 
 with lv as (
   select lv.id from module_levels lv
   join modules m on m.id = lv.module_id
-  where m.slug = 'conjugaison' and lv.name = 'Tense Test Niveau 1'
+  where m.slug = 'conjugation' and lv.name = 'Tense Test Level 1'
 ),
 do_seed as (
   select id from lv where not exists (select 1 from cards c where c.level_id = lv.id)
@@ -93,22 +93,22 @@ cross join (values
 ) as v(e, j, s, t);
 
 -- =========================================================
--- Level B: Conjugaison Niveau 1 (5-form conjugation drill)
+-- Level B: Conjugation Level 1 (5-form conjugation drill)
 -- Cards have word + word_type + forms{} object.
 -- =========================================================
 
-with m as (select id from modules where slug = 'conjugaison')
+with m as (select id from modules where slug = 'conjugation')
 insert into module_levels (module_id, name, order_index, script)
-select m.id, 'Conjugaison Niveau 1', 2, 'hiragana' from m
+select m.id, 'Conjugation Level 1', 2, 'hiragana' from m
 where not exists (
   select 1 from module_levels lv
-  where lv.module_id = (select id from m) and lv.name = 'Conjugaison Niveau 1'
+  where lv.module_id = (select id from m) and lv.name = 'Conjugation Level 1'
 );
 
 with lv as (
   select lv.id from module_levels lv
   join modules m on m.id = lv.module_id
-  where m.slug = 'conjugaison' and lv.name = 'Conjugaison Niveau 1'
+  where m.slug = 'conjugation' and lv.name = 'Conjugation Level 1'
 ),
 do_seed as (
   select id from lv where not exists (select 1 from cards c where c.level_id = lv.id)

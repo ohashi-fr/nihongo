@@ -3,7 +3,7 @@
 -- Run this in your Supabase SQL editor (project → SQL).
 -- =========================================================
 
--- Modules (e.g., Vocabulaire, Conjugaison)
+-- Modules (e.g., Vocabulary, Conjugation)
 create table if not exists modules (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -13,7 +13,7 @@ create table if not exists modules (
   created_at timestamp default now()
 );
 
--- Levels inside each module (e.g., Niveau 1)
+-- Levels inside each module (e.g., Level 1)
 create table if not exists module_levels (
   id uuid primary key default gen_random_uuid(),
   module_id uuid references modules(id) on delete cascade,

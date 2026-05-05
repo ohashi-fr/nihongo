@@ -1,33 +1,33 @@
 -- =========================================================
 -- Nihongo — seed data
--- Idempotent: safe to re-run. Inserts the "Vocabulaire" module
--- with one level "Niveau 1" and the starter card set.
+-- Idempotent: safe to re-run. Inserts the "Vocabulary" module
+-- with one level "Level 1" and the starter card set.
 -- =========================================================
 
 -- 1) Module
 insert into modules (name, slug, description, type)
 values (
-  'Vocabulaire',
-  'vocabulaire',
-  'Mots japonais courants — débutant.',
+  'Vocabulary',
+  'vocabulary',
+  'Common Japanese words — beginner.',
   'quiz'
 )
 on conflict (slug) do nothing;
 
 -- 2) Level
-with m as (select id from modules where slug = 'vocabulaire')
+with m as (select id from modules where slug = 'vocabulary')
 insert into module_levels (module_id, name, order_index, script)
-select m.id, 'Niveau 1', 1, 'both' from m
+select m.id, 'Level 1', 1, 'both' from m
 where not exists (
   select 1 from module_levels lv
-  where lv.module_id = (select id from m) and lv.name = 'Niveau 1'
+  where lv.module_id = (select id from m) and lv.name = 'Level 1'
 );
 
 -- 3) Cards — only insert if the level is currently empty.
 with lv as (
   select lv.id from module_levels lv
   join modules m on m.id = lv.module_id
-  where m.slug = 'vocabulaire' and lv.name = 'Niveau 1'
+  where m.slug = 'vocabulary' and lv.name = 'Level 1'
 ),
 do_seed as (
   select id from lv where not exists (select 1 from cards c where c.level_id = lv.id)
