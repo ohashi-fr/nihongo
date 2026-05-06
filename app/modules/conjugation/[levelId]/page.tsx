@@ -23,10 +23,12 @@ export default async function ConjugationQuizPage({
 
   const { data: level } = await supabase
     .from("module_levels")
-    .select("id, name, script, module_id")
+    .select("id, name, script, supports_mcq, module_id")
     .eq("id", params.levelId)
     .maybeSingle();
   if (!level || level.module_id !== mod.id) notFound();
+
+  const supportsMcq = Boolean(level.supports_mcq);
 
   const { data: cards } = await supabase
     .from("cards")
@@ -61,7 +63,13 @@ export default async function ConjugationQuizPage({
       ) : isConjugationLevel ? (
         <ConjugationQuizClient cards={list} levelId={level.id} />
       ) : isTranslationLevel ? (
-        <TranslationQuizClient cards={list} levelId={level.id} />
+        <TranslationQuizClient
+          cards={list}
+          levelId={level.id}
+          slug={mod.slug}
+          levelName={level.name}
+          supportsMcq={supportsMcq}
+        />
       ) : (
         <p className="rounded-lg border border-accent/30 bg-accent/5 p-6 text-center text-accent">
           This level&apos;s cards don&apos;t match a known format.

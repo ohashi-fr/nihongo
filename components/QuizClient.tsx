@@ -1,14 +1,25 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Card, ScriptType } from "@/lib/types";
+import McqCard, {
+  type McqOption,
+  buildMcqOptions,
+} from "@/components/McqCard";
+import PreQuizScreen from "@/components/PreQuizScreen";
 
 type Props = {
   cards: Card[];
   moduleType: "quiz" | "conjugation";
   levelId: string;
+  slug: string;
+  levelName: string;
   script: ScriptType;
+  // When true, the user first lands on a PreQuizScreen to pick a mode.
+  // The chosen mode comes back via the `?mode=` URL param.
+  supportsMcq?: boolean;
 };
 
 type Status = "asking" | "correct" | "wrong";
@@ -49,8 +60,24 @@ export default function QuizClient({
   cards,
   moduleType,
   levelId,
+  slug,
+  levelName,
   script,
+  supportsMcq = false,
 }: Props) {
+  const searchParams = useSearchParams();
+  const modeParam = searchParams.get("mode");
+  const mode: "normal" | "mcq" = modeParam === "mcq" ? "mcq" : "normal";
+
+  // TEMP: confirm the URL param is being read. Remove after verifying.
+  // eslint-disable-next-line no-console
+  console.log("[QuizClient] mode read from URL:", modeParam, "→", mode);
+
+  // Show the pre-quiz screen only for MCQ-enabled levels and only on the
+  // first visit (before a mode has been picked). Once `?mode=` is in the
+  // URL we render the actual quiz.
+  const needsPreQuiz = supportsMcq && !modeParam;
+
   const showFilter = moduleType === "quiz" && cardsHaveScripts(cards);
 
   // Default the filter to the level's own script when sensible.
@@ -100,6 +127,19 @@ export default function QuizClient({
     const f = card.fields as any;
     return moduleType === "quiz" ? f.japanese ?? "" : f.answer ?? "";
   }, [card, moduleType]);
+
+  // MCQ is only available for the simple `quiz` module type and only when
+  // the current playing set has at least 4 cards (3 distractors + 1 correct).
+  // Otherwise we silently fall back to the text-input flow.
+  const useMcq = mode === "mcq" && moduleType === "quiz" && order.length >= 4;
+
+  // Distractor selection lives in McqCard (buildMcqOptions): same-
+  // word_type filter with fallback, plus dedupe on `japanese`.
+  // Re-rolls each card.
+  const mcqOptions: McqOption[] = useMemo(() => {
+    if (!useMcq || !card) return [];
+    return buildMcqOptions(card, order);
+  }, [useMcq, card, order]);
 
   // Re-focus input on each new card.
   useEffect(() => {
@@ -152,6 +192,12 @@ export default function QuizClient({
     }
   }
 
+  // Called by McqCard once the user picks an option. We only count the
+  // first attempt — the user gets a single click per card in MCQ mode.
+  function handleMcqAnswered(wasCorrect: boolean) {
+    if (wasCorrect) setCorrectFirstTry((n) => n + 1);
+  }
+
   function retry() {
     setAnswer("");
     setStatus("asking");
@@ -184,6 +230,18 @@ export default function QuizClient({
   function backToPrep() {
     setPhase(showFilter ? "prep" : "playing");
     setSavedSession(false);
+  }
+
+  // ─── PRE-QUIZ screen (only on MCQ-enabled levels, before mode is picked)
+  if (needsPreQuiz) {
+    return (
+      <PreQuizScreen
+        slug={slug}
+        levelId={levelId}
+        levelName={levelName}
+        cardCount={cards.length}
+      />
+    );
   }
 
   // ─── PREP screen ──────────────────────────────────────────────────────
@@ -278,6 +336,7 @@ export default function QuizClient({
               {FILTER_LABELS[scriptFilter].jp}
             </span>
           )}
+          {useMcq && <span className="badge">MCQ</span>}
         </div>
         <div className="flex items-center gap-3">
           <button
@@ -298,79 +357,103 @@ export default function QuizClient({
       </div>
 
       <div className="rounded-lg border border-border bg-white p-8 shadow-card">
-        <div className="mb-6 text-center">
-          {moduleType === "conjugation" && prompt.secondary && (
-            <div className="text-xs uppercase tracking-[0.25em] text-muted">
-              {prompt.secondary}
-            </div>
-          )}
-          <div
-            className={
-              moduleType === "quiz"
-                ? "mt-2 text-3xl font-medium"
-                : "jp mt-2 text-4xl"
-            }
-          >
-            {prompt.primary}
-          </div>
-        </div>
-
-        <form onSubmit={handleSubmit}>
-          <input
-            ref={inputRef}
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            disabled={status !== "asking"}
-            autoFocus
-            autoComplete="off"
-            spellCheck={false}
-            placeholder={moduleType === "quiz" ? "日本語で…" : "answer"}
-            className={`input jp text-center text-2xl ${
-              status === "wrong" ? "border-accent ring-2 ring-accent/20" : ""
-            } ${
-              status === "correct"
-                ? "border-green-600 ring-2 ring-green-600/20"
-                : ""
-            }`}
+        {useMcq ? (
+          <McqCard
+            key={card.id}
+            prompt={prompt.primary}
+            options={mcqOptions}
+            onAnswered={handleMcqAnswered}
+            onNext={advance}
           />
-
-          {status === "asking" && (
-            <div className="mt-4 flex justify-center gap-3">
-              <button type="submit" className="btn-primary">
-                Check
-              </button>
-              <button type="button" onClick={skip} className="btn-ghost">
-                Skip
-              </button>
-            </div>
-          )}
-
-          {status === "correct" && (
-            <div className="mt-4 text-center text-green-700">正解！ Correct.</div>
-          )}
-
-          {status === "wrong" && (
-            <div className="mt-4 rounded-md border border-accent/30 bg-accent/5 p-4 text-center">
-              <div className="text-xs uppercase tracking-wide text-accent">
-                Answer
-              </div>
-              <div className="jp mt-1 text-2xl">{expected}</div>
-              {(card.fields as any).note && (
-                <div className="mt-2 text-sm text-muted">
-                  {(card.fields as any).note}
+        ) : (
+          <>
+            <div className="mb-6 text-center">
+              {moduleType === "conjugation" && prompt.secondary && (
+                <div className="text-xs uppercase tracking-[0.25em] text-muted">
+                  {prompt.secondary}
                 </div>
               )}
-              <div className="mt-4 flex justify-center gap-3">
-                <button type="button" onClick={retry} className="btn-outline">
-                  Try again
-                </button>
-                <button type="button" onClick={skip} className="btn-primary">
-                  Next
-                </button>
+              <div
+                className={
+                  moduleType === "quiz"
+                    ? "mt-2 text-3xl font-medium"
+                    : "jp mt-2 text-4xl"
+                }
+              >
+                {prompt.primary}
               </div>
             </div>
-          )}
-        </form>
+
+            <form onSubmit={handleSubmit}>
+              <input
+                ref={inputRef}
+                value={answer}
+                onChange={(e) => setAnswer(e.target.value)}
+                disabled={status !== "asking"}
+                autoFocus
+                autoComplete="off"
+                spellCheck={false}
+                placeholder={moduleType === "quiz" ? "日本語で…" : "answer"}
+                className={`input jp text-center text-2xl ${
+                  status === "wrong"
+                    ? "border-accent ring-2 ring-accent/20"
+                    : ""
+                } ${
+                  status === "correct"
+                    ? "border-green-600 ring-2 ring-green-600/20"
+                    : ""
+                }`}
+              />
+
+              {status === "asking" && (
+                <div className="mt-4 flex justify-center gap-3">
+                  <button type="submit" className="btn-primary">
+                    Check
+                  </button>
+                  <button type="button" onClick={skip} className="btn-ghost">
+                    Skip
+                  </button>
+                </div>
+              )}
+
+              {status === "correct" && (
+                <div className="mt-4 text-center text-green-700">
+                  正解！ Correct.
+                </div>
+              )}
+
+              {status === "wrong" && (
+                <div className="mt-4 rounded-md border border-accent/30 bg-accent/5 p-4 text-center">
+                  <div className="text-xs uppercase tracking-wide text-accent">
+                    Answer
+                  </div>
+                  <div className="jp mt-1 text-2xl">{expected}</div>
+                  {(card.fields as any).note && (
+                    <div className="mt-2 text-sm text-muted">
+                      {(card.fields as any).note}
+                    </div>
+                  )}
+                  <div className="mt-4 flex justify-center gap-3">
+                    <button
+                      type="button"
+                      onClick={retry}
+                      className="btn-outline"
+                    >
+                      Try again
+                    </button>
+                    <button
+                      type="button"
+                      onClick={skip}
+                      className="btn-primary"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+              )}
+            </form>
+          </>
+        )}
       </div>
     </div>
   );

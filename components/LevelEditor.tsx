@@ -10,6 +10,7 @@ type Level = {
   name: string;
   script: ScriptType;
   order_index: number;
+  supports_mcq?: boolean;
 };
 
 type Card = {
@@ -72,6 +73,9 @@ function LevelDetails({ level }: { level: Level }) {
   const [name, setName] = useState(level.name);
   const [script, setScript] = useState<ScriptType>(level.script);
   const [orderIndex, setOrderIndex] = useState<number>(level.order_index ?? 0);
+  const [supportsMcq, setSupportsMcq] = useState<boolean>(
+    Boolean(level.supports_mcq)
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -84,7 +88,12 @@ function LevelDetails({ level }: { level: Level }) {
     const supabase = createClient();
     const { error } = await supabase
       .from("module_levels")
-      .update({ name: name.trim(), script, order_index: orderIndex })
+      .update({
+        name: name.trim(),
+        script,
+        order_index: orderIndex,
+        supports_mcq: supportsMcq,
+      })
       .eq("id", level.id);
     setLoading(false);
     if (error) return setError(error.message);
@@ -129,6 +138,20 @@ function LevelDetails({ level }: { level: Level }) {
         <button type="submit" disabled={loading} className="btn-primary">
           {loading ? "Saving…" : "Save"}
         </button>
+      </div>
+      <div className="sm:col-span-3">
+        <label className="inline-flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={supportsMcq}
+            onChange={(e) => setSupportsMcq(e.target.checked)}
+            className="h-4 w-4 rounded border-border accent-ink"
+          />
+          <span>Supports MCQ mode</span>
+        </label>
+        <p className="mt-1 text-xs text-muted">
+          Players will be offered a Normal / MCQ choice on the level card.
+        </p>
       </div>
       {error && (
         <p className="sm:col-span-3 text-sm text-accent">{error}</p>

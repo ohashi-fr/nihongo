@@ -21,7 +21,7 @@ export default async function EditLevelPage({
 
   const { data: level } = await supabase
     .from("module_levels")
-    .select("id, name, script, order_index, module_id")
+    .select("id, name, script, order_index, supports_mcq, module_id")
     .eq("id", params.levelId)
     .maybeSingle();
   if (!level || level.module_id !== mod.id) notFound();

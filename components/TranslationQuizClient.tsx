@@ -1,12 +1,25 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Card } from "@/lib/types";
+import McqCard, {
+  type McqOption,
+  buildMcqOptions,
+} from "@/components/McqCard";
+import PreQuizScreen from "@/components/PreQuizScreen";
 
 type Props = {
   cards: Card[];
   levelId: string;
+  // Optional MCQ wiring. When supportsMcq is true, the user first lands
+  // on PreQuizScreen to pick Normal vs MCQ; the chosen mode arrives via
+  // ?mode= in the URL. Existing callers that omit these props get the
+  // text-input flow exactly as before.
+  slug?: string;
+  levelName?: string;
+  supportsMcq?: boolean;
 };
 
 type Status = "asking" | "correct" | "wrong";
@@ -32,7 +45,19 @@ function normalize(s: string): string {
   return s.trim().normalize("NFC").toLowerCase();
 }
 
-export default function TranslationQuizClient({ cards, levelId }: Props) {
+export default function TranslationQuizClient({
+  cards,
+  levelId,
+  slug,
+  levelName,
+  supportsMcq = false,
+}: Props) {
+  const searchParams = useSearchParams();
+  const modeParam = searchParams.get("mode");
+  const mode: "normal" | "mcq" = modeParam === "mcq" ? "mcq" : "normal";
+
+  const needsPreQuiz = supportsMcq && !modeParam;
+
   const [order, setOrder] = useState<Card[]>(() => shuffle(cards));
   const [index, setIndex] = useState(0);
   const [answer, setAnswer] = useState("");
@@ -57,6 +82,20 @@ export default function TranslationQuizClient({ cards, levelId }: Props) {
       wordType: f.word_type ?? "",
     };
   }, [card]);
+
+  // MCQ is on when the URL says so AND there are enough cards for distractors.
+  const useMcq = mode === "mcq" && order.length >= 4;
+
+  // Distractor selection lives in McqCard (buildMcqOptions): same-
+  // word_type filter with fallback, plus dedupe on `japanese`.
+  const mcqOptions: McqOption[] = useMemo(() => {
+    if (!useMcq || !card) return [];
+    return buildMcqOptions(card, order);
+  }, [useMcq, card, order]);
+
+  function handleMcqAnswered(wasCorrect: boolean) {
+    if (wasCorrect) setCorrectFirstTry((n) => n + 1);
+  }
 
   useEffect(() => {
     if (status === "asking") inputRef.current?.focus();
@@ -131,6 +170,18 @@ export default function TranslationQuizClient({ cards, levelId }: Props) {
     setSavedSession(false);
   }
 
+  // Pre-quiz screen for MCQ-enabled levels before a mode is picked.
+  if (needsPreQuiz) {
+    return (
+      <PreQuizScreen
+        slug={slug ?? ""}
+        levelId={levelId}
+        levelName={levelName ?? ""}
+        cardCount={cards.length}
+      />
+    );
+  }
+
   if (done) {
     const pct = total === 0 ? 0 : Math.round((correctFirstTry / total) * 100);
     return (
@@ -158,9 +209,12 @@ export default function TranslationQuizClient({ cards, levelId }: Props) {
   return (
     <div className="mx-auto max-w-xl">
       <div className="mb-4 flex items-center justify-between text-sm text-muted">
-        <span>
-          Card {index + 1} / {total}
-        </span>
+        <div className="flex items-center gap-3">
+          <span>
+            Card {index + 1} / {total}
+          </span>
+          {useMcq && <span className="badge">MCQ</span>}
+        </div>
         <button
           onClick={reset}
           className="hover:text-ink underline-offset-2 hover:underline"
@@ -170,6 +224,16 @@ export default function TranslationQuizClient({ cards, levelId }: Props) {
       </div>
 
       <div className="rounded-lg border border-border bg-white p-8 shadow-card">
+        {useMcq ? (
+          <McqCard
+            key={card.id}
+            prompt={fields.english}
+            options={mcqOptions}
+            onAnswered={handleMcqAnswered}
+            onNext={advance}
+          />
+        ) : (
+          <>
         <div className="mb-6 text-center">
           <div className="text-xs uppercase tracking-[0.25em] text-muted">
             Translate
@@ -258,6 +322,8 @@ export default function TranslationQuizClient({ cards, levelId }: Props) {
             </div>
           )}
         </form>
+          </>
+        )}
       </div>
     </div>
   );

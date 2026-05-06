@@ -16,6 +16,7 @@ export interface ModuleLevel {
   name: string;
   order_index: number;
   script: ScriptType;
+  supports_mcq: boolean;
   created_at: string;
 }
 

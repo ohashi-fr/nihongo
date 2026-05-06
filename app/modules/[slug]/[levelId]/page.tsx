@@ -20,13 +20,30 @@ export default async function QuizPage({
 
   if (!mod) notFound();
 
-  const { data: level } = await supabase
+  const { data: level, error: levelErr } = await supabase
     .from("module_levels")
-    .select("id, name, script, module_id")
+    .select("id, name, script, supports_mcq, module_id")
     .eq("id", params.levelId)
     .maybeSingle();
 
+  // TEMP DEBUG — remove once MCQ is confirmed working
+  // eslint-disable-next-line no-console
+  console.log("[QuizPage server] route=/modules/" + params.slug + "/" + params.levelId);
+  // eslint-disable-next-line no-console
+  console.log("[QuizPage server] module slug+id =", mod.slug, mod.id);
+  // eslint-disable-next-line no-console
+  console.log("[QuizPage server] level row =", level);
+  // eslint-disable-next-line no-console
+  console.log("[QuizPage server] level.supports_mcq =", level?.supports_mcq, "typeof =", typeof level?.supports_mcq);
+  // eslint-disable-next-line no-console
+  console.log("[QuizPage server] supabase level error =", levelErr);
+
   if (!level || level.module_id !== mod.id) notFound();
+
+  const supportsMcq = Boolean(level.supports_mcq);
+
+  // eslint-disable-next-line no-console
+  console.log("[QuizPage server] passing supportsMcq prop =", supportsMcq);
 
   const { data: cards } = await supabase
     .from("cards")
@@ -55,8 +72,11 @@ export default async function QuizPage({
         <QuizClient
           cards={cards as any}
           moduleType={mod.type as "quiz" | "conjugation"}
+          slug={mod.slug}
           levelId={level.id}
+          levelName={level.name}
           script={level.script}
+          supportsMcq={supportsMcq}
         />
       )}
     </section>
