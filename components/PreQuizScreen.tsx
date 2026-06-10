@@ -3,27 +3,35 @@
 import Link from "next/link";
 import { useState } from "react";
 
-type Mode = "normal" | "mcq";
+export type PreQuizMode = { value: string; label: string };
+
+const DEFAULT_MODES: PreQuizMode[] = [
+  { value: "normal", label: "Type the answer" },
+  { value: "mcq", label: "Multiple choice" },
+];
 
 type Props = {
   slug: string;
   levelId: string;
   levelName: string;
   cardCount: number;
+  // Optional. Defaults to Normal / MCQ for the vocabulary + translation
+  // levels. Other modules (kanji, etc.) can pass their own modes.
+  modes?: PreQuizMode[];
 };
 
 /**
- * Shown before the quiz starts on levels where supports_mcq = true.
- * The user picks Normal vs MCQ; clicking Start navigates back to the
- * same quiz URL with the chosen mode in `?mode=`.
+ * Shown before the quiz starts. The user picks a mode; clicking Start
+ * navigates to `/modules/{slug}/{levelId}?mode={value}`.
  */
 export default function PreQuizScreen({
   slug,
   levelId,
   levelName,
   cardCount,
+  modes = DEFAULT_MODES,
 }: Props) {
-  const [mode, setMode] = useState<Mode>("normal");
+  const [mode, setMode] = useState<string>(modes[0]?.value ?? "");
 
   return (
     <div className="mx-auto max-w-md rounded-lg border border-border bg-white p-8 shadow-card">
@@ -41,17 +49,25 @@ export default function PreQuizScreen({
         <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted">
           Choose mode
         </p>
-        <div className="grid grid-cols-2 gap-3">
-          <ModeButton
-            label="Type the answer"
-            selected={mode === "normal"}
-            onClick={() => setMode("normal")}
-          />
-          <ModeButton
-            label="Multiple choice"
-            selected={mode === "mcq"}
-            onClick={() => setMode("mcq")}
-          />
+        <div
+          className={`grid gap-3 ${
+            modes.length >= 4
+              ? "grid-cols-2"
+              : modes.length === 3
+                ? "grid-cols-3"
+                : modes.length === 2
+                  ? "grid-cols-2"
+                  : "grid-cols-1"
+          }`}
+        >
+          {modes.map((m) => (
+            <ModeButton
+              key={m.value}
+              label={m.label}
+              selected={mode === m.value}
+              onClick={() => setMode(m.value)}
+            />
+          ))}
         </div>
       </div>
 
