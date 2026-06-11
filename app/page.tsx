@@ -2,7 +2,10 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import type { Module, ModuleLevel } from "@/lib/types";
 
-export const dynamic = "force-dynamic";
+// Modules list changes rarely (admin-edited). Cache for 60s with
+// stale-while-revalidate so the home page renders instantly on hover-
+// prefetch, then refreshes in the background.
+export const revalidate = 60;
 
 type ModuleWithLevels = Module & { module_levels: { id: string }[] };
 

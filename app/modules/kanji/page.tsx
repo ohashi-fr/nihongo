@@ -2,23 +2,35 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export const dynamic = "force-dynamic";
+// Cache module + level list (rarely changes).
+export const revalidate = 60;
 
 export default async function KanjiHome() {
   const supabase = createClient();
 
+  // Single query — replaces 2 sequential ones.
   const { data: mod } = await supabase
     .from("modules")
-    .select("id, name, slug, description")
+    .select(
+      "id, name, slug, description, module_levels(id, name, order_index, is_exam, cards(id))"
+    )
     .eq("slug", "kanji")
+    .order("order_index", {
+      foreignTable: "module_levels",
+      ascending: true,
+    })
     .maybeSingle();
   if (!mod) notFound();
 
-  const { data: levels } = await supabase
-    .from("module_levels")
-    .select("id, name, order_index, is_exam, cards(id)")
-    .eq("module_id", mod.id)
-    .order("order_index", { ascending: true });
+  const levels = (mod as any).module_levels as
+    | {
+        id: string;
+        name: string;
+        order_index: number;
+        is_exam: boolean;
+        cards: { id: string }[];
+      }[]
+    | null;
 
   return (
     <section>

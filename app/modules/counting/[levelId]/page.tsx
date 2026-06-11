@@ -13,27 +13,39 @@ export default async function CountingQuizPage({
 }) {
   const supabase = createClient();
 
-  const { data: mod } = await supabase
-    .from("modules")
-    .select("id, name, slug")
-    .eq("slug", "counting")
-    .maybeSingle();
-  if (!mod) notFound();
+  // First pass — module, level, and (speculatively) the level's own cards
+  // all in parallel. For Final Boss the level's cards are empty anyway,
+  // so the parallel cards query is essentially free.
+  const [modRes, levelRes, levelCardsRes] = await Promise.all([
+    supabase
+      .from("modules")
+      .select("id, name, slug")
+      .eq("slug", "counting")
+      .maybeSingle(),
+    supabase
+      .from("module_levels")
+      .select("id, name, order_index, module_id")
+      .eq("id", params.levelId)
+      .maybeSingle(),
+    supabase
+      .from("cards")
+      .select("id, fields, level_id, created_at")
+      .eq("level_id", params.levelId),
+  ]);
 
-  const { data: level } = await supabase
-    .from("module_levels")
-    .select("id, name, order_index, module_id")
-    .eq("id", params.levelId)
-    .maybeSingle();
+  const mod = modRes.data;
+  const level = levelRes.data;
+  if (!mod) notFound();
   if (!level || level.module_id !== mod.id) notFound();
 
   const isFinalBoss = level.order_index === 11;
 
-  let cards: Card[] = [];
+  let cards: Card[] = (levelCardsRes.data ?? []) as Card[];
 
   if (isFinalBoss) {
-    // Pull every card from the module's other levels and let the
-    // client randomly draw 10 from that pool.
+    // Final Boss draws from every other level in the module — needs the
+    // sibling level ids. This is the one chain that still has to be
+    // sequential (pool depends on otherLevels.ids).
     const { data: otherLevels } = await supabase
       .from("module_levels")
       .select("id")
@@ -46,13 +58,9 @@ export default async function CountingQuizPage({
         .select("id, fields, level_id, created_at")
         .in("level_id", ids);
       cards = (pool ?? []) as Card[];
+    } else {
+      cards = [];
     }
-  } else {
-    const { data: levelCards } = await supabase
-      .from("cards")
-      .select("id, fields, level_id, created_at")
-      .eq("level_id", level.id);
-    cards = (levelCards ?? []) as Card[];
   }
 
   return (

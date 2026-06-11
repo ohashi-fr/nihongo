@@ -14,26 +14,32 @@ export default async function ConjugationQuizPage({
 }) {
   const supabase = createClient();
 
-  const { data: mod } = await supabase
-    .from("modules")
-    .select("id, name, slug")
-    .eq("slug", "conjugation")
-    .maybeSingle();
-  if (!mod) notFound();
+  // 3 parallel queries instead of 3 sequential.
+  const [modRes, levelRes, cardsRes] = await Promise.all([
+    supabase
+      .from("modules")
+      .select("id, name, slug")
+      .eq("slug", "conjugation")
+      .maybeSingle(),
+    supabase
+      .from("module_levels")
+      .select("id, name, script, supports_mcq, module_id")
+      .eq("id", params.levelId)
+      .maybeSingle(),
+    supabase
+      .from("cards")
+      .select("id, fields, level_id, created_at")
+      .eq("level_id", params.levelId),
+  ]);
 
-  const { data: level } = await supabase
-    .from("module_levels")
-    .select("id, name, script, supports_mcq, module_id")
-    .eq("id", params.levelId)
-    .maybeSingle();
+  const mod = modRes.data;
+  const level = levelRes.data;
+  const cards = cardsRes.data;
+
+  if (!mod) notFound();
   if (!level || level.module_id !== mod.id) notFound();
 
   const supportsMcq = Boolean(level.supports_mcq);
-
-  const { data: cards } = await supabase
-    .from("cards")
-    .select("id, fields, level_id, created_at")
-    .eq("level_id", level.id);
 
   const list = (cards ?? []) as Card[];
 

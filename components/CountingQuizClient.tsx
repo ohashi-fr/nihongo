@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import type { Card } from "@/lib/types";
 
@@ -254,9 +255,9 @@ export default function CountingQuizClient({
           <button onClick={reset} className="btn-primary">
             {isFinalBoss ? "New 10 cards" : "Restart"}
           </button>
-          <a href="../" className="btn-outline">
+          <Link href="/modules/counting" className="btn-outline">
             Back to levels
-          </a>
+          </Link>
         </div>
       </div>
     );

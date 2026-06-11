@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { toHiragana } from "wanakana";
 import { createClient } from "@/lib/supabase/client";
 import type { Card } from "@/lib/types";
@@ -564,9 +565,9 @@ function ResultsScreen({
         <button onClick={onRetry} className="btn-primary">
           Retry (new questions)
         </button>
-        <a href="../" className="btn-outline">
+        <Link href="/modules/kanji" className="btn-outline">
           Back to levels
-        </a>
+        </Link>
       </div>
     </div>
   );

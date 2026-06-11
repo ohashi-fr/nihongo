@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export const dynamic = "force-dynamic";
+// Modules + levels rarely change. Cache 60s with stale-while-revalidate
+// so hover-prefetching from the home grid is near-instant.
+export const revalidate = 60;
 
 const SCRIPT_LABELS: Record<string, string> = {
   hiragana: "ひらがな",
@@ -18,19 +20,31 @@ export default async function ModulePage({
 }) {
   const supabase = createClient();
 
+  // Single query — module with its levels nested (and cards' ids for the
+  // count). Replaces the previous 2 sequential queries.
   const { data: mod } = await supabase
     .from("modules")
-    .select("id, name, slug, description, type")
+    .select(
+      "id, name, slug, description, type, module_levels(id, name, script, order_index, cards(id))"
+    )
     .eq("slug", params.slug)
+    .order("order_index", {
+      foreignTable: "module_levels",
+      ascending: true,
+    })
     .maybeSingle();
 
   if (!mod) notFound();
 
-  const { data: levels } = await supabase
-    .from("module_levels")
-    .select("id, name, script, order_index, cards(id)")
-    .eq("module_id", mod.id)
-    .order("order_index", { ascending: true });
+  const levels = (mod as any).module_levels as
+    | {
+        id: string;
+        name: string;
+        script: string;
+        order_index: number;
+        cards: { id: string }[];
+      }[]
+    | null;
 
   return (
     <section>

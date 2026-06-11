@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Card, ScriptType } from "@/lib/types";
@@ -299,9 +300,9 @@ export default function QuizClient({
           <button onClick={() => startQuiz(scriptFilter)} className="btn-outline">
             Restart this set
           </button>
-          <a href="./" className="btn-ghost">
+          <Link href={`/modules/${slug}`} className="btn-ghost">
             Back to levels
-          </a>
+          </Link>
         </div>
       </div>
     );

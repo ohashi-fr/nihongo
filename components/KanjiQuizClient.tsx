@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Card } from "@/lib/types";
@@ -245,9 +246,9 @@ export default function KanjiQuizClient({
           <button onClick={reset} className="btn-primary">
             Restart
           </button>
-          <a href="../" className="btn-outline">
+          <Link href={`/modules/${slug}`} className="btn-outline">
             Back to levels
-          </a>
+          </Link>
         </div>
       </div>
     );

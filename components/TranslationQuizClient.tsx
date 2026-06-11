@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Card } from "@/lib/types";
@@ -196,9 +197,12 @@ export default function TranslationQuizClient({
           <button onClick={reset} className="btn-primary">
             Restart
           </button>
-          <a href="../" className="btn-outline">
+          <Link
+            href={slug ? `/modules/${slug}` : "/modules/conjugation"}
+            className="btn-outline"
+          >
             Back to levels
-          </a>
+          </Link>
         </div>
       </div>
     );

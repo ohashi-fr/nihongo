@@ -12,43 +12,30 @@ export default async function QuizPage({
 }) {
   const supabase = createClient();
 
-  const { data: mod } = await supabase
-    .from("modules")
-    .select("id, name, slug, type")
-    .eq("slug", params.slug)
-    .maybeSingle();
+  // Parallelize the 3 queries — they all key off URL params, none depend
+  // on each other. Was 3 sequential round-trips, now 1.
+  const [modRes, levelRes, cardsRes] = await Promise.all([
+    supabase
+      .from("modules")
+      .select("id, name, slug, type")
+      .eq("slug", params.slug)
+      .maybeSingle(),
+    supabase
+      .from("module_levels")
+      .select("id, name, script, supports_mcq, module_id")
+      .eq("id", params.levelId)
+      .maybeSingle(),
+    supabase.from("cards").select("id, fields").eq("level_id", params.levelId),
+  ]);
+
+  const mod = modRes.data;
+  const level = levelRes.data;
+  const cards = cardsRes.data;
 
   if (!mod) notFound();
-
-  const { data: level, error: levelErr } = await supabase
-    .from("module_levels")
-    .select("id, name, script, supports_mcq, module_id")
-    .eq("id", params.levelId)
-    .maybeSingle();
-
-  // TEMP DEBUG — remove once MCQ is confirmed working
-  // eslint-disable-next-line no-console
-  console.log("[QuizPage server] route=/modules/" + params.slug + "/" + params.levelId);
-  // eslint-disable-next-line no-console
-  console.log("[QuizPage server] module slug+id =", mod.slug, mod.id);
-  // eslint-disable-next-line no-console
-  console.log("[QuizPage server] level row =", level);
-  // eslint-disable-next-line no-console
-  console.log("[QuizPage server] level.supports_mcq =", level?.supports_mcq, "typeof =", typeof level?.supports_mcq);
-  // eslint-disable-next-line no-console
-  console.log("[QuizPage server] supabase level error =", levelErr);
-
   if (!level || level.module_id !== mod.id) notFound();
 
   const supportsMcq = Boolean(level.supports_mcq);
-
-  // eslint-disable-next-line no-console
-  console.log("[QuizPage server] passing supportsMcq prop =", supportsMcq);
-
-  const { data: cards } = await supabase
-    .from("cards")
-    .select("id, fields")
-    .eq("level_id", level.id);
 
   return (
     <section>

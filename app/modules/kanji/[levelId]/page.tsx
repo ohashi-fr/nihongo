@@ -14,18 +14,29 @@ export default async function KanjiLevelPage({
 }) {
   const supabase = createClient();
 
-  const { data: mod } = await supabase
-    .from("modules")
-    .select("id, name, slug")
-    .eq("slug", "kanji")
-    .maybeSingle();
-  if (!mod) notFound();
+  // 3 parallel queries up front — module, level, and (speculatively) the
+  // level's own cards. The cards query is wasted in exam mode (the exam
+  // level has none) but cheap, and saves a round-trip in the regular path.
+  const [modRes, levelRes, levelCardsRes] = await Promise.all([
+    supabase
+      .from("modules")
+      .select("id, name, slug")
+      .eq("slug", "kanji")
+      .maybeSingle(),
+    supabase
+      .from("module_levels")
+      .select("id, name, order_index, is_exam, module_id")
+      .eq("id", params.levelId)
+      .maybeSingle(),
+    supabase
+      .from("cards")
+      .select("id, fields, level_id, created_at")
+      .eq("level_id", params.levelId),
+  ]);
 
-  const { data: level } = await supabase
-    .from("module_levels")
-    .select("id, name, order_index, is_exam, module_id")
-    .eq("id", params.levelId)
-    .maybeSingle();
+  const mod = modRes.data;
+  const level = levelRes.data;
+  if (!mod) notFound();
   if (!level || level.module_id !== mod.id) notFound();
 
   const isExam = !!level.is_exam;
@@ -34,6 +45,10 @@ export default async function KanjiLevelPage({
   // (regular kanji levels), plus a map of level_id → name for the result
   // breakdown. The exam itself doesn't store cards.
   if (isExam) {
+    // Exam pulls every kanji from the module's regular levels. Sibling
+    // level ids and the card pool are still one dependent chain — but
+    // we already paid for `levelCardsRes` (which is empty for the exam)
+    // in the first round-trip, so this is the only extra delay.
     const { data: regularLevels } = await supabase
       .from("module_levels")
       .select("id, name")
@@ -84,13 +99,9 @@ export default async function KanjiLevelPage({
     );
   }
 
-  // Regular kanji level.
-  const { data: cards } = await supabase
-    .from("cards")
-    .select("id, fields, level_id, created_at")
-    .eq("level_id", level.id);
-
-  const list = (cards ?? []) as Card[];
+  // Regular kanji level — we already fetched these in the parallel
+  // first pass above.
+  const list = (levelCardsRes.data ?? []) as Card[];
 
   return (
     <section>
