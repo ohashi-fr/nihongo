@@ -6,6 +6,7 @@ import Link from "next/link";
 import type { Card } from "@/lib/types";
 import PreQuizScreen, { type PreQuizMode } from "@/components/PreQuizScreen";
 import VerbCheatSheet from "@/components/VerbCheatSheet";
+import { deriveHiragana } from "@/lib/verbReadings";
 
 export type VerbFields = {
   card_type: "verb_flashcard";
@@ -295,32 +296,35 @@ function BackContent({
   fields: VerbFields;
   frontDir: "en_jp" | "jp_en";
 }) {
-  // The "other side" of the verb — meaning if the front was Japanese,
-  // dictionary form if the front was English.
+  const dict = fields.dictionary_form;
+
+  // Whichever piece of meta wasn't on the front goes near the top.
   const otherSide =
     frontDir === "jp_en" ? fields.translation_en : fields.dictionary_form;
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-baseline gap-3">
-        <span className="inline-flex items-center rounded-full border border-border bg-white px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
-          Group {fields.group}
-        </span>
-        <div
-          className={`text-sm font-medium ${
-            frontDir === "jp_en" ? "" : "jp"
-          }`}
-        >
-          {otherSide}
+    <div className="space-y-4">
+      <div className="text-center">
+        <div className="jp text-4xl leading-tight">{dict}</div>
+        <div className="mt-2 flex items-center justify-center gap-2">
+          <span className="inline-flex items-center rounded-full border border-border bg-white px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+            Group {fields.group}
+          </span>
+          {frontDir === "jp_en" && (
+            <span className="text-xs text-muted">— {otherSide}</span>
+          )}
         </div>
       </div>
 
-      <Row label="Long (masu)" value={fields.masu_form} jp />
-      <Row label="Short (dictionary)" value={fields.dictionary_form} jp />
-      <Row label="Te form" value={fields.te_form} jp />
-      <Row label="Ta form" value={fields.ta_form} jp />
-      <Row label="Nai form" value={fields.nai_form} jp />
-      <Row label="Potential" value={fields.potential_form} jp />
+      <Row label="Long (masu)" value={deriveHiragana(fields.masu_form, dict)} jp />
+      <Row label="Te form" value={deriveHiragana(fields.te_form, dict)} jp />
+      <Row label="Ta form" value={deriveHiragana(fields.ta_form, dict)} jp />
+      <Row label="Nai form" value={deriveHiragana(fields.nai_form, dict)} jp />
+      <Row
+        label="Potential"
+        value={deriveHiragana(fields.potential_form, dict)}
+        jp
+      />
     </div>
   );
 }

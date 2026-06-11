@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import type { VerbFields } from "@/components/VerbFlashcardClient";
+import { deriveHiragana } from "@/lib/verbReadings";
 
 type Props = {
   open: boolean;
@@ -83,18 +84,23 @@ export default function VerbCheatSheet({ open, onClose, cards }: Props) {
               </tr>
             </thead>
             <tbody>
-              {sorted.map(({ id, fields: f }) => (
-                <tr key={id} className="border-b border-border">
-                  <Td>{f.translation_en}</Td>
-                  <Td jp>{f.dictionary_form}</Td>
-                  <Td>{f.group}</Td>
-                  <Td jp>{f.masu_form}</Td>
-                  <Td jp>{f.te_form}</Td>
-                  <Td jp>{f.ta_form}</Td>
-                  <Td jp>{f.nai_form}</Td>
-                  <Td jp>{f.potential_form}</Td>
-                </tr>
-              ))}
+              {sorted.map(({ id, fields: f }) => {
+                const dict = f.dictionary_form;
+                return (
+                  <tr key={id} className="border-b border-border">
+                    <Td>{f.translation_en}</Td>
+                    {/* Dictionary column stays kanji + reading */}
+                    <Td jp>{dict}</Td>
+                    <Td>{f.group}</Td>
+                    {/* Form columns rendered in full hiragana */}
+                    <Td jp>{deriveHiragana(f.masu_form, dict)}</Td>
+                    <Td jp>{deriveHiragana(f.te_form, dict)}</Td>
+                    <Td jp>{deriveHiragana(f.ta_form, dict)}</Td>
+                    <Td jp>{deriveHiragana(f.nai_form, dict)}</Td>
+                    <Td jp>{deriveHiragana(f.potential_form, dict)}</Td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
