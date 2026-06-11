@@ -10,6 +10,7 @@ import McqCard, {
   buildMcqOptions,
 } from "@/components/McqCard";
 import PreQuizScreen from "@/components/PreQuizScreen";
+import VerbFlashcardClient from "@/components/VerbFlashcardClient";
 
 type Props = {
   cards: Card[];
@@ -67,6 +68,31 @@ export default function QuizClient({
   supportsMcq = false,
 }: Props) {
   const searchParams = useSearchParams();
+
+  // Verb-flashcard levels live inside the vocabulary module but use an
+  // entirely different UI. Route them out of this component as early as
+  // possible. `cards` is a stable server prop within a route, so this
+  // conditional return is hook-safe.
+  const isVerbFlashcardLevel = useMemo(
+    () =>
+      cards.length > 0 &&
+      cards.every(
+        (c) => (c.fields as any)?.card_type === "verb_flashcard"
+      ),
+    [cards]
+  );
+
+  if (isVerbFlashcardLevel) {
+    return (
+      <VerbFlashcardClient
+        cards={cards}
+        slug={slug}
+        levelId={levelId}
+        levelName={levelName}
+      />
+    );
+  }
+
   const modeParam = searchParams.get("mode");
   const mode: "normal" | "mcq" = modeParam === "mcq" ? "mcq" : "normal";
 
