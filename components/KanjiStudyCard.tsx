@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { KanjiFields } from "@/components/KanjiQuizClient";
+import { formatKunyomi } from "@/lib/kanjiReadings";
 
 type Props = {
   cards: { id: string; fields: KanjiFields }[];
@@ -130,7 +131,9 @@ export default function KanjiStudyCard({ cards }: Props) {
                   <span className="text-xs uppercase tracking-wide text-muted">
                     Kun&apos;yomi
                   </span>
-                  <div className="jp text-lg">{f.kunyomi.join("、")}</div>
+                  <div className="jp text-lg">
+                    {f.kunyomi.map(formatKunyomi).join("、")}
+                  </div>
                 </div>
               )}
               {f.onyomi.length > 0 && (

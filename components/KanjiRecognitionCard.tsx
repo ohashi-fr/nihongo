@@ -3,6 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { toHiragana } from "wanakana";
 import type { KanjiFields } from "@/components/KanjiQuizClient";
+import {
+  formatKunyomi,
+  getKunyomiAnswer,
+} from "@/lib/kanjiReadings";
 
 type Props = {
   fields: KanjiFields;
@@ -23,7 +27,9 @@ function checkMeaning(input: string, meanings: string[]): boolean {
 }
 
 // Try the literal input AND a romaji-converted version, against every
-// reading in the supplied list. Returns true if any combination matches.
+// reading in the supplied list. For dictionary-style entries like
+// "なが.い", ONLY the kanji-only part ("なが") counts as correct.
+// Adding the okurigana (typing "ながい") is intentionally not accepted.
 function checkReading(input: string, list: string[]): boolean {
   const raw = input.trim();
   if (!raw) return false;
@@ -31,7 +37,7 @@ function checkReading(input: string, list: string[]): boolean {
     normalize(raw),
     normalize(toHiragana(raw)),
   ]);
-  return list.some((r) => candidates.has(normalize(r)));
+  return list.some((r) => candidates.has(normalize(getKunyomiAnswer(r))));
 }
 
 export default function KanjiRecognitionCard({
@@ -128,7 +134,7 @@ export default function KanjiRecognitionCard({
               disabled={status === "correct"}
               autoComplete="off"
               spellCheck={false}
-              placeholder="e.g. taberu / たべる"
+              placeholder="e.g. naga / なが"
               className={`input jp mt-1 text-center text-lg ${
                 kunOk === false ? "border-accent ring-2 ring-accent/20" : ""
               } ${
@@ -137,6 +143,12 @@ export default function KanjiRecognitionCard({
                   : ""
               }`}
             />
+            <p className="mt-1 text-xs text-muted">
+              Type only the kanji reading (e.g.{" "}
+              <span className="jp">なが</span> for{" "}
+              <span className="jp">長</span>, not{" "}
+              <span className="jp">ながい</span>).
+            </p>
           </div>
         )}
 
@@ -218,7 +230,9 @@ export default function KanjiRecognitionCard({
               {fields.kunyomi.length > 0 && (
                 <div>
                   <span className="text-muted">Kun&apos;yomi:</span>{" "}
-                  <span className="jp">{fields.kunyomi.join("、")}</span>
+                  <span className="jp">
+                    {fields.kunyomi.map(formatKunyomi).join("、")}
+                  </span>
                 </div>
               )}
               {fields.onyomi.length > 0 && (

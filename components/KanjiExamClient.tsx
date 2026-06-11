@@ -5,6 +5,10 @@ import { toHiragana } from "wanakana";
 import { createClient } from "@/lib/supabase/client";
 import type { Card } from "@/lib/types";
 import { parseKanjiFields, type KanjiFields } from "@/components/KanjiQuizClient";
+import {
+  formatKunyomi,
+  getKunyomiAnswer,
+} from "@/lib/kanjiReadings";
 
 type Props = {
   // Every kanji card across the kanji module (excluding the exam level).
@@ -63,7 +67,10 @@ function checkReadingAny(input: string, list: string[]): boolean {
     normalize(raw),
     normalize(toHiragana(raw)),
   ]);
-  return list.some((r) => candidates.has(normalize(r)));
+  // For dictionary-style entries like "なが.い", only the kanji-only
+  // part ("なが") counts. Keeps the exam strict and consistent with the
+  // Recognition card.
+  return list.some((r) => candidates.has(normalize(getKunyomiAnswer(r))));
 }
 
 function checkMeaning(input: string, meanings: string[]): boolean {
@@ -590,7 +597,7 @@ function ReadErrorRow({
             <>
               {" · "}
               <span className="text-muted">Kun:</span>{" "}
-              <span className="jp">{f.kunyomi.join("、")}</span>
+              <span className="jp">{f.kunyomi.map(formatKunyomi).join("、")}</span>
             </>
           )}
           {f.onyomi.length > 0 && (

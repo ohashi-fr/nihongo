@@ -9,6 +9,7 @@ import KanjiRecognitionCard from "@/components/KanjiRecognitionCard";
 import KanjiWritingCard from "@/components/KanjiWritingCard";
 import KanjiWordsCard, { type WordItem } from "@/components/KanjiWordsCard";
 import KanjiStudyCard from "@/components/KanjiStudyCard";
+import { formatKunyomi } from "@/lib/kanjiReadings";
 
 export type KanjiExample = {
   word: string;
@@ -383,7 +384,9 @@ function KanjiCheatSheetPanel({
                       {f.kunyomi.length > 0 && (
                         <>
                           kun:{" "}
-                          <span className="jp">{f.kunyomi.join("、")}</span>
+                          <span className="jp">
+                            {f.kunyomi.map(formatKunyomi).join("、")}
+                          </span>
                         </>
                       )}
                       {f.kunyomi.length > 0 && f.onyomi.length > 0 && (
