@@ -50,6 +50,7 @@ export default async function KanjiHome() {
         <ul className="mt-6 divide-y divide-border overflow-hidden rounded-lg border border-border bg-white">
           {levels.map((lv: any) => {
             const exam = !!lv.is_exam;
+            const aggregate = lv.name === "All Kanjis - Mid Terms";
             return (
               <li key={lv.id}>
                 <Link
@@ -57,19 +58,33 @@ export default async function KanjiHome() {
                   className={`flex items-center justify-between px-5 py-4 transition ${
                     exam
                       ? "border-l-4 border-l-accent bg-accent/[0.04] hover:bg-accent/[0.08]"
-                      : "hover:bg-soft"
+                      : aggregate
+                        ? "border-l-4 border-l-[#2563eb] bg-[#2563eb]/[0.05] hover:bg-[#2563eb]/[0.1]"
+                        : "hover:bg-soft"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-xs text-muted">
                       {String(lv.order_index ?? 0).padStart(2, "0")}
                     </span>
-                    <span className={`font-medium ${exam ? "text-accent" : ""}`}>
+                    <span
+                      className={`font-medium ${
+                        exam
+                          ? "text-accent"
+                          : aggregate
+                            ? "text-[#2563eb]"
+                            : ""
+                      }`}
+                    >
                       {lv.name}
                     </span>
                     {exam ? (
                       <span className="inline-flex items-center rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-accent">
                         Exam
+                      </span>
+                    ) : aggregate ? (
+                      <span className="inline-flex items-center rounded-full border border-[#2563eb]/40 bg-[#2563eb]/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#2563eb]">
+                        All
                       </span>
                     ) : (
                       <span className="badge jp">漢字</span>
@@ -78,7 +93,9 @@ export default async function KanjiHome() {
                   <div className="text-sm text-muted">
                     {exam
                       ? "20 random questions"
-                      : `${lv.cards?.length ?? 0} kanji`}{" "}
+                      : aggregate
+                        ? "All kanji combined"
+                        : `${lv.cards?.length ?? 0} kanji`}{" "}
                     →
                   </div>
                 </Link>

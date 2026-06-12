@@ -42,6 +42,11 @@ export default function HeaderUserMenu() {
     };
   }, []);
 
+  // Due-count badge removed: /reviews is now a manual favorites list,
+  // not an FSRS schedule, so a red "alert" dot would be misleading.
+  // If FSRS is re-enabled later, restore the polling effect that lived
+  // here in git history.
+
   async function logout() {
     setLoggingOut(true);
     const supabase = createClient();
@@ -66,6 +71,9 @@ export default function HeaderUserMenu() {
 
   return (
     <div className="flex items-center gap-3">
+      <Link href="/reviews" className="hover:text-ink">
+        My Reviews
+      </Link>
       <span
         className="max-w-[180px] truncate text-xs text-muted"
         title={state.email}

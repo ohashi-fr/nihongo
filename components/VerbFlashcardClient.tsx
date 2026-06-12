@@ -7,6 +7,11 @@ import type { Card } from "@/lib/types";
 import PreQuizScreen, { type PreQuizMode } from "@/components/PreQuizScreen";
 import VerbCheatSheet from "@/components/VerbCheatSheet";
 import { deriveHiragana } from "@/lib/verbReadings";
+import { createClient } from "@/lib/supabase/client";
+import FavoriteStar from "@/components/FavoriteStar";
+
+// FSRS rating UI removed — see lib/fsrs.ts to re-enable spaced
+// repetition later. The card_reviews table is still in the schema.
 
 export type VerbFields = {
   card_type: "verb_flashcard";
@@ -110,6 +115,112 @@ export default function VerbFlashcardClient({
   const [flipped, setFlipped] = useState(false);
   const [cheatOpen, setCheatOpen] = useState(false);
 
+  // Auth state — used to conditionally render the favorite star.
+  const [userId, setUserId] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const supabase = createClient();
+    let active = true;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!active) return;
+      setUserId(user?.id ?? null);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUserId(session?.user?.id ?? null);
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  // Fetch favorites for this user + this level's cards.
+  useEffect(() => {
+    if (!userId) {
+      setFavorites(new Set());
+      return;
+    }
+    const supabase = createClient();
+    const cardIds = parsedCards.map((c) => c.id);
+    if (cardIds.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("favorites")
+        .select("card_id")
+        .eq("user_id", userId)
+        .in("card_id", cardIds);
+      if (cancelled) return;
+      setFavorites(new Set((data ?? []).map((r: any) => r.card_id as string)));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, parsedCards]);
+
+  async function toggleFavorite(cardId: string) {
+    if (!userId) {
+      // eslint-disable-next-line no-console
+      console.warn("[favorites] no userId — star noop");
+      return;
+    }
+    const isFav = favorites.has(cardId);
+
+    // Optimistic
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (isFav) next.delete(cardId);
+      else next.add(cardId);
+      return next;
+    });
+
+    const supabase = createClient();
+
+    // TEMP DEBUG — confirm the browser client actually has a session.
+    // Remove once favorites are verified working.
+    const { data: sessionData } = await supabase.auth.getSession();
+    // eslint-disable-next-line no-console
+    console.log("[favorites] session check:", {
+      authedUserId: sessionData?.session?.user?.id ?? null,
+      propUserId: userId,
+      cardId,
+      action: isFav ? "delete" : "insert",
+    });
+
+    if (isFav) {
+      const { error } = await supabase
+        .from("favorites")
+        .delete()
+        .eq("user_id", userId)
+        .eq("card_id", cardId);
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error("[favorites] delete failed:", error);
+        // Roll back the optimistic toggle.
+        setFavorites((prev) => {
+          const next = new Set(prev);
+          next.add(cardId);
+          return next;
+        });
+      }
+    } else {
+      const { error } = await supabase
+        .from("favorites")
+        .insert({ user_id: userId, card_id: cardId });
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error("[favorites] insert failed:", error);
+        // Roll back the optimistic toggle.
+        setFavorites((prev) => {
+          const next = new Set(prev);
+          next.delete(cardId);
+          return next;
+        });
+      }
+    }
+  }
+
   // Reset index when order is rebuilt (direction or shuffle changed).
   useEffect(() => {
     setIndex(0);
@@ -127,6 +238,9 @@ export default function VerbFlashcardClient({
     setFlipped(false);
     setIndex((i) => i + 1);
   }
+
+  // FSRS rating UI removed — see lib/fsrs.ts to re-enable spaced
+  // repetition later.
 
   useEffect(() => {
     if (cheatOpen) return; // cheat sheet handles its own keys
@@ -203,7 +317,7 @@ export default function VerbFlashcardClient({
       </div>
 
       <div
-        className="mx-auto"
+        className="relative mx-auto"
         style={{ perspective: "1200px", maxWidth: "560px" }}
       >
         <button
@@ -248,6 +362,15 @@ export default function VerbFlashcardClient({
             <BackContent fields={f} frontDir={item.dir} />
           </div>
         </button>
+
+        {/* Favorite star — top-right of the card, above the flip button */}
+        <div className="absolute right-2 top-2 z-10">
+          <FavoriteStar
+            isFavorite={favorites.has(item.id)}
+            onToggle={() => toggleFavorite(item.id)}
+            loggedIn={Boolean(userId)}
+          />
+        </div>
       </div>
 
       <div className="mt-3 text-center text-xs text-muted">
@@ -270,6 +393,10 @@ export default function VerbFlashcardClient({
           Next →
         </button>
       </div>
+
+      {/* FSRS rating UI removed — see lib/fsrs.ts to re-enable spaced
+          repetition later. Card favoriting is handled by the star
+          button in the top-right of the card. */}
 
       <div className="mt-4 text-center">
         <Link
@@ -345,3 +472,6 @@ function Row({
     </div>
   );
 }
+
+// FSRS rating button removed — see lib/fsrs.ts to re-enable spaced
+// repetition later.

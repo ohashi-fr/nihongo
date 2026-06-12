@@ -3,6 +3,11 @@
 import { useEffect, useState } from "react";
 import type { KanjiFields } from "@/components/KanjiQuizClient";
 import { formatKunyomi } from "@/lib/kanjiReadings";
+import { createClient } from "@/lib/supabase/client";
+import FavoriteStar from "@/components/FavoriteStar";
+
+// FSRS rating UI removed — see lib/fsrs.ts to re-enable spaced
+// repetition later. The card_reviews table is still in the schema.
 
 type Props = {
   cards: { id: string; fields: KanjiFields }[];
@@ -28,6 +33,106 @@ export default function KanjiStudyCard({ cards }: Props) {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
 
+  // Auth + favorites (replaces the FSRS reviews state).
+  const [userId, setUserId] = useState<string | null>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    const supabase = createClient();
+    let active = true;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!active) return;
+      setUserId(user?.id ?? null);
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUserId(session?.user?.id ?? null);
+    });
+    return () => {
+      active = false;
+      sub.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!userId) {
+      setFavorites(new Set());
+      return;
+    }
+    const supabase = createClient();
+    const ids = cards.map((c) => c.id);
+    if (ids.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase
+        .from("favorites")
+        .select("card_id")
+        .eq("user_id", userId)
+        .in("card_id", ids);
+      if (cancelled) return;
+      setFavorites(new Set((data ?? []).map((r: any) => r.card_id as string)));
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [userId, cards]);
+
+  async function toggleFavorite(cardId: string) {
+    if (!userId) {
+      // eslint-disable-next-line no-console
+      console.warn("[favorites] no userId — star noop");
+      return;
+    }
+    const isFav = favorites.has(cardId);
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (isFav) next.delete(cardId);
+      else next.add(cardId);
+      return next;
+    });
+
+    const supabase = createClient();
+
+    // TEMP DEBUG — confirm the browser client actually has a session.
+    const { data: sessionData } = await supabase.auth.getSession();
+    // eslint-disable-next-line no-console
+    console.log("[favorites] session check:", {
+      authedUserId: sessionData?.session?.user?.id ?? null,
+      propUserId: userId,
+      cardId,
+      action: isFav ? "delete" : "insert",
+    });
+
+    if (isFav) {
+      const { error } = await supabase
+        .from("favorites")
+        .delete()
+        .eq("user_id", userId)
+        .eq("card_id", cardId);
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error("[favorites] delete failed:", error);
+        setFavorites((prev) => {
+          const next = new Set(prev);
+          next.add(cardId);
+          return next;
+        });
+      }
+    } else {
+      const { error } = await supabase
+        .from("favorites")
+        .insert({ user_id: userId, card_id: cardId });
+      if (error) {
+        // eslint-disable-next-line no-console
+        console.error("[favorites] insert failed:", error);
+        setFavorites((prev) => {
+          const next = new Set(prev);
+          next.delete(cardId);
+          return next;
+        });
+      }
+    }
+  }
+
   // Toggling shuffle reshuffles the order and resets back to the start.
   function toggleShuffle() {
     const next = !shuffleOn;
@@ -48,6 +153,9 @@ export default function KanjiStudyCard({ cards }: Props) {
     setFlipped(false);
     setIndex((i) => i + 1);
   }
+
+  // FSRS rating logic removed — see lib/fsrs.ts to re-enable spaced
+  // repetition later.
 
   // Keyboard navigation.
   useEffect(() => {
@@ -87,7 +195,7 @@ export default function KanjiStudyCard({ cards }: Props) {
 
       {/* Flip card */}
       <div
-        className="mx-auto"
+        className="relative mx-auto"
         style={{ perspective: "1200px", maxWidth: "560px" }}
       >
         <button
@@ -164,6 +272,15 @@ export default function KanjiStudyCard({ cards }: Props) {
             )}
           </div>
         </button>
+
+        {/* Favorite star — top-right of the card, above the flip button */}
+        <div className="absolute right-2 top-2 z-10">
+          <FavoriteStar
+            isFavorite={favorites.has(card.id)}
+            onToggle={() => toggleFavorite(card.id)}
+            loggedIn={Boolean(userId)}
+          />
+        </div>
       </div>
 
       <div className="mt-3 text-center text-xs text-muted">
@@ -186,6 +303,13 @@ export default function KanjiStudyCard({ cards }: Props) {
           Next →
         </button>
       </div>
+
+      {/* FSRS rating UI removed — see lib/fsrs.ts to re-enable spaced
+          repetition later. Favoriting is handled by the star button on
+          the card itself. */}
     </div>
   );
 }
+
+// FSRS RatingButton removed — see lib/fsrs.ts to re-enable spaced
+// repetition later.
