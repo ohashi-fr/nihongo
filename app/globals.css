@@ -3,56 +3,91 @@
 @tailwind utilities;
 
 :root {
-  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", system-ui, sans-serif;
   --font-jp: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", serif;
 }
 
 html,
 body {
-  background: #faf8f5;
-  color: #1a1a1a;
+  background: #fafbfd;
+  color: #0f172a;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
 }
 
-/* Subtle paper texture */
+/* Subtle ambient gradient — adds depth without the old dot grid. */
 body {
-  background-image: radial-gradient(
-      rgba(0, 0, 0, 0.018) 1px,
-      transparent 1px
-    ),
-    radial-gradient(rgba(0, 0, 0, 0.012) 1px, transparent 1px);
-  background-position: 0 0, 12px 12px;
-  background-size: 24px 24px;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, rgba(5, 29, 72, 0.06), transparent 70%),
+    radial-gradient(900px 500px at 100% 0%, rgba(255, 178, 83, 0.10), transparent 70%),
+    #fafbfd;
+  background-attachment: fixed;
+}
+
+@layer base {
+  h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
+  }
 }
 
 @layer components {
+  /* ── Buttons ────────────────────────────────────────── */
   .btn {
-    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors;
+    @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-semibold transition;
   }
   .btn-primary {
-    @apply btn bg-ink text-paper hover:bg-sumi;
+    @apply btn bg-primary text-white shadow-soft hover:bg-primary-700 active:bg-primary-900;
   }
   .btn-accent {
-    @apply btn bg-accent text-paper hover:opacity-90;
-  }
-  .btn-ghost {
-    @apply btn text-ink hover:bg-soft;
+    @apply btn bg-accent text-primary shadow-glow hover:bg-accent-300 active:bg-accent-700;
   }
   .btn-outline {
-    @apply btn border border-border text-ink hover:bg-soft;
+    @apply btn border border-border bg-white text-primary hover:bg-soft;
   }
+  .btn-ghost {
+    @apply btn text-primary hover:bg-soft;
+  }
+
+  /* ── Inputs ─────────────────────────────────────────── */
   .input {
-    @apply w-full rounded-md border border-border bg-white px-3 py-2 text-sm outline-none focus:border-ink focus:ring-2 focus:ring-ink/10;
+    @apply w-full rounded-xl border border-border bg-white px-4 py-2.5 text-sm text-ink outline-none transition
+           focus:border-primary focus:ring-4 focus:ring-primary/10
+           placeholder:text-muted/70;
   }
   .label {
-    @apply block text-xs font-medium uppercase tracking-wide text-muted;
+    @apply block text-[11px] font-semibold uppercase tracking-[0.08em] text-muted;
   }
+
+  /* ── Cards / surfaces ───────────────────────────────── */
   .card-tile {
-    @apply block rounded-lg border border-border bg-white p-5 shadow-card transition hover:-translate-y-0.5 hover:shadow-md;
+    @apply block rounded-2xl bg-white p-6 shadow-card transition
+           hover:-translate-y-0.5 hover:shadow-cardHover;
   }
+  .surface {
+    @apply rounded-2xl bg-white shadow-card;
+  }
+
+  /* ── Pills / badges ─────────────────────────────────── */
   .badge {
-    @apply inline-flex items-center rounded-full border border-border bg-soft px-2 py-0.5 text-[11px] font-medium uppercase tracking-wide text-muted;
+    @apply inline-flex items-center rounded-full bg-soft px-2.5 py-0.5
+           text-[11px] font-semibold uppercase tracking-wide text-primary;
+  }
+  .badge-accent {
+    @apply inline-flex items-center rounded-full bg-accent-100 px-2.5 py-0.5
+           text-[11px] font-semibold uppercase tracking-wide text-accent-700;
+  }
+  .badge-success {
+    @apply inline-flex items-center rounded-full bg-success-50 px-2.5 py-0.5
+           text-[11px] font-semibold uppercase tracking-wide text-success-700;
+  }
+
+  /* ── Progress ───────────────────────────────────────── */
+  .progress-track {
+    @apply h-2 w-full overflow-hidden rounded-full bg-soft;
+  }
+  .progress-fill {
+    @apply h-full rounded-full bg-accent transition-all duration-500;
   }
 }
 

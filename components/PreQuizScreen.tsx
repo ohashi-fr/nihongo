@@ -15,8 +15,6 @@ type Props = {
   levelId: string;
   levelName: string;
   cardCount: number;
-  // Optional. Defaults to Normal / MCQ for the vocabulary + translation
-  // levels. Other modules (kanji, etc.) can pass their own modes.
   modes?: PreQuizMode[];
 };
 
@@ -34,10 +32,12 @@ export default function PreQuizScreen({
   const [mode, setMode] = useState<string>(modes[0]?.value ?? "");
 
   return (
-    <div className="mx-auto max-w-md rounded-lg border border-border bg-white p-8 shadow-card">
+    <div className="mx-auto max-w-md rounded-3xl bg-white p-8 shadow-card sm:p-10">
       <div className="text-center">
-        <div className="jp text-4xl">準備</div>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-100">
+          <span className="jp text-2xl text-accent-700">準備</span>
+        </div>
+        <h2 className="mt-5 text-2xl font-bold tracking-tight text-ink">
           {levelName}
         </h2>
         <p className="mt-1 text-sm text-muted">
@@ -46,7 +46,7 @@ export default function PreQuizScreen({
       </div>
 
       <div className="mt-8">
-        <p className="mb-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted">
+        <p className="mb-3 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">
           Choose mode
         </p>
         <div
@@ -73,9 +73,9 @@ export default function PreQuizScreen({
 
       <Link
         href={`/modules/${slug}/${levelId}?mode=${mode}`}
-        className="btn-primary mt-6 w-full justify-center"
+        className="btn-accent mt-8 w-full justify-center !rounded-2xl !py-3 text-base"
       >
-        Start
+        Start →
       </Link>
     </div>
   );
@@ -95,13 +95,13 @@ function ModeButton({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`flex items-center justify-center rounded-lg border p-5 text-center transition ${
+      className={`flex items-center justify-center rounded-2xl border-2 p-5 text-center transition ${
         selected
-          ? "border-ink bg-ink text-paper shadow-card"
-          : "border-border bg-white text-ink hover:bg-soft"
+          ? "border-primary bg-primary text-white shadow-card"
+          : "border-transparent bg-soft text-primary hover:bg-primary-50"
       }`}
     >
-      <span className="text-base font-medium">{label}</span>
+      <span className="text-sm font-semibold">{label}</span>
     </button>
   );
 }
