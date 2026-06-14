@@ -11,6 +11,7 @@ import McqCard, {
 } from "@/components/McqCard";
 import PreQuizScreen from "@/components/PreQuizScreen";
 import VerbFlashcardClient from "@/components/VerbFlashcardClient";
+import AdjectiveFlashcardClient from "@/components/AdjectiveFlashcardClient";
 
 type Props = {
   cards: Card[];
@@ -69,10 +70,10 @@ export default function QuizClient({
 }: Props) {
   const searchParams = useSearchParams();
 
-  // Verb-flashcard levels live inside the vocabulary module but use an
-  // entirely different UI. Route them out of this component as early as
-  // possible. `cards` is a stable server prop within a route, so this
-  // conditional return is hook-safe.
+  // Verb- and adjective-flashcard levels live inside the vocabulary
+  // module but use entirely different UIs. Route them out early.
+  // `cards` is a stable server prop, so these conditional returns are
+  // hook-safe.
   const isVerbFlashcardLevel = useMemo(
     () =>
       cards.length > 0 &&
@@ -81,10 +82,29 @@ export default function QuizClient({
       ),
     [cards]
   );
+  const isAdjectiveFlashcardLevel = useMemo(
+    () =>
+      cards.length > 0 &&
+      cards.every(
+        (c) => (c.fields as any)?.card_type === "adjective_flashcard"
+      ),
+    [cards]
+  );
 
   if (isVerbFlashcardLevel) {
     return (
       <VerbFlashcardClient
+        cards={cards}
+        slug={slug}
+        levelId={levelId}
+        levelName={levelName}
+      />
+    );
+  }
+
+  if (isAdjectiveFlashcardLevel) {
+    return (
+      <AdjectiveFlashcardClient
         cards={cards}
         slug={slug}
         levelId={levelId}

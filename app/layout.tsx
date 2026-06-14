@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Plus_Jakarta_Sans, Noto_Serif_JP } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import HeaderUserMenu from "@/components/HeaderUserMenu";
+import MobileNav from "@/components/MobileNav";
 import "./globals.css";
 
 const sans = Plus_Jakarta_Sans({
@@ -53,7 +54,8 @@ export default function RootLayout({
                 </span>
               </span>
             </Link>
-            <nav className="flex items-center gap-1 text-sm sm:gap-3">
+            {/* Desktop nav */}
+            <nav className="hidden items-center gap-2 text-sm sm:flex">
               <Link
                 href="/"
                 className="rounded-full px-3 py-1.5 font-medium text-muted transition hover:bg-soft hover:text-primary"
@@ -62,12 +64,17 @@ export default function RootLayout({
               </Link>
               <Link
                 href="/admin"
-                className="hidden rounded-full px-3 py-1.5 font-medium text-muted transition hover:bg-soft hover:text-primary sm:inline-flex"
+                className="rounded-full px-3 py-1.5 font-medium text-muted transition hover:bg-soft hover:text-primary"
               >
                 Admin
               </Link>
               <HeaderUserMenu />
             </nav>
+
+            {/* Mobile hamburger + slide-in panel */}
+            <div className="sm:hidden">
+              <MobileNav />
+            </div>
           </header>
           <main className="flex-1 py-6 sm:py-10">{children}</main>
           <footer className="mt-12 border-t border-border py-6 text-xs text-muted">

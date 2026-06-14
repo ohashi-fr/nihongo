@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import ReviewsClient, {
   type VerbFavoriteItem,
   type KanjiFavoriteItem,
+  type AdjectiveFavoriteItem,
 } from "@/components/ReviewsClient";
 
 // Fully per-user — no caching possible.
@@ -31,12 +32,15 @@ export default async function ReviewsPage() {
     .order("created_at", { ascending: false });
 
   const verbItems: VerbFavoriteItem[] = [];
+  const adjectiveItems: AdjectiveFavoriteItem[] = [];
   const kanjiItems: KanjiFavoriteItem[] = [];
 
   for (const r of ((favRows ?? []) as any[])) {
     const type = r.cards?.fields?.card_type;
     if (type === "verb_flashcard") {
       verbItems.push({ cardId: r.card_id, fields: r.cards.fields });
+    } else if (type === "adjective_flashcard") {
+      adjectiveItems.push({ cardId: r.card_id, fields: r.cards.fields });
     } else if (type === "kanji_flashcard") {
       kanjiItems.push({ cardId: r.card_id, fields: r.cards.fields });
     }
@@ -61,6 +65,7 @@ export default async function ReviewsPage() {
 
       <ReviewsClient
         verbItems={verbItems}
+        adjectiveItems={adjectiveItems}
         kanjiItems={kanjiItems}
         userId={user.id}
       />
