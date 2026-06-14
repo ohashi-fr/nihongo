@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { isAdminEmail } from "@/lib/admin";
 
 /**
  * Desktop user menu rendered in the layout header. Subscribes to the
@@ -136,6 +137,17 @@ export default function HeaderUserMenu() {
             </div>
           </div>
           <div className="my-1 h-px bg-border" />
+          {isAdminEmail(state.email) && (
+            <Link
+              role="menuitem"
+              href="/admin"
+              onClick={() => setOpen(false)}
+              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-ink transition hover:bg-soft"
+            >
+              <span aria-hidden>⚙</span>
+              <span>Admin</span>
+            </Link>
+          )}
           <button
             type="button"
             role="menuitem"

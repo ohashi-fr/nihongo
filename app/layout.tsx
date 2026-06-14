@@ -54,7 +54,7 @@ export default function RootLayout({
                 </span>
               </span>
             </Link>
-            {/* Desktop nav */}
+            {/* Desktop nav — Admin moved into the My Profile dropdown. */}
             <nav className="hidden items-center gap-2 text-sm sm:flex">
               <Link
                 href="/"
@@ -63,10 +63,10 @@ export default function RootLayout({
                 Modules
               </Link>
               <Link
-                href="/admin"
+                href="/reviews"
                 className="rounded-full px-3 py-1.5 font-medium text-muted transition hover:bg-soft hover:text-primary"
               >
-                Admin
+                My Reviews
               </Link>
               <HeaderUserMenu />
             </nav>

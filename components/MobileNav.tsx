@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { isAdminEmail } from "@/lib/admin";
 
 /**
  * Mobile-only navigation. Renders a small hamburger button in the
@@ -201,29 +202,34 @@ export default function MobileNav() {
               }
               onSelect={() => setOpen(false)}
             />
-            {state.kind === "user" && (
+            {/* My Reviews is always shown so the entry point is easy to
+                find on mobile. Anonymous taps go through /login?next=. */}
+            <NavItem
+              href="/reviews"
+              label="My Reviews"
+              icon={
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 3l2.5 5.5L20 9.5l-4 4 1 5.5L12 16l-5 3 1-5.5-4-4 5.5-1z" />
+                </svg>
+              }
+              onSelect={() => setOpen(false)}
+            />
+            {/* Admin only visible to addresses listed in
+                NEXT_PUBLIC_ADMIN_EMAILS. Hidden for anonymous users
+                and for non-admin signed-in users. */}
+            {state.kind === "user" && isAdminEmail(state.email) && (
               <NavItem
-                href="/reviews"
-                label="My Reviews"
+                href="/admin"
+                label="Admin"
                 icon={
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 3l2.5 5.5L20 9.5l-4 4 1 5.5L12 16l-5 3 1-5.5-4-4 5.5-1z" />
+                    <circle cx="12" cy="12" r="3" />
+                    <path d="M19 12a7 7 0 0 1-.2 1.6l1.7 1.3-2 3.5-2-.8a7 7 0 0 1-2.7 1.6l-.3 2.2h-4l-.3-2.2a7 7 0 0 1-2.7-1.6l-2 .8-2-3.5L4.2 13.6A7 7 0 0 1 4 12c0-.6.1-1.1.2-1.6L2.5 9.1l2-3.5 2 .8A7 7 0 0 1 9.2 4.8L9.5 2.6h4l.3 2.2a7 7 0 0 1 2.7 1.6l2-.8 2 3.5-1.7 1.3c.1.5.2 1 .2 1.6z" />
                   </svg>
                 }
                 onSelect={() => setOpen(false)}
               />
             )}
-            <NavItem
-              href="/admin"
-              label="Admin"
-              icon={
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="12" cy="12" r="3" />
-                  <path d="M19 12a7 7 0 0 1-.2 1.6l1.7 1.3-2 3.5-2-.8a7 7 0 0 1-2.7 1.6l-.3 2.2h-4l-.3-2.2a7 7 0 0 1-2.7-1.6l-2 .8-2-3.5L4.2 13.6A7 7 0 0 1 4 12c0-.6.1-1.1.2-1.6L2.5 9.1l2-3.5 2 .8A7 7 0 0 1 9.2 4.8L9.5 2.6h4l.3 2.2a7 7 0 0 1 2.7 1.6l2-.8 2 3.5-1.7 1.3c.1.5.2 1 .2 1.6z" />
-                </svg>
-              }
-              onSelect={() => setOpen(false)}
-            />
           </ul>
         </nav>
 
