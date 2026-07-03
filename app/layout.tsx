@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans, Noto_Serif_JP } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import HeaderUserMenu from "@/components/HeaderUserMenu";
 import MobileNav from "@/components/MobileNav";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import "./globals.css";
 
 const sans = Plus_Jakarta_Sans({
@@ -76,11 +77,47 @@ export default function RootLayout({
               <MobileNav />
             </div>
           </header>
-          <main className="flex-1 py-6 sm:py-10">{children}</main>
+          {/* Bottom padding on mobile leaves room for the sticky
+              bottom nav (64 px + iOS safe area). At sm+ the bar is
+              hidden and `sm:pb-10` overrides back to normal spacing. */}
+          <main className="flex-1 pt-6 pb-[calc(5rem+env(safe-area-inset-bottom))] sm:pb-10 sm:pt-10">
+            {children}
+          </main>
           <footer className="mt-12 border-t border-border py-6 text-xs text-muted">
-            <span className="jp mr-2 text-primary">頑張って</span> — keep going.
+            <div>
+              <span className="jp mr-2 text-primary">頑張って</span> — keep
+              going.
+            </div>
+            {/* JMdict / EDRDG attribution — required by the dictionary
+                licence (CC-BY-SA 4.0). Kept in the global footer so
+                it's visible on every page that exposes dictionary data. */}
+            <div className="mt-2 text-[10px] leading-snug">
+              Dictionary data from{" "}
+              <a
+                href="https://www.edrdg.org/"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="underline decoration-dotted underline-offset-2 hover:text-ink"
+              >
+                JMdict
+              </a>
+              , property of the Electronic Dictionary Research and
+              Development Group, used under{" "}
+              <a
+                href="https://www.edrdg.org/edrdg/licence.html"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="underline decoration-dotted underline-offset-2 hover:text-ink"
+              >
+                the EDRDG licence
+              </a>{" "}
+              (CC-BY-SA 4.0).
+            </div>
           </footer>
         </div>
+        {/* Sticky mobile-only bottom nav — hides itself on focused
+            study screens via `usePathname()`. */}
+        <MobileBottomNav />
         <Analytics />
       </body>
     </html>
