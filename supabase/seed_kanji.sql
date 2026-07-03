@@ -115,7 +115,7 @@ select ds.id, fld::jsonb from do_seed ds
 cross join (values
   ('{"kanji":"上","meanings":["top","above","on"],"kunyomi":["うえ","あがる"],"onyomi":["じょう"],"examples":[{"word":"上下","reading":"じょうげ","meaning":"up and down"}]}'),
   ('{"kanji":"中","meanings":["inside"],"kunyomi":["なか"],"onyomi":["ちゅう"],"examples":[{"word":"中学校","reading":"ちゅうがっこう","meaning":"junior high school"},{"word":"一日中","reading":"いちにちちゅう","meaning":"all day long"}]}'),
-  ('{"kanji":"下","meanings":["under","below","down"],"kunyomi":["した","さがる","ください"],"onyomi":["ち","げ"],"examples":[{"word":"地下鉄","reading":"ちかてつ","meaning":"subway"}]}'),
+  ('{"kanji":"下","meanings":["under","below","down"],"kunyomi":["した","さがる","ください"],"onyomi":["か","げ"],"examples":[{"word":"地下鉄","reading":"ちかてつ","meaning":"subway"}]}'),
   ('{"kanji":"右","meanings":["right"],"kunyomi":["みぎ"],"onyomi":["う"],"examples":[{"word":"右折","reading":"うせつ","meaning":"right turn"}]}'),
   ('{"kanji":"左","meanings":["left"],"kunyomi":["ひだり"],"onyomi":["さ"],"examples":[{"word":"左折","reading":"させつ","meaning":"left turn"}]}'),
   ('{"kanji":"本","meanings":["book","base"],"kunyomi":["もと"],"onyomi":["ほん"],"examples":[{"word":"本","reading":"ほん","meaning":"book"}]}'),

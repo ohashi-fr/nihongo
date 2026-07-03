@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import EditDeckModal from "@/components/EditDeckModal";
 import AddCardForm from "@/components/AddCardForm";
 import { illustrationUrl } from "@/lib/deckIllustrations";
+import { revalidateDeck, revalidateDecksList } from "@/app/reviews/actions";
 import type { CustomCard, CustomDeck } from "@/lib/customDecks";
 
 /**
@@ -138,7 +139,9 @@ export default function CustomDeckClient({
             console.error("[custom_cards] delete failed:", error);
             setCards(prev);
           } else {
-            router.refresh();
+            // Purge router cache for this deck + the /reviews list
+            // (card count on the deck card just changed).
+            void revalidateDeck(deck.id);
           }
         }}
       />
@@ -243,8 +246,9 @@ function DeleteDeckButton({
       setBusy(false);
       return;
     }
+    // Purge the list before navigating so the deck really disappears.
+    await revalidateDecksList();
     router.push("/reviews");
-    router.refresh();
   }
 
   if (!asking) {

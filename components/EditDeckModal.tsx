@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import Modal from "@/components/ui/Modal";
 import { createClient } from "@/lib/supabase/client";
 import IllustrationPicker from "@/components/IllustrationPicker";
 import { safeIllustration } from "@/lib/deckIllustrations";
+import { revalidateDeck } from "@/app/reviews/actions";
 import type { CustomDeck } from "@/lib/customDecks";
 
 /**
@@ -23,7 +23,6 @@ type Props = {
 };
 
 export default function EditDeckModal({ open, onClose, deck }: Props) {
-  const router = useRouter();
   const [name, setName] = useState(deck.name);
   const [illustration, setIllustration] = useState(
     safeIllustration(deck.illustration)
@@ -68,7 +67,9 @@ export default function EditDeckModal({ open, onClose, deck }: Props) {
 
     setBusy(false);
     onClose();
-    router.refresh();
+    // Purges router cache for this deck's detail page + the /reviews
+    // list (the deck card in the grid shows name + illustration).
+    await revalidateDeck(deck.id);
   }
 
   function close() {

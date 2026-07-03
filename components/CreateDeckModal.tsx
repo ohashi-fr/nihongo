@@ -6,6 +6,7 @@ import Modal from "@/components/ui/Modal";
 import { createClient } from "@/lib/supabase/client";
 import IllustrationPicker from "@/components/IllustrationPicker";
 import { DEFAULT_DECK_ILLUSTRATION } from "@/lib/deckIllustrations";
+import { revalidateDecksList } from "@/app/reviews/actions";
 
 /**
  * Small modal used to create a new custom deck. Inserts a row into
@@ -57,10 +58,12 @@ export default function CreateDeckModal({ open, onClose, userId }: Props) {
       return;
     }
 
-    // Fresh deck — jump straight to it so the user can start adding
-    // cards without an extra click.
+    // Invalidate the cached /reviews list before we navigate away —
+    // if the user hits "back" later they should see the new deck in
+    // the grid. The just-created deck's detail page was never cached
+    // (fresh id), so no separate invalidation is needed there.
+    await revalidateDecksList();
     router.push(`/reviews/decks/${data.id}`);
-    router.refresh();
   }
 
   function close() {

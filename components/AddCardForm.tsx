@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { revalidateDeck } from "@/app/reviews/actions";
 import type { CustomCard } from "@/lib/customDecks";
 
 /**
@@ -148,7 +149,14 @@ export default function AddCardForm({
       return;
     }
 
+    // Optimistic append in the parent stays the primary UX signal —
+    // the new card shows up in the visible list immediately. The
+    // revalidator runs after so a navigation away and back (or a
+    // fresh add via a different surface) sees fresh data too.
     onAdded(data as CustomCard);
+    // Fire-and-forget — the local state already reflects the change,
+    // and awaiting would only delay the field reset.
+    void revalidateDeck(deckId);
 
     setKanji("");
     setReading("");
