@@ -7,6 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import type { VerbFields } from "@/components/VerbFlashcardClient";
 import type { AdjectiveFields } from "@/components/AdjectiveFlashcardClient";
 import type { KanjiFields } from "@/components/KanjiQuizClient";
+import type { NounFields } from "@/components/NounFlashcardClient";
+import type { ConjugationFields } from "@/components/VerbConjugationFlashcardClient";
 import { deriveHiragana } from "@/lib/verbReadings";
 import { formatKunyomi } from "@/lib/kanjiReadings";
 import FavoriteStar from "@/components/FavoriteStar";
@@ -29,12 +31,24 @@ export type KanjiFavoriteItem = {
   fields: KanjiFields;
 };
 
-// Unified vocab item — verbs + adjectives are both members of the
-// Vocabulary deck, but render differently. Tagged with `kind` so the
-// playing screen can dispatch.
+export type NounFavoriteItem = {
+  cardId: string;
+  fields: NounFields;
+};
+
+export type ConjugationFavoriteItem = {
+  cardId: string;
+  fields: ConjugationFields;
+};
+
+// Unified vocab item — verbs, adjectives, nouns, and conjugation
+// reference cards are all part of the Vocabulary deck but render
+// differently. Tagged with `kind` so the playing screen can dispatch.
 type VocabItem =
   | { kind: "verb"; cardId: string; fields: VerbFields }
-  | { kind: "adjective"; cardId: string; fields: AdjectiveFields };
+  | { kind: "adjective"; cardId: string; fields: AdjectiveFields }
+  | { kind: "noun"; cardId: string; fields: NounFields }
+  | { kind: "conjugation"; cardId: string; fields: ConjugationFields };
 
 type Deck = "vocab" | "kanji";
 
@@ -42,11 +56,13 @@ type Phase =
   | { kind: "ready" }
   | { kind: "playing"; deck: Deck };
 
-type VocabFilter = "all" | "verbs" | "adjectives";
+type VocabFilter = "all" | "verbs" | "adjectives" | "nouns" | "conjugation";
 
 type Props = {
   verbItems: VerbFavoriteItem[];
   adjectiveItems: AdjectiveFavoriteItem[];
+  nounItems: NounFavoriteItem[];
+  conjugationItems: ConjugationFavoriteItem[];
   kanjiItems: KanjiFavoriteItem[];
   userId: string;
 };
@@ -54,6 +70,8 @@ type Props = {
 export default function ReviewsClient({
   verbItems,
   adjectiveItems,
+  nounItems,
+  conjugationItems,
   kanjiItems,
   userId,
 }: Props) {
@@ -71,7 +89,7 @@ export default function ReviewsClient({
     setFlipped(false);
     setVocabQueue([]);
     setKanjiQueue([]);
-  }, [verbItems, adjectiveItems, kanjiItems]);
+  }, [verbItems, adjectiveItems, nounItems, conjugationItems, kanjiItems]);
 
   // Keyboard — Space / Enter flip, ← / → navigate.
   useEffect(() => {
@@ -102,10 +120,22 @@ export default function ReviewsClient({
       cardId: it.cardId,
       fields: it.fields,
     }));
+    const nouns: VocabItem[] = nounItems.map((it) => ({
+      kind: "noun",
+      cardId: it.cardId,
+      fields: it.fields,
+    }));
+    const conjugations: VocabItem[] = conjugationItems.map((it) => ({
+      kind: "conjugation",
+      cardId: it.cardId,
+      fields: it.fields,
+    }));
     if (vocabFilter === "verbs") return verbs;
     if (vocabFilter === "adjectives") return adjectives;
-    return [...verbs, ...adjectives];
-  }, [verbItems, adjectiveItems, vocabFilter]);
+    if (vocabFilter === "nouns") return nouns;
+    if (vocabFilter === "conjugation") return conjugations;
+    return [...verbs, ...adjectives, ...nouns, ...conjugations];
+  }, [verbItems, adjectiveItems, nounItems, conjugationItems, vocabFilter]);
 
   function startVocab() {
     if (filteredVocabPool.length === 0) return;
@@ -172,7 +202,11 @@ export default function ReviewsClient({
   // ─── Ready / empty ─────────────────────────────────────────────
   if (phase.kind === "ready") {
     const totalFavorites =
-      verbItems.length + adjectiveItems.length + kanjiItems.length;
+      verbItems.length +
+      adjectiveItems.length +
+      nounItems.length +
+      conjugationItems.length +
+      kanjiItems.length;
     if (totalFavorites === 0) {
       return (
         <div className="mx-auto max-w-md rounded-lg border border-border bg-white p-8 text-center shadow-card">
@@ -201,6 +235,8 @@ export default function ReviewsClient({
           onFilterChange={setVocabFilter}
           verbCount={verbItems.length}
           adjectiveCount={adjectiveItems.length}
+          nounCount={nounItems.length}
+          conjugationCount={conjugationItems.length}
           filteredCount={filteredVocabPool.length}
           onStart={startVocab}
         />
@@ -223,7 +259,13 @@ export default function ReviewsClient({
       <SessionShell
         deckLabel="Vocabulary"
         deckSubLabel={
-          item.kind === "verb" ? "Verb" : "Adjective"
+          item.kind === "verb"
+            ? "Verb"
+            : item.kind === "adjective"
+              ? "Adjective"
+              : item.kind === "noun"
+                ? "Noun"
+                : "Conjugation"
         }
         progress={`${index + 1} / ${vocabQueue.length}`}
         flipped={flipped}
@@ -238,8 +280,12 @@ export default function ReviewsClient({
       >
         {item.kind === "verb" ? (
           <VerbCardFaces item={item} />
-        ) : (
+        ) : item.kind === "adjective" ? (
           <AdjectiveCardFaces item={item} />
+        ) : item.kind === "noun" ? (
+          <NounCardFaces item={item} />
+        ) : (
+          <ConjugationCardFaces item={item} />
         )}
       </SessionShell>
     );
@@ -278,6 +324,8 @@ function VocabDeckCard({
   onFilterChange,
   verbCount,
   adjectiveCount,
+  nounCount,
+  conjugationCount,
   filteredCount,
   onStart,
 }: {
@@ -285,6 +333,8 @@ function VocabDeckCard({
   onFilterChange: (f: VocabFilter) => void;
   verbCount: number;
   adjectiveCount: number;
+  nounCount: number;
+  conjugationCount: number;
   filteredCount: number;
   onStart: () => void;
 }) {
@@ -295,7 +345,7 @@ function VocabDeckCard({
         <div>
           <h3 className="text-lg font-bold text-ink">Vocabulary</h3>
           <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted">
-            Saved verbs &amp; adjectives
+            Saved verbs, adjectives, nouns &amp; conjugations
           </p>
         </div>
         {/* Matches the bonsai illustration used on the home page's
@@ -312,7 +362,7 @@ function VocabDeckCard({
       <div className="mt-4 flex flex-wrap gap-1.5">
         <FilterPill
           label="All"
-          count={verbCount + adjectiveCount}
+          count={verbCount + adjectiveCount + nounCount + conjugationCount}
           active={filter === "all"}
           onClick={() => onFilterChange("all")}
         />
@@ -327,6 +377,18 @@ function VocabDeckCard({
           count={adjectiveCount}
           active={filter === "adjectives"}
           onClick={() => onFilterChange("adjectives")}
+        />
+        <FilterPill
+          label="Nouns"
+          count={nounCount}
+          active={filter === "nouns"}
+          onClick={() => onFilterChange("nouns")}
+        />
+        <FilterPill
+          label="Conjugation"
+          count={conjugationCount}
+          active={filter === "conjugation"}
+          onClick={() => onFilterChange("conjugation")}
         />
       </div>
 
@@ -627,6 +689,165 @@ function AdjectiveCardFaces({
           {f.opposite ? (
             <Row label="Opposite" value={f.opposite} />
           ) : null}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// =============================================================
+// Noun card faces — English on front, JP + reading on back.
+// Kana-only nouns (パン) render the reading once, never twice.
+// =============================================================
+function NounCardFaces({
+  item,
+}: {
+  item: Extract<VocabItem, { kind: "noun" }>;
+}) {
+  const f = item.fields;
+  const kanaOnly =
+    f.japanese.length > 0 && f.japanese === f.hiragana;
+  return (
+    <>
+      <div
+        className="absolute inset-0 flex flex-col items-center justify-center rounded-lg border border-border bg-white p-8 shadow-card"
+        style={{ backfaceVisibility: "hidden" }}
+      >
+        <div className="text-center text-3xl font-medium">{f.english}</div>
+        <div className="mt-6 text-xs uppercase tracking-[0.25em] text-muted">
+          English
+        </div>
+      </div>
+
+      <div
+        className="absolute inset-0 overflow-y-auto rounded-lg border border-border bg-paper p-6 shadow-card"
+        style={{
+          backfaceVisibility: "hidden",
+          transform: "rotateY(180deg)",
+        }}
+      >
+        <div className="space-y-4">
+          <div className="text-center">
+            <div className="jp text-4xl leading-tight">{f.japanese}</div>
+            {!kanaOnly && f.hiragana && (
+              <div className="jp mt-1 text-sm text-muted">{f.hiragana}</div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// =============================================================
+// Conjugation card faces — English on the front, verb + Short/Long
+// toggle + 7-form table on the back.
+//
+// The register toggle here is local to this face render so each
+// conjugation card starts on "short" — the /reviews review flow is
+// short and mixed, so session-persistence would be surprising.
+// =============================================================
+function ConjugationCardFaces({
+  item,
+}: {
+  item: Extract<VocabItem, { kind: "conjugation" }>;
+}) {
+  const f = item.fields;
+  const [register, setRegister] = useState<"short" | "long">("short");
+  const active = f[register];
+
+  const rows: { key: keyof typeof active; label: string; sameHint?: boolean }[] = [
+    { key: "present_aff", label: "Present affirmative" },
+    { key: "present_neg", label: "Present negative" },
+    { key: "past_aff",    label: "Past affirmative" },
+    { key: "past_neg",    label: "Past negative" },
+    { key: "te",          label: "Te-form", sameHint: true },
+    { key: "tai",         label: "Tai (want to)" },
+    { key: "potential",   label: "Potential" },
+  ];
+  const teSame = f.short.te === f.long.te;
+
+  return (
+    <>
+      <div
+        className="absolute inset-0 flex flex-col items-center justify-center rounded-lg border border-border bg-white p-8 shadow-card"
+        style={{ backfaceVisibility: "hidden" }}
+      >
+        <div className="text-center text-3xl font-medium">{f.english}</div>
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+          <span className="badge-accent">Group {f.group || "?"}</span>
+        </div>
+        <div className="mt-6 text-xs uppercase tracking-[0.25em] text-muted">
+          English
+        </div>
+      </div>
+
+      <div
+        className="absolute inset-0 overflow-y-auto rounded-lg border border-border bg-paper p-4 shadow-card sm:p-5"
+        style={{
+          backfaceVisibility: "hidden",
+          transform: "rotateY(180deg)",
+        }}
+      >
+        <div className="space-y-3">
+          <div className="text-center">
+            <div className="jp text-2xl leading-tight text-ink">{f.kanji}</div>
+            {f.reading && f.reading !== f.kanji && (
+              <div className="jp mt-0.5 text-xs text-muted">{f.reading}</div>
+            )}
+          </div>
+
+          <div
+            role="tablist"
+            aria-label="Register"
+            className="mx-auto inline-flex w-full max-w-[240px] rounded-full border border-border bg-white p-0.5 shadow-soft"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex w-full">
+              {(["short", "long"] as const).map((r) => (
+                <button
+                  key={r}
+                  role="tab"
+                  aria-selected={register === r}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setRegister(r);
+                  }}
+                  className={`flex-1 rounded-full px-3 py-1 text-xs font-semibold transition ${
+                    register === r
+                      ? "bg-primary text-white shadow-soft"
+                      : "text-muted hover:text-primary"
+                  }`}
+                >
+                  {r === "short" ? "Short" : "Long"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <ul className="overflow-hidden rounded-xl border border-border/60">
+            {rows.map((row, i) => (
+              <li
+                key={row.key}
+                className={`flex items-baseline justify-between gap-3 px-3 py-2 ${
+                  i % 2 === 1 ? "bg-white/70" : "bg-paper"
+                }`}
+              >
+                <span className="min-w-0 flex-1 text-[10px] font-semibold uppercase tracking-wide text-muted">
+                  {row.label}
+                  {row.sameHint && teSame && (
+                    <span className="ml-1 rounded-full bg-soft px-1.5 py-[1px] text-[9px] font-medium normal-case tracking-normal text-muted">
+                      same
+                    </span>
+                  )}
+                </span>
+                <span className="jp shrink-0 text-right text-base leading-tight text-ink">
+                  {active[row.key] || "—"}
+                </span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </>

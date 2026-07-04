@@ -1,0 +1,1442 @@
+[
+  {
+    "category": "People & Family",
+    "japanese": "人",
+    "hiragana": "ひと",
+    "english": "person"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "男",
+    "hiragana": "おとこ",
+    "english": "man"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "女",
+    "hiragana": "おんな",
+    "english": "woman"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "男の人",
+    "hiragana": "おとこのひと",
+    "english": "male, man"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "女の人",
+    "hiragana": "おんなのひと",
+    "english": "female, woman"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "男の子",
+    "hiragana": "おとこのこ",
+    "english": "boy"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "女の子",
+    "hiragana": "おんなのこ",
+    "english": "girl"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "子供",
+    "hiragana": "こども",
+    "english": "child"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "大人",
+    "hiragana": "おとな",
+    "english": "adult"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "友達",
+    "hiragana": "ともだち",
+    "english": "friend"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "家族",
+    "hiragana": "かぞく",
+    "english": "family"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "父",
+    "hiragana": "ちち",
+    "english": "father (own)"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "母",
+    "hiragana": "はは",
+    "english": "mother (own)"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "お父さん",
+    "hiragana": "おとうさん",
+    "english": "father (polite)"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "お母さん",
+    "hiragana": "おかあさん",
+    "english": "mother (polite)"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "兄",
+    "hiragana": "あに",
+    "english": "older brother (own)"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "姉",
+    "hiragana": "あね",
+    "english": "older sister (own)"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "弟",
+    "hiragana": "おとうと",
+    "english": "younger brother"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "妹",
+    "hiragana": "いもうと",
+    "english": "younger sister"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "お兄さん",
+    "hiragana": "おにいさん",
+    "english": "older brother (polite)"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "お姉さん",
+    "hiragana": "おねえさん",
+    "english": "older sister (polite)"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "先生",
+    "hiragana": "せんせい",
+    "english": "teacher"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "学生",
+    "hiragana": "がくせい",
+    "english": "student"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "医者",
+    "hiragana": "いしゃ",
+    "english": "doctor"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "外国人",
+    "hiragana": "がいこくじん",
+    "english": "foreigner"
+  },
+  {
+    "category": "People & Family",
+    "japanese": "名前",
+    "hiragana": "なまえ",
+    "english": "name"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "ご飯",
+    "hiragana": "ごはん",
+    "english": "cooked rice, meal"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "朝ご飯",
+    "hiragana": "あさごはん",
+    "english": "breakfast"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "昼ご飯",
+    "hiragana": "ひるごはん",
+    "english": "lunch"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "晩ご飯",
+    "hiragana": "ばんごはん",
+    "english": "dinner"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "食べ物",
+    "hiragana": "たべもの",
+    "english": "food"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "飲み物",
+    "hiragana": "のみもの",
+    "english": "drink, beverage"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "水",
+    "hiragana": "みず",
+    "english": "water"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "お茶",
+    "hiragana": "おちゃ",
+    "english": "tea"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "牛乳",
+    "hiragana": "ぎゅうにゅう",
+    "english": "milk"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "肉",
+    "hiragana": "にく",
+    "english": "meat"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "牛肉",
+    "hiragana": "ぎゅうにく",
+    "english": "beef"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "鳥肉",
+    "hiragana": "とりにく",
+    "english": "chicken (meat)"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "豚肉",
+    "hiragana": "ぶたにく",
+    "english": "pork"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "魚",
+    "hiragana": "さかな",
+    "english": "fish"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "野菜",
+    "hiragana": "やさい",
+    "english": "vegetable"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "果物",
+    "hiragana": "くだもの",
+    "english": "fruit"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "卵",
+    "hiragana": "たまご",
+    "english": "egg"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "パン",
+    "hiragana": "パン",
+    "english": "bread"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "塩",
+    "hiragana": "しお",
+    "english": "salt"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "砂糖",
+    "hiragana": "さとう",
+    "english": "sugar"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "料理",
+    "hiragana": "りょうり",
+    "english": "cooking, dish"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "お酒",
+    "hiragana": "おさけ",
+    "english": "alcohol, sake"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "コーヒー",
+    "hiragana": "コーヒー",
+    "english": "coffee"
+  },
+  {
+    "category": "Food & Drink",
+    "japanese": "お菓子",
+    "hiragana": "おかし",
+    "english": "sweets, snack"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "本",
+    "hiragana": "ほん",
+    "english": "book"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "ノート",
+    "hiragana": "ノート",
+    "english": "notebook"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "ペン",
+    "hiragana": "ペン",
+    "english": "pen"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "鉛筆",
+    "hiragana": "えんぴつ",
+    "english": "pencil"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "紙",
+    "hiragana": "かみ",
+    "english": "paper"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "手紙",
+    "hiragana": "てがみ",
+    "english": "letter"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "辞書",
+    "hiragana": "じしょ",
+    "english": "dictionary"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "新聞",
+    "hiragana": "しんぶん",
+    "english": "newspaper"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "雑誌",
+    "hiragana": "ざっし",
+    "english": "magazine"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "写真",
+    "hiragana": "しゃしん",
+    "english": "photograph"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "時計",
+    "hiragana": "とけい",
+    "english": "clock, watch"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "傘",
+    "hiragana": "かさ",
+    "english": "umbrella"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "かばん",
+    "hiragana": "かばん",
+    "english": "bag"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "財布",
+    "hiragana": "さいふ",
+    "english": "wallet"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "かぎ",
+    "hiragana": "かぎ",
+    "english": "key"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "電話",
+    "hiragana": "でんわ",
+    "english": "telephone"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "テレビ",
+    "hiragana": "テレビ",
+    "english": "television"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "ラジオ",
+    "hiragana": "ラジオ",
+    "english": "radio"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "机",
+    "hiragana": "つくえ",
+    "english": "desk"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "椅子",
+    "hiragana": "いす",
+    "english": "chair"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "ドア",
+    "hiragana": "ドア",
+    "english": "door"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "窓",
+    "hiragana": "まど",
+    "english": "window"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "部屋",
+    "hiragana": "へや",
+    "english": "room"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "家",
+    "hiragana": "いえ",
+    "english": "house, home"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "テーブル",
+    "hiragana": "テーブル",
+    "english": "table"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "ベッド",
+    "hiragana": "ベッド",
+    "english": "bed"
+  },
+  {
+    "category": "Home & Everyday Objects",
+    "japanese": "せっけん",
+    "hiragana": "せっけん",
+    "english": "soap"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "学校",
+    "hiragana": "がっこう",
+    "english": "school"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "大学",
+    "hiragana": "だいがく",
+    "english": "university"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "会社",
+    "hiragana": "かいしゃ",
+    "english": "company"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "銀行",
+    "hiragana": "ぎんこう",
+    "english": "bank"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "病院",
+    "hiragana": "びょういん",
+    "english": "hospital"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "図書館",
+    "hiragana": "としょかん",
+    "english": "library"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "郵便局",
+    "hiragana": "ゆうびんきょく",
+    "english": "post office"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "駅",
+    "hiragana": "えき",
+    "english": "station"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "店",
+    "hiragana": "みせ",
+    "english": "shop, store"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "きっさてん",
+    "hiragana": "きっさてん",
+    "english": "café"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "レストラン",
+    "hiragana": "レストラン",
+    "english": "restaurant"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "デパート",
+    "hiragana": "デパート",
+    "english": "department store"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "映画館",
+    "hiragana": "えいがかん",
+    "english": "cinema"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "公園",
+    "hiragana": "こうえん",
+    "english": "park"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "ホテル",
+    "hiragana": "ホテル",
+    "english": "hotel"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "空港",
+    "hiragana": "くうこう",
+    "english": "airport"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "町",
+    "hiragana": "まち",
+    "english": "town"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "国",
+    "hiragana": "くに",
+    "english": "country"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "道",
+    "hiragana": "みち",
+    "english": "road, way"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "トイレ",
+    "hiragana": "トイレ",
+    "english": "toilet"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "お手洗い",
+    "hiragana": "おてあらい",
+    "english": "restroom"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "台所",
+    "hiragana": "だいどころ",
+    "english": "kitchen"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "庭",
+    "hiragana": "にわ",
+    "english": "garden"
+  },
+  {
+    "category": "Places & Buildings",
+    "japanese": "プール",
+    "hiragana": "プール",
+    "english": "swimming pool"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "時間",
+    "hiragana": "じかん",
+    "english": "time, hour"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "今",
+    "hiragana": "いま",
+    "english": "now"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "朝",
+    "hiragana": "あさ",
+    "english": "morning"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "昼",
+    "hiragana": "ひる",
+    "english": "noon, daytime"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "夕方",
+    "hiragana": "ゆうがた",
+    "english": "evening"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "夜",
+    "hiragana": "よる",
+    "english": "night"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "晩",
+    "hiragana": "ばん",
+    "english": "evening, night"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "午前",
+    "hiragana": "ごぜん",
+    "english": "morning, a.m."
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "午後",
+    "hiragana": "ごご",
+    "english": "afternoon, p.m."
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "今日",
+    "hiragana": "きょう",
+    "english": "today"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "明日",
+    "hiragana": "あした",
+    "english": "tomorrow"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "昨日",
+    "hiragana": "きのう",
+    "english": "yesterday"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "毎日",
+    "hiragana": "まいにち",
+    "english": "every day"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "毎朝",
+    "hiragana": "まいあさ",
+    "english": "every morning"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "毎晩",
+    "hiragana": "まいばん",
+    "english": "every night"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "週",
+    "hiragana": "しゅう",
+    "english": "week"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "今週",
+    "hiragana": "こんしゅう",
+    "english": "this week"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "先週",
+    "hiragana": "せんしゅう",
+    "english": "last week"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "来週",
+    "hiragana": "らいしゅう",
+    "english": "next week"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "毎週",
+    "hiragana": "まいしゅう",
+    "english": "every week"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "月",
+    "hiragana": "つき",
+    "english": "month, moon"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "今月",
+    "hiragana": "こんげつ",
+    "english": "this month"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "先月",
+    "hiragana": "せんげつ",
+    "english": "last month"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "来月",
+    "hiragana": "らいげつ",
+    "english": "next month"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "年",
+    "hiragana": "とし",
+    "english": "year"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "今年",
+    "hiragana": "ことし",
+    "english": "this year"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "去年",
+    "hiragana": "きょねん",
+    "english": "last year"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "来年",
+    "hiragana": "らいねん",
+    "english": "next year"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "誕生日",
+    "hiragana": "たんじょうび",
+    "english": "birthday"
+  },
+  {
+    "category": "Time & Calendar",
+    "japanese": "曜日",
+    "hiragana": "ようび",
+    "english": "day of the week"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "体",
+    "hiragana": "からだ",
+    "english": "body"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "頭",
+    "hiragana": "あたま",
+    "english": "head"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "顔",
+    "hiragana": "かお",
+    "english": "face"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "目",
+    "hiragana": "め",
+    "english": "eye"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "耳",
+    "hiragana": "みみ",
+    "english": "ear"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "鼻",
+    "hiragana": "はな",
+    "english": "nose"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "口",
+    "hiragana": "くち",
+    "english": "mouth"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "は",
+    "hiragana": "は",
+    "english": "tooth"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "手",
+    "hiragana": "て",
+    "english": "hand"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "足",
+    "hiragana": "あし",
+    "english": "foot, leg"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "おなか",
+    "hiragana": "おなか",
+    "english": "stomach, belly"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "せ",
+    "hiragana": "せ",
+    "english": "height, back"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "病気",
+    "hiragana": "びょうき",
+    "english": "illness"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "薬",
+    "hiragana": "くすり",
+    "english": "medicine"
+  },
+  {
+    "category": "Body & Health",
+    "japanese": "元気",
+    "hiragana": "げんき",
+    "english": "health, energy"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "車",
+    "hiragana": "くるま",
+    "english": "car"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "電車",
+    "hiragana": "でんしゃ",
+    "english": "train"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "地下鉄",
+    "hiragana": "ちかてつ",
+    "english": "subway"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "自転車",
+    "hiragana": "じてんしゃ",
+    "english": "bicycle"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "自動車",
+    "hiragana": "じどうしゃ",
+    "english": "automobile"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "バス",
+    "hiragana": "バス",
+    "english": "bus"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "タクシー",
+    "hiragana": "タクシー",
+    "english": "taxi"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "飛行機",
+    "hiragana": "ひこうき",
+    "english": "airplane"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "船",
+    "hiragana": "ふね",
+    "english": "ship, boat"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "旅行",
+    "hiragana": "りょこう",
+    "english": "travel, trip"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "切符",
+    "hiragana": "きっぷ",
+    "english": "ticket"
+  },
+  {
+    "category": "Transport & Travel",
+    "japanese": "地図",
+    "hiragana": "ちず",
+    "english": "map"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "天気",
+    "hiragana": "てんき",
+    "english": "weather"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "雨",
+    "hiragana": "あめ",
+    "english": "rain"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "雪",
+    "hiragana": "ゆき",
+    "english": "snow"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "風",
+    "hiragana": "かぜ",
+    "english": "wind"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "空",
+    "hiragana": "そら",
+    "english": "sky"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "海",
+    "hiragana": "うみ",
+    "english": "sea"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "山",
+    "hiragana": "やま",
+    "english": "mountain"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "川",
+    "hiragana": "かわ",
+    "english": "river"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "木",
+    "hiragana": "き",
+    "english": "tree, wood"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "花",
+    "hiragana": "はな",
+    "english": "flower"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "池",
+    "hiragana": "いけ",
+    "english": "pond"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "石",
+    "hiragana": "いし",
+    "english": "stone"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "火",
+    "hiragana": "ひ",
+    "english": "fire"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "動物",
+    "hiragana": "どうぶつ",
+    "english": "animal"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "犬",
+    "hiragana": "いぬ",
+    "english": "dog"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "猫",
+    "hiragana": "ねこ",
+    "english": "cat"
+  },
+  {
+    "category": "Nature & Weather",
+    "japanese": "鳥",
+    "hiragana": "とり",
+    "english": "bird"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "服",
+    "hiragana": "ふく",
+    "english": "clothes"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "洋服",
+    "hiragana": "ようふく",
+    "english": "Western clothes"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "シャツ",
+    "hiragana": "シャツ",
+    "english": "shirt"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "Tシャツ",
+    "hiragana": "ティーシャツ",
+    "english": "T-shirt"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "上着",
+    "hiragana": "うわぎ",
+    "english": "jacket, coat"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "コート",
+    "hiragana": "コート",
+    "english": "coat"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "ズボン",
+    "hiragana": "ズボン",
+    "english": "trousers"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "スカート",
+    "hiragana": "スカート",
+    "english": "skirt"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "帽子",
+    "hiragana": "ぼうし",
+    "english": "hat, cap"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "靴",
+    "hiragana": "くつ",
+    "english": "shoes"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "靴下",
+    "hiragana": "くつした",
+    "english": "socks"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "めがね",
+    "hiragana": "めがね",
+    "english": "glasses"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "色",
+    "hiragana": "いろ",
+    "english": "color"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "白",
+    "hiragana": "しろ",
+    "english": "white"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "黒",
+    "hiragana": "くろ",
+    "english": "black"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "赤",
+    "hiragana": "あか",
+    "english": "red"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "青",
+    "hiragana": "あお",
+    "english": "blue"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "緑",
+    "hiragana": "みどり",
+    "english": "green"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "黄色",
+    "hiragana": "きいろ",
+    "english": "yellow"
+  },
+  {
+    "category": "Clothing & Colors",
+    "japanese": "茶色",
+    "hiragana": "ちゃいろ",
+    "english": "brown"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "教室",
+    "hiragana": "きょうしつ",
+    "english": "classroom"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "授業",
+    "hiragana": "じゅぎょう",
+    "english": "class, lesson"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "宿題",
+    "hiragana": "しゅくだい",
+    "english": "homework"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "テスト",
+    "hiragana": "テスト",
+    "english": "test"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "問題",
+    "hiragana": "もんだい",
+    "english": "problem, question"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "質問",
+    "hiragana": "しつもん",
+    "english": "question"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "言葉",
+    "hiragana": "ことば",
+    "english": "word, language"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "英語",
+    "hiragana": "えいご",
+    "english": "English (language)"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "日本語",
+    "hiragana": "にほんご",
+    "english": "Japanese (language)"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "仕事",
+    "hiragana": "しごと",
+    "english": "work, job"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "会議",
+    "hiragana": "かいぎ",
+    "english": "meeting"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "お金",
+    "hiragana": "おかね",
+    "english": "money"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "円",
+    "hiragana": "えん",
+    "english": "yen"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "番号",
+    "hiragana": "ばんごう",
+    "english": "number"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "電気",
+    "hiragana": "でんき",
+    "english": "electricity, light"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "音楽",
+    "hiragana": "おんがく",
+    "english": "music"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "映画",
+    "hiragana": "えいが",
+    "english": "movie"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "絵",
+    "hiragana": "え",
+    "english": "picture, drawing"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "歌",
+    "hiragana": "うた",
+    "english": "song"
+  },
+  {
+    "category": "School, City & Work",
+    "japanese": "スポーツ",
+    "hiragana": "スポーツ",
+    "english": "sport"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "上",
+    "hiragana": "うえ",
+    "english": "up, above, on"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "下",
+    "hiragana": "した",
+    "english": "down, below, under"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "中",
+    "hiragana": "なか",
+    "english": "inside, middle"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "外",
+    "hiragana": "そと",
+    "english": "outside"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "前",
+    "hiragana": "まえ",
+    "english": "front, before"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "後ろ",
+    "hiragana": "うしろ",
+    "english": "behind, back"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "右",
+    "hiragana": "みぎ",
+    "english": "right"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "左",
+    "hiragana": "ひだり",
+    "english": "left"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "隣",
+    "hiragana": "となり",
+    "english": "next to, neighbor"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "側",
+    "hiragana": "そば",
+    "english": "beside, near"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "近く",
+    "hiragana": "ちかく",
+    "english": "nearby"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "東",
+    "hiragana": "ひがし",
+    "english": "east"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "西",
+    "hiragana": "にし",
+    "english": "west"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "南",
+    "hiragana": "みなみ",
+    "english": "south"
+  },
+  {
+    "category": "Positions & Directions",
+    "japanese": "北",
+    "hiragana": "きた",
+    "english": "north"
+  },
+  {
+    "category": "Misc & Abstract",
+    "japanese": "物",
+    "hiragana": "もの",
+    "english": "thing (object)"
+  },
+  {
+    "category": "Misc & Abstract",
+    "japanese": "事",
+    "hiragana": "こと",
+    "english": "thing (abstract), matter"
+  },
+  {
+    "category": "Misc & Abstract",
+    "japanese": "話",
+    "hiragana": "はなし",
+    "english": "talk, story"
+  },
+  {
+    "category": "Misc & Abstract",
+    "japanese": "所",
+    "hiragana": "ところ",
+    "english": "place"
+  },
+  {
+    "category": "Misc & Abstract",
+    "japanese": "方",
+    "hiragana": "かた",
+    "english": "way, direction, person (polite)"
+  },
+  {
+    "category": "Misc & Abstract",
+    "japanese": "意味",
+    "hiragana": "いみ",
+    "english": "meaning"
+  },
+  {
+    "category": "Misc & Abstract",
+    "japanese": "趣味",
+    "hiragana": "しゅみ",
+    "english": "hobby"
+  },
+  {
+    "category": "Misc & Abstract",
+    "japanese": "文",
+    "hiragana": "ぶん",
+    "english": "sentence"
+  },
+  {
+    "category": "Misc & Abstract",
+    "japanese": "字",
+    "hiragana": "じ",
+    "english": "character, letter"
+  },
+  {
+    "category": "Misc & Abstract",
+    "japanese": "ページ",
+    "hiragana": "ページ",
+    "english": "page"
+  }
+]

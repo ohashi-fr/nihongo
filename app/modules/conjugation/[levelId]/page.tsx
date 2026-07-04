@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import TranslationQuizClient from "@/components/TranslationQuizClient";
 import ConjugationQuizClient from "@/components/ConjugationQuizClient";
+import VerbConjugationFlashcardClient from "@/components/VerbConjugationFlashcardClient";
 import type { Card } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -43,10 +44,17 @@ export default async function ConjugationQuizPage({
 
   const list = (cards ?? []) as Card[];
 
-  // Detect the level's quiz format from the first card's field shape.
+  // Detect the level's quiz format. Prefer an explicit `card_type`
+  // marker if the seeder set one — that's the modern pattern — and
+  // fall back to inferring from the field shape for the older
+  // seed_conjugation.sql drill/translation cards.
   const sample = list[0]?.fields as Record<string, unknown> | undefined;
-  const isConjugationLevel = !!sample && "forms" in sample;
-  const isTranslationLevel = !!sample && "english" in sample;
+  const cardType = sample?.card_type;
+  const isVerbConjugationFlashcard = cardType === "verb_conjugation";
+  const isConjugationLevel =
+    !isVerbConjugationFlashcard && !!sample && "forms" in sample;
+  const isTranslationLevel =
+    !isVerbConjugationFlashcard && !!sample && "english" in sample;
 
   return (
     <section>
@@ -66,6 +74,13 @@ export default async function ConjugationQuizPage({
         <p className="rounded-lg border border-dashed border-border bg-white/50 p-8 text-center text-muted">
           No cards in this level yet.
         </p>
+      ) : isVerbConjugationFlashcard ? (
+        <VerbConjugationFlashcardClient
+          cards={list}
+          slug={mod.slug}
+          levelId={level.id}
+          levelName={level.name}
+        />
       ) : isConjugationLevel ? (
         <ConjugationQuizClient cards={list} levelId={level.id} />
       ) : isTranslationLevel ? (

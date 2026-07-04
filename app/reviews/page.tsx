@@ -5,6 +5,8 @@ import ReviewsClient, {
   type VerbFavoriteItem,
   type KanjiFavoriteItem,
   type AdjectiveFavoriteItem,
+  type NounFavoriteItem,
+  type ConjugationFavoriteItem,
 } from "@/components/ReviewsClient";
 import CustomDecksList from "@/components/CustomDecksList";
 import type { CustomDeckWithCount } from "@/lib/customDecks";
@@ -35,6 +37,8 @@ export default async function ReviewsPage() {
 
   const verbItems: VerbFavoriteItem[] = [];
   const adjectiveItems: AdjectiveFavoriteItem[] = [];
+  const nounItems: NounFavoriteItem[] = [];
+  const conjugationItems: ConjugationFavoriteItem[] = [];
   const kanjiItems: KanjiFavoriteItem[] = [];
 
   for (const r of ((favRows ?? []) as any[])) {
@@ -43,6 +47,10 @@ export default async function ReviewsPage() {
       verbItems.push({ cardId: r.card_id, fields: r.cards.fields });
     } else if (type === "adjective_flashcard") {
       adjectiveItems.push({ cardId: r.card_id, fields: r.cards.fields });
+    } else if (type === "noun_flashcard") {
+      nounItems.push({ cardId: r.card_id, fields: r.cards.fields });
+    } else if (type === "verb_conjugation") {
+      conjugationItems.push({ cardId: r.card_id, fields: r.cards.fields });
     } else if (type === "kanji_flashcard") {
       kanjiItems.push({ cardId: r.card_id, fields: r.cards.fields });
     }
@@ -94,6 +102,8 @@ export default async function ReviewsPage() {
         <ReviewsClient
           verbItems={verbItems}
           adjectiveItems={adjectiveItems}
+          nounItems={nounItems}
+          conjugationItems={conjugationItems}
           kanjiItems={kanjiItems}
           userId={user.id}
         />

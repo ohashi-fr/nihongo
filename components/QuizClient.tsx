@@ -12,6 +12,7 @@ import McqCard, {
 import PreQuizScreen from "@/components/PreQuizScreen";
 import VerbFlashcardClient from "@/components/VerbFlashcardClient";
 import AdjectiveFlashcardClient from "@/components/AdjectiveFlashcardClient";
+import NounFlashcardClient from "@/components/NounFlashcardClient";
 
 type Props = {
   cards: Card[];
@@ -90,6 +91,14 @@ export default function QuizClient({
       ),
     [cards]
   );
+  const isNounFlashcardLevel = useMemo(
+    () =>
+      cards.length > 0 &&
+      cards.every(
+        (c) => (c.fields as any)?.card_type === "noun_flashcard"
+      ),
+    [cards]
+  );
 
   if (isVerbFlashcardLevel) {
     return (
@@ -105,6 +114,17 @@ export default function QuizClient({
   if (isAdjectiveFlashcardLevel) {
     return (
       <AdjectiveFlashcardClient
+        cards={cards}
+        slug={slug}
+        levelId={levelId}
+        levelName={levelName}
+      />
+    );
+  }
+
+  if (isNounFlashcardLevel) {
+    return (
+      <NounFlashcardClient
         cards={cards}
         slug={slug}
         levelId={levelId}

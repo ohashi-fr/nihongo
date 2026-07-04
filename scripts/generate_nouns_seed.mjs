@@ -1,0 +1,195 @@
+#!/usr/bin/env node
+/* eslint-disable no-console */
+
+/**
+ * scripts/generate_nouns_seed.mjs
+ *
+ * Reads supabase/data/nouns_n5.json (array of
+ * `{category, japanese, hiragana, english}`) and emits
+ * supabase/seed_nouns_n5.sql — an idempotent seed script for the
+ * "N5 Nouns" module, structured like `seed_counting.sql`:
+ *
+ *   - `insert into modules … on conflict (slug) do nothing`
+ *   - Per-level `insert into module_levels … where not exists (…)`
+ *   - Per-level cards inserted **only** when the level is currently
+ *     empty (`where not exists (select 1 from cards …)`).
+ *
+ * Card `fields` shape (matches the app's `noun_flashcard` renderer):
+ *   { card_type: 'noun_flashcard', japanese, hiragana, english }
+ *
+ * Usage:
+ *   node scripts/generate_nouns_seed.mjs
+ * (no arguments; input path and output path are baked in)
+ */
+
+import { readFile, writeFile } from "node:fs/promises";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const here = dirname(fileURLToPath(import.meta.url));
+const root = resolve(here, "..");
+const INPUT = resolve(root, "supabase/data/nouns_n5.json");
+const OUTPUT = resolve(root, "supabase/seed_nouns_n5.sql");
+
+// Display order + names for the 12 themed levels. Categories in
+// nouns_n5.json must match exactly; anything else halts the script.
+const LEVELS = [
+  "People & Family",
+  "Food & Drink",
+  "Home & Everyday Objects",
+  "Places & Buildings",
+  "Time & Calendar",
+  "Body & Health",
+  "Transport & Travel",
+  "Nature & Weather",
+  "Clothing & Colors",
+  "School, City & Work",
+  "Positions & Directions",
+  "Misc & Abstract",
+];
+
+const MODULE = {
+  name: "N5 Nouns",
+  slug: "n5-nouns",
+  type: "quiz",
+  description: "Essential JLPT N5 nouns, grouped by theme.",
+};
+
+// -----------------------------------------------------------------
+// Load + validate
+// -----------------------------------------------------------------
+const raw = JSON.parse(await readFile(INPUT, "utf8"));
+if (!Array.isArray(raw)) {
+  console.error("Expected an array in", INPUT);
+  process.exit(1);
+}
+
+const requiredKeys = ["category", "japanese", "hiragana", "english"];
+for (const [i, row] of raw.entries()) {
+  for (const k of requiredKeys) {
+    if (typeof row[k] !== "string" || row[k].length === 0) {
+      console.error(`Row ${i} missing/empty key '${k}':`, row);
+      process.exit(1);
+    }
+  }
+}
+
+// Bucket by category, in the specified level order.
+const buckets = new Map(LEVELS.map((n) => [n, []]));
+for (const row of raw) {
+  if (!buckets.has(row.category)) {
+    console.error(
+      `Unknown category '${row.category}' — add it to LEVELS in this script or fix the JSON.`
+    );
+    process.exit(1);
+  }
+  buckets.get(row.category).push(row);
+}
+
+const totals = LEVELS.map((name) => ({ name, n: buckets.get(name).length }));
+console.log(`Loaded ${raw.length} nouns across ${LEVELS.length} levels:`);
+for (const { name, n } of totals) {
+  console.log(`  ${String(n).padStart(3)}  ${name}`);
+}
+
+// -----------------------------------------------------------------
+// SQL helpers
+// -----------------------------------------------------------------
+/** Escape a single-quoted SQL string literal (double any '). */
+function sql(s) {
+  return String(s).replace(/'/g, "''");
+}
+
+/** One `(japanese, hiragana, english)` row inside a `values (...)`. */
+function cardRow({ japanese, hiragana, english }) {
+  return `  ('${sql(japanese)}', '${sql(hiragana)}', '${sql(english)}')`;
+}
+
+function levelBlock(name, orderIndex, cards) {
+  const cardsHead = `
+with lv as (
+  select lv.id from module_levels lv
+  join modules m on m.id = lv.module_id
+  where m.slug = '${MODULE.slug}' and lv.name = '${sql(name)}'
+),
+do_seed as (
+  select id from lv where not exists (select 1 from cards c where c.level_id = lv.id)
+)
+insert into cards (level_id, fields)
+select ds.id, jsonb_build_object(
+  'card_type', 'noun_flashcard',
+  'japanese', j,
+  'hiragana', h,
+  'english', e
+)
+from do_seed ds
+cross join (values
+${cards.map(cardRow).join(",\n")}
+) as v(j, h, e);
+`.trimStart();
+
+  return `
+-- =========================================================
+-- LEVEL ${orderIndex} — ${name} (${cards.length} nouns)
+-- =========================================================
+with m as (select id from modules where slug = '${MODULE.slug}')
+insert into module_levels (module_id, name, order_index, script)
+select m.id, '${sql(name)}', ${orderIndex}, 'hiragana' from m
+where not exists (
+  select 1 from module_levels lv
+  where lv.module_id = (select id from m) and lv.name = '${sql(name)}'
+);
+
+${cardsHead}`.trimStart();
+}
+
+// -----------------------------------------------------------------
+// Emit
+// -----------------------------------------------------------------
+const totalCards = totals.reduce((a, b) => a + b.n, 0);
+const header = `-- =========================================================
+-- Nihongo — N5 Nouns module seed  (generated)
+-- Generated by scripts/generate_nouns_seed.mjs — DO NOT EDIT BY HAND.
+-- Source: supabase/data/nouns_n5.json  (${raw.length} entries)
+--
+-- Structure: one module + ${LEVELS.length} themed levels + ${totalCards} noun cards.
+-- Card fields shape (for the noun_flashcard renderer):
+--     { card_type: 'noun_flashcard', japanese, hiragana, english }
+--
+-- Idempotent — safe to re-run.
+--   * Module: insert … on conflict (slug) do nothing
+--   * Levels: insert only when a level with the same name is missing
+--   * Cards:  insert only when the level currently holds zero cards
+-- =========================================================
+
+-- 1) Module
+insert into modules (name, slug, description, type)
+values (
+  '${sql(MODULE.name)}',
+  '${MODULE.slug}',
+  '${sql(MODULE.description)}',
+  '${MODULE.type}'
+)
+on conflict (slug) do nothing;
+`;
+
+const body = LEVELS.map((name, i) =>
+  levelBlock(name, i + 1, buckets.get(name))
+).join("\n");
+
+const footer = `
+-- =========================================================
+-- Sanity check — should print ${LEVELS.length} rows with the expected counts.
+-- =========================================================
+select lv.order_index, lv.name, count(c.id) as cards
+from module_levels lv
+join modules m on m.id = lv.module_id
+left join cards c on c.level_id = lv.id
+where m.slug = '${MODULE.slug}'
+group by lv.order_index, lv.name
+order by lv.order_index;
+`;
+
+await writeFile(OUTPUT, header + "\n" + body + footer, "utf8");
+console.log(`\nWrote ${OUTPUT}`);
+console.log(`(${LEVELS.length} levels, ${totalCards} cards)`);
