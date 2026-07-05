@@ -27,8 +27,8 @@ type DictResult = {
 type Props = {
   deckId: string;
   userId: string;
-  /** Called with the newly inserted row on success. */
-  onAdded: (card: CustomCard) => void;
+  /** Called with the newly inserted row on success (ADD mode). */
+  onAdded?: (card: CustomCard) => void;
   /**
    * Optional "close/done" affordance. Rendered as the outline button
    * next to the primary Save action. If omitted, no cancel button is
@@ -42,6 +42,20 @@ type Props = {
    * so typing starts immediately.
    */
   autoFocus?: boolean;
+  /**
+   * If supplied, the form switches to EDIT mode: fields prefill with
+   * the card's current values, "Save" calls UPDATE instead of INSERT,
+   * and the form does NOT reset after save. The submission calls
+   * `onEdited(updatedCard)` and the parent is expected to close the
+   * form itself.
+   *
+   * Editing does NOT touch `custom_card_reviews` — the box, due_date
+   * and lapses of a card stay exactly as they were. Only content
+   * fields on `custom_cards` are mutated.
+   */
+  existingCard?: CustomCard;
+  /** Called with the updated row on success (EDIT mode). */
+  onEdited?: (card: CustomCard) => void;
 };
 
 const SEARCH_DEBOUNCE_MS = 200;
@@ -51,17 +65,24 @@ export default function AddCardForm({
   userId,
   onAdded,
   onCancel,
-  heading = "Add a card",
+  heading,
   autoFocus = false,
+  existingCard,
+  onEdited,
 }: Props) {
+  const isEditing = Boolean(existingCard);
+  const resolvedHeading =
+    heading ?? (isEditing ? "Edit card" : "Add a card");
+
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<DictResult[]>([]);
   const [searching, setSearching] = useState(false);
 
-  const [kanji, setKanji] = useState("");
-  const [reading, setReading] = useState("");
-  const [meaning, setMeaning] = useState("");
-  const [note, setNote] = useState("");
+  // Prefill from the existing card in edit mode; empty otherwise.
+  const [kanji, setKanji] = useState(existingCard?.kanji ?? "");
+  const [reading, setReading] = useState(existingCard?.reading ?? "");
+  const [meaning, setMeaning] = useState(existingCard?.meaning_en ?? "");
+  const [note, setNote] = useState(existingCard?.note ?? "");
 
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -123,19 +144,54 @@ export default function AddCardForm({
     setSaving(true);
     setErr(null);
 
-    const payload = {
-      deck_id: deckId,
-      user_id: userId,
+    const supabase = createClient();
+
+    // Content-only fields — same shape for INSERT and UPDATE.
+    // Deliberately does NOT include anything from custom_card_reviews;
+    // editing a card's spelling never resets learning progress.
+    const contentFields = {
       kanji: kanji.trim() || null,
       reading: reading.trim(),
       meaning_en: meaning.trim(),
       note: note.trim() || null,
     };
 
-    const supabase = createClient();
+    if (isEditing && existingCard) {
+      // ── EDIT — UPDATE the existing row ──────────────────────
+      const { data, error } = await supabase
+        .from("custom_cards")
+        .update(contentFields)
+        .eq("id", existingCard.id)
+        .select(
+          "id, deck_id, user_id, kanji, reading, meaning_en, note, created_at"
+        )
+        .single();
+
+      if (error || !data) {
+        // eslint-disable-next-line no-console
+        console.error("[custom_cards] update failed:", error);
+        setErr("Couldn't save. Try again?");
+        setSaving(false);
+        return;
+      }
+
+      onEdited?.(data as CustomCard);
+      void revalidateDeck(deckId);
+      setSaving(false);
+      // No field reset — the parent closes the form now.
+      return;
+    }
+
+    // ── ADD — INSERT a new row ─────────────────────────────────
+    const insertPayload = {
+      ...contentFields,
+      deck_id: deckId,
+      user_id: userId,
+    };
+
     const { data, error } = await supabase
       .from("custom_cards")
-      .insert(payload)
+      .insert(insertPayload)
       .select(
         "id, deck_id, user_id, kanji, reading, meaning_en, note, created_at"
       )
@@ -153,11 +209,10 @@ export default function AddCardForm({
     // the new card shows up in the visible list immediately. The
     // revalidator runs after so a navigation away and back (or a
     // fresh add via a different surface) sees fresh data too.
-    onAdded(data as CustomCard);
-    // Fire-and-forget — the local state already reflects the change,
-    // and awaiting would only delay the field reset.
+    onAdded?.(data as CustomCard);
     void revalidateDeck(deckId);
 
+    // Reset for the next add — user can chain multiple cards.
     setKanji("");
     setReading("");
     setMeaning("");
@@ -173,10 +228,10 @@ export default function AddCardForm({
       onSubmit={save}
       className="rounded-2xl border border-border bg-white p-4 shadow-card"
     >
-      {heading && (
+      {resolvedHeading && (
         <div className="mb-3 flex items-center justify-between">
           <h3 className="text-sm font-bold tracking-tight text-ink">
-            {heading}
+            {resolvedHeading}
           </h3>
         </div>
       )}
@@ -273,7 +328,7 @@ export default function AddCardForm({
             disabled={saving}
             className="btn-outline flex-1 justify-center disabled:opacity-40"
           >
-            Done
+            {isEditing ? "Cancel" : "Done"}
           </button>
         )}
         <button
@@ -281,7 +336,11 @@ export default function AddCardForm({
           disabled={!canSave}
           className="btn-accent flex-1 justify-center disabled:opacity-40"
         >
-          {saving ? "Saving…" : "Save card"}
+          {saving
+            ? "Saving…"
+            : isEditing
+              ? "Save changes"
+              : "Save card"}
         </button>
       </div>
     </form>

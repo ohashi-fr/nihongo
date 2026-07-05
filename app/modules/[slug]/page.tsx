@@ -28,13 +28,6 @@ import SectionHeader from "@/components/ui/SectionHeader";
 // so hover-prefetching from the home grid is near-instant.
 export const revalidate = 60;
 
-const SCRIPT_LABELS: Record<string, string> = {
-  hiragana: "ひらがな",
-  katakana: "カタカナ",
-  both: "かな",
-  none: "—",
-};
-
 type LevelRow = {
   id: string;
   name: string;
@@ -180,9 +173,6 @@ function FlatLevelRow({
             {String(lv.order_index ?? 0).padStart(2, "0")}
           </span>
           <span className="truncate font-semibold text-ink">{lv.name}</span>
-          <span className="badge jp">
-            {SCRIPT_LABELS[lv.script] ?? lv.script}
-          </span>
         </div>
         <div className="flex shrink-0 items-center gap-3 text-sm">
           <span className="text-muted">{lv.cards?.length ?? 0} cards</span>
@@ -205,7 +195,6 @@ function GroupRow({
   slug: string;
   group: GroupEntry;
 }) {
-  const count = group.levels.length;
   return (
     <li>
       <Link
@@ -233,9 +222,6 @@ function GroupRow({
           </span>
           <span className="truncate font-semibold text-ink">
             {group.name}
-          </span>
-          <span className="badge">
-            {count} {count === 1 ? "category" : "categories"}
           </span>
         </div>
         <div className="flex shrink-0 items-center gap-3 text-sm">

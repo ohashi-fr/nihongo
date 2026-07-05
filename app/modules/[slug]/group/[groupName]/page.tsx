@@ -18,13 +18,6 @@ import SectionHeader from "@/components/ui/SectionHeader";
 
 export const revalidate = 60;
 
-const SCRIPT_LABELS: Record<string, string> = {
-  hiragana: "ひらがな",
-  katakana: "カタカナ",
-  both: "かな",
-  none: "—",
-};
-
 type LevelRow = {
   id: string;
   name: string;
@@ -103,9 +96,6 @@ export default async function ModuleGroupPage({
                 </span>
                 <span className="truncate font-semibold text-ink">
                   {lv.name}
-                </span>
-                <span className="badge jp">
-                  {SCRIPT_LABELS[lv.script] ?? lv.script}
                 </span>
               </div>
               <div className="flex shrink-0 items-center gap-3 text-sm">

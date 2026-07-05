@@ -44,8 +44,10 @@ function shouldShow(pathname: string): boolean {
   // Never on the focused study surfaces.
   //   /modules/<slug>/<levelId>
   //   /reviews/decks/<deckId>/review
+  //   /reviews/decks/<deckId>/session
   if (/^\/modules\/[^/]+\/[^/]+/.test(pathname)) return false;
   if (/^\/reviews\/decks\/[^/]+\/review/.test(pathname)) return false;
+  if (/^\/reviews\/decks\/[^/]+\/session/.test(pathname)) return false;
 
   // Auth + admin — different UX, no shortcut needed.
   if (pathname.startsWith("/login")) return false;

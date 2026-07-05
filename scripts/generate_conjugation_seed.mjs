@@ -8,9 +8,12 @@
  * `{ card_type, group, kanji, reading, english, ending_note,
  *    short: {…7 forms}, long: {…7 forms} }`) and emits
  * supabase/seed_conjugation_flashcards.sql — an idempotent seed
- * that adds three new levels to the existing `conjugation` module
- * (Group I / II / III) and inserts the verb reference cards under
- * each. The existing conjugation drill levels stay untouched.
+ * that adds ONE new level to the existing `conjugation` module,
+ * mixing all Group I / II / III verbs together. Group info stays
+ * on each card (`fields.group`) and surfaces as the small pill on
+ * the flashcard front, so the mix stays legible.
+ *
+ * The existing conjugation drill levels stay untouched.
  *
  * SQL shape follows the seed_counting / seed_nouns pattern:
  *   * Module: assumed to already exist (slug='conjugation'). We
@@ -35,14 +38,22 @@ const root = resolve(here, "..");
 const INPUT = resolve(root, "supabase/data/verbs_conjugation.json");
 const OUTPUT = resolve(root, "supabase/seed_conjugation_flashcards.sql");
 
-// Order + display names come straight from the spec.
-const LEVELS = [
-  { group: "I",   name: "Group I — Godan Verbs",     order: 100 },
-  { group: "II",  name: "Group II — Ichidan Verbs",  order: 101 },
-  { group: "III", name: "Group III — Irregular Verbs", order: 102 },
-];
+// Single mixed level. Group info stays on each card; the client
+// prints "Group I / II / III" as a badge on the front. order_index
+// is high so the level appears after the existing drill levels.
+const LEVEL_NAME = "Verb Conjugation Reference";
+const LEVEL_ORDER = 100;
 
 const MODULE_SLUG = "conjugation";
+
+// Historic names from an earlier attempt that used one level per
+// group. The emitted SQL defensively deletes these so re-runs and
+// migrations from that attempt end up clean.
+const LEGACY_LEVEL_NAMES = [
+  "Group I — Godan Verbs",
+  "Group II — Ichidan Verbs",
+  "Group III — Irregular Verbs",
+];
 
 // --- Load + validate ---------------------------------------------
 const raw = JSON.parse(await readFile(INPUT, "utf8"));
@@ -91,19 +102,18 @@ for (const [i, row] of raw.entries()) {
   }
 }
 
-const buckets = new Map(LEVELS.map((l) => [l.group, []]));
+// Report per-group counts for the log, then merge into a single
+// pool that lands in one level (input order preserved so all Group I
+// verbs come first, then II, then III — same file order).
+const perGroup = new Map();
 for (const row of raw) {
-  if (!buckets.has(row.group)) {
-    console.error(`Unknown group '${row.group}' in row:`, row);
-    process.exit(1);
-  }
-  buckets.get(row.group).push(row);
+  perGroup.set(row.group, (perGroup.get(row.group) ?? 0) + 1);
 }
-const totals = LEVELS.map((l) => ({ ...l, n: buckets.get(l.group).length }));
-console.log(`Loaded ${raw.length} verbs across 3 groups:`);
-for (const { group, name, n } of totals) {
-  console.log(`  ${String(n).padStart(3)}  Group ${group}  — ${name}`);
+console.log(`Loaded ${raw.length} verbs across ${perGroup.size} groups:`);
+for (const [g, n] of perGroup) {
+  console.log(`  Group ${g}: ${n}`);
 }
+const cards = raw.slice();
 
 // --- SQL helpers -------------------------------------------------
 /** Double any ' inside a value for safe SQL string embedding. */
@@ -121,11 +131,11 @@ function jsonbLiteral(obj) {
   return `'${q(json)}'::jsonb`;
 }
 
-function levelBlock({ group, name, order }, cards) {
+function levelBlock(name, order, cards) {
   const rows = cards.map(jsonbLiteral).map((v) => `  (${v})`).join(",\n");
   return `
 -- =========================================================
--- LEVEL ${order} — ${name} (${cards.length} verbs)
+-- LEVEL ${order} — ${name} (${cards.length} verbs, all groups mixed)
 -- =========================================================
 with m as (select id from modules where slug = '${MODULE_SLUG}')
 insert into module_levels (module_id, name, order_index, script)
@@ -152,46 +162,64 @@ ${rows}
 `.trimStart();
 }
 
+/**
+ * SQL to defensively delete rows from the earlier 3-level attempt.
+ * FK to cards is `on delete cascade`, so removing the levels also
+ * drops the (probably zero) cards under them.
+ */
+function legacyCleanupBlock() {
+  const list = LEGACY_LEVEL_NAMES.map((n) => `'${q(n)}'`).join(", ");
+  return `
+-- =========================================================
+-- Defensive cleanup — an earlier version of this seed created
+-- three separate levels (Group I / II / III). If any of those
+-- rows still exist, drop them so we don't ship two flavours of
+-- the same content. Safe no-op if they were never created.
+-- =========================================================
+delete from module_levels
+ where module_id = (select id from modules where slug = '${MODULE_SLUG}')
+   and name in (${list});
+`.trimStart();
+}
+
 // --- Emit --------------------------------------------------------
-const totalCards = totals.reduce((a, b) => a + b.n, 0);
 const header = `-- =========================================================
 -- Nihongo — Conjugation flashcard seed (generated)
 -- Generated by scripts/generate_conjugation_seed.mjs — DO NOT EDIT.
 -- Source: supabase/data/verbs_conjugation.json  (${raw.length} entries)
 --
--- Adds three new levels to the existing "conjugation" module:
---   * Group I  — Godan Verbs
---   * Group II — Ichidan Verbs
---   * Group III — Irregular Verbs
--- Each card is a JSONB blob with card_type = 'verb_conjugation'
--- and nested \`short\` / \`long\` objects holding the 7 forms.
+-- Adds ONE level to the existing "conjugation" module named
+-- "${LEVEL_NAME}" that mixes all three verb groups (I / II / III).
+-- Group info stays on each card (\`fields.group\`) and surfaces as
+-- a small pill on the flashcard front.
 --
 -- The existing conjugation drill levels (typing exercises) are
 -- untouched — the "insert if level empty" guard would refuse to
 -- add cards to a populated level anyway.
 --
 -- Idempotent — safe to re-run.
---   * Levels: insert only when a level with the same name is missing
---   * Cards:  insert only when the level currently holds zero cards
+--   * Legacy cleanup: drops the three per-group levels from an
+--     earlier attempt (no-op if they never existed).
+--   * Level: insert only when a level with the same name is missing.
+--   * Cards: insert only when the level currently holds zero cards.
 -- =========================================================
 `;
 
-const body = LEVELS.map((lv) => levelBlock(lv, buckets.get(lv.group))).join("\n");
+const body = legacyCleanupBlock() + "\n" + levelBlock(LEVEL_NAME, LEVEL_ORDER, cards);
 
 const footer = `
 -- =========================================================
--- Sanity check — should print 3 rows.
+-- Sanity check — should print one row with ${cards.length} cards.
 -- =========================================================
 select lv.order_index, lv.name, count(c.id) as cards
 from module_levels lv
 join modules m on m.id = lv.module_id
 left join cards c on c.level_id = lv.id
 where m.slug = '${MODULE_SLUG}'
-  and lv.name in (${LEVELS.map((l) => `'${q(l.name)}'`).join(", ")})
-group by lv.order_index, lv.name
-order by lv.order_index;
+  and lv.name = '${q(LEVEL_NAME)}'
+group by lv.order_index, lv.name;
 `;
 
 await writeFile(OUTPUT, header + "\n" + body + footer, "utf8");
 console.log(`\nWrote ${OUTPUT}`);
-console.log(`(${LEVELS.length} levels, ${totalCards} cards)`);
+console.log(`(1 level, ${cards.length} cards)`);

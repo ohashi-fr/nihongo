@@ -86,9 +86,7 @@ export default async function KanjiHome() {
                       <span className="inline-flex items-center rounded-full border border-[#2563eb]/40 bg-[#2563eb]/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#2563eb]">
                         All
                       </span>
-                    ) : (
-                      <span className="badge jp">漢字</span>
-                    )}
+                    ) : null}
                   </div>
                   <div className="text-sm text-muted">
                     {exam

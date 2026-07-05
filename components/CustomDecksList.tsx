@@ -4,7 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import CreateDeckModal from "@/components/CreateDeckModal";
+import DeleteDeckModal from "@/components/DeleteDeckModal";
+import DeckActionsMenu from "@/components/DeckActionsMenu";
+import Toast from "@/components/ui/Toast";
 import { illustrationUrl } from "@/lib/deckIllustrations";
+import { revalidateDecksList } from "@/app/reviews/actions";
 import type { CustomDeckWithCount } from "@/lib/customDecks";
 
 /**
@@ -14,6 +18,11 @@ import type { CustomDeckWithCount } from "@/lib/customDecks";
  * affordance to add a new deck is a translucent dashed *card* in the
  * same grid, not a top-corner button, so the "add one here" hint
  * stays visible inline with the collection.
+ *
+ * Each deck card carries a discreet "⋯" menu (via <DeckActionsMenu>)
+ * that opens the destructive Delete action; confirmation happens
+ * through <DeleteDeckModal>. On success the deck disappears from
+ * the local list and a toast confirms.
  */
 
 type Props = {
@@ -23,6 +32,11 @@ type Props = {
 
 export default function CustomDecksList({ decks, userId }: Props) {
   const [creating, setCreating] = useState(false);
+  const [visibleDecks, setVisibleDecks] =
+    useState<CustomDeckWithCount[]>(decks);
+  const [deletingDeck, setDeletingDeck] =
+    useState<CustomDeckWithCount | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
   return (
     <section className="mt-2">
@@ -36,8 +50,12 @@ export default function CustomDecksList({ decks, userId }: Props) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        {decks.map((d) => (
-          <DeckCard key={d.id} deck={d} />
+        {visibleDecks.map((d) => (
+          <DeckCard
+            key={d.id}
+            deck={d}
+            onRequestDelete={() => setDeletingDeck(d)}
+          />
         ))}
 
         {/* Translucent "add a deck here" placeholder — same footprint
@@ -63,48 +81,94 @@ export default function CustomDecksList({ decks, userId }: Props) {
         onClose={() => setCreating(false)}
         userId={userId}
       />
+
+      <DeleteDeckModal
+        open={deletingDeck !== null}
+        deck={deletingDeck}
+        cardCount={deletingDeck?.card_count ?? 0}
+        onClose={() => setDeletingDeck(null)}
+        onDeleted={async () => {
+          const name = deletingDeck?.name;
+          if (deletingDeck) {
+            setVisibleDecks((prev) =>
+              prev.filter((d) => d.id !== deletingDeck.id)
+            );
+          }
+          setDeletingDeck(null);
+          await revalidateDecksList();
+          setToast(name ? `"${name}" deleted` : "Deck deleted");
+        }}
+      />
+
+      <Toast
+        message={toast}
+        onDismiss={() => setToast(null)}
+        tone="success"
+      />
     </section>
   );
 }
 
 // =============================================================
 // Single deck card — mirrors VocabDeckCard / KanjiDeckCard shape.
+// Wraps a <Link> to the deck detail; the "⋯" menu sits in the top-
+// right corner and stops event propagation so tapping it doesn't
+// also fire the Link navigation.
 // =============================================================
-function DeckCard({ deck }: { deck: CustomDeckWithCount }) {
+function DeckCard({
+  deck,
+  onRequestDelete,
+}: {
+  deck: CustomDeckWithCount;
+  onRequestDelete: () => void;
+}) {
   const empty = deck.card_count === 0;
   return (
-    <Link
-      href={`/reviews/decks/${deck.id}`}
-      className="group block rounded-2xl bg-white p-6 shadow-card transition hover:-translate-y-0.5 hover:shadow-cardHover"
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <h3 className="truncate text-lg font-bold text-ink">{deck.name}</h3>
-          <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted">
-            Custom deck
-          </p>
+    <div className="relative">
+      <Link
+        href={`/reviews/decks/${deck.id}`}
+        className="group block rounded-2xl bg-white p-6 shadow-card transition hover:-translate-y-0.5 hover:shadow-cardHover"
+      >
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="truncate text-lg font-bold text-ink">
+              {deck.name}
+            </h3>
+            <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted">
+              Custom deck
+            </p>
+          </div>
+          <Image
+            src={illustrationUrl(deck.illustration)}
+            alt=""
+            width={64}
+            height={64}
+            className="h-16 w-16 shrink-0 object-contain drop-shadow-sm"
+          />
         </div>
-        <Image
-          src={illustrationUrl(deck.illustration)}
-          alt=""
-          width={64}
-          height={64}
-          className="h-16 w-16 shrink-0 object-contain drop-shadow-sm"
+
+        <p className="mt-4 text-2xl font-semibold">
+          {deck.card_count} {deck.card_count === 1 ? "card" : "cards"} saved
+        </p>
+        {empty && (
+          <p className="mt-1 text-xs text-muted">
+            No cards yet — tap to add your first.
+          </p>
+        )}
+
+        <div className="btn-primary mt-4 w-full justify-center transition group-hover:brightness-105">
+          Open →
+        </div>
+      </Link>
+
+      {/* Actions menu — floats over the Link, but stops event
+          propagation so tapping it doesn't navigate. */}
+      <div className="absolute right-2 top-2">
+        <DeckActionsMenu
+          label={`Actions for ${deck.name}`}
+          onDelete={onRequestDelete}
         />
       </div>
-
-      <p className="mt-4 text-2xl font-semibold">
-        {deck.card_count} {deck.card_count === 1 ? "card" : "cards"} saved
-      </p>
-      {empty && (
-        <p className="mt-1 text-xs text-muted">
-          No cards yet — tap to add your first.
-        </p>
-      )}
-
-      <div className="btn-primary mt-4 w-full justify-center transition group-hover:brightness-105">
-        Open →
-      </div>
-    </Link>
+    </div>
   );
 }

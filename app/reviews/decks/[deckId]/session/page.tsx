@@ -1,16 +1,25 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import CustomDeckClient from "@/components/CustomDeckClient";
+import CustomDeckSessionClient from "@/components/CustomDeckSessionClient";
 import type { CustomCard, CustomDeck } from "@/lib/customDecks";
 import type { CustomCardReview } from "@/lib/leitner";
 
-// Fully per-user — no caching.
+/**
+ * Server page for the Leitner daily review session of a custom
+ * deck. Fetches the deck, all its cards, and the user's existing
+ * review rows (including the `created_at` we need for the
+ * "new-cards-today" budget). Queue building itself is done on the
+ * client so the local calendar wins for "today".
+ *
+ * Redirects anon users to /login; 404s foreign deck ids.
+ */
+
 export const dynamic = "force-dynamic";
 
-export const metadata = { title: "Custom deck — Nihongo" };
+export const metadata = { title: "Review session — Nihongo" };
 
-export default async function CustomDeckPage({
+export default async function CustomDeckSessionPage({
   params,
 }: {
   params: { deckId: string };
@@ -21,15 +30,9 @@ export default async function CustomDeckPage({
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect(`/login?next=/reviews/decks/${params.deckId}`);
+    redirect(`/login?next=/reviews/decks/${params.deckId}/session`);
   }
 
-  // Three parallel queries — deck row, its cards, and the user's
-  // Leitner review rows for those cards. RLS scopes each to the
-  // owner; a foreign deckId returns 0 rows and we notFound().
-  //
-  // The review-rows query filters via the join through custom_cards
-  // — anything without a row is treated as "new" client-side.
   const [deckRes, cardsRes, reviewsRes] = await Promise.all([
     supabase
       .from("custom_decks")
@@ -55,8 +58,6 @@ export default async function CustomDeckPage({
   if (!deck) notFound();
 
   const cards = (cardsRes.data ?? []) as CustomCard[];
-  // Strip the inner join tag before handing to the client — it's
-  // just there to constrain the fetch to this deck.
   const reviews = ((reviewsRes.data ?? []) as any[]).map(
     ({ custom_cards: _cc, ...row }) => row as CustomCardReview
   );
@@ -65,24 +66,19 @@ export default async function CustomDeckPage({
     <section>
       <div className="mb-6">
         <Link
-          href="/reviews"
+          href={`/reviews/decks/${deck.id}`}
           className="text-sm text-muted hover:text-ink"
         >
-          ← My Reviews
+          ← {deck.name}
         </Link>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight">
-          {deck.name}
+          Today&apos;s review
         </h1>
-        <p className="mt-2 text-sm text-muted">
-          {cards.length === 0
-            ? "No cards yet — search a word below to add your first one."
-            : `${cards.length} card${cards.length === 1 ? "" : "s"} in this deck.`}
-        </p>
       </div>
 
-      <CustomDeckClient
+      <CustomDeckSessionClient
         deck={deck}
-        initialCards={cards}
+        cards={cards}
         initialReviews={reviews}
         userId={user.id}
       />
