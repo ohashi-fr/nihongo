@@ -6,6 +6,7 @@ import ReviewsClient, {
   type KanjiFavoriteItem,
   type AdjectiveFavoriteItem,
   type NounFavoriteItem,
+  type AdverbFavoriteItem,
   type ConjugationFavoriteItem,
 } from "@/components/ReviewsClient";
 import CustomDecksList from "@/components/CustomDecksList";
@@ -38,6 +39,7 @@ export default async function ReviewsPage() {
   const verbItems: VerbFavoriteItem[] = [];
   const adjectiveItems: AdjectiveFavoriteItem[] = [];
   const nounItems: NounFavoriteItem[] = [];
+  const adverbItems: AdverbFavoriteItem[] = [];
   const conjugationItems: ConjugationFavoriteItem[] = [];
   const kanjiItems: KanjiFavoriteItem[] = [];
 
@@ -49,6 +51,10 @@ export default async function ReviewsPage() {
       adjectiveItems.push({ cardId: r.card_id, fields: r.cards.fields });
     } else if (type === "noun_flashcard") {
       nounItems.push({ cardId: r.card_id, fields: r.cards.fields });
+    } else if (type === "adverb_flashcard") {
+      // Adverbs live in the Vocabulary deck under their own filter
+      // pill; they reuse `NounFields` since the shape is identical.
+      adverbItems.push({ cardId: r.card_id, fields: r.cards.fields });
     } else if (type === "verb_conjugation") {
       conjugationItems.push({ cardId: r.card_id, fields: r.cards.fields });
     } else if (type === "kanji_flashcard") {
@@ -103,6 +109,7 @@ export default async function ReviewsPage() {
           verbItems={verbItems}
           adjectiveItems={adjectiveItems}
           nounItems={nounItems}
+          adverbItems={adverbItems}
           conjugationItems={conjugationItems}
           kanjiItems={kanjiItems}
           userId={user.id}

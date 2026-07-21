@@ -6,6 +6,7 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import type { VerbFields } from "@/components/VerbFlashcardClient";
 import type { AdjectiveFields } from "@/components/AdjectiveFlashcardClient";
+import { AdjectiveClassChip } from "@/components/AdjectiveFlashcardClient";
 import type { KanjiFields } from "@/components/KanjiQuizClient";
 import type { NounFields } from "@/components/NounFlashcardClient";
 import type { ConjugationFields } from "@/components/VerbConjugationFlashcardClient";
@@ -36,18 +37,31 @@ export type NounFavoriteItem = {
   fields: NounFields;
 };
 
+/**
+ * Adverbs are stored with `card_type: "adverb_flashcard"` and reuse
+ * the same three-slot shape as nouns (japanese / hiragana / english).
+ * We keep them in their own bucket only so the Reviews filter can tell
+ * them apart from nouns — the render path is otherwise identical.
+ */
+export type AdverbFavoriteItem = {
+  cardId: string;
+  fields: NounFields;
+};
+
 export type ConjugationFavoriteItem = {
   cardId: string;
   fields: ConjugationFields;
 };
 
-// Unified vocab item — verbs, adjectives, nouns, and conjugation
-// reference cards are all part of the Vocabulary deck but render
-// differently. Tagged with `kind` so the playing screen can dispatch.
+// Unified vocab item — verbs, adjectives, nouns, adverbs, and
+// conjugation reference cards are all part of the Vocabulary deck but
+// render differently. Tagged with `kind` so the playing screen can
+// dispatch.
 type VocabItem =
   | { kind: "verb"; cardId: string; fields: VerbFields }
   | { kind: "adjective"; cardId: string; fields: AdjectiveFields }
   | { kind: "noun"; cardId: string; fields: NounFields }
+  | { kind: "adverb"; cardId: string; fields: NounFields }
   | { kind: "conjugation"; cardId: string; fields: ConjugationFields };
 
 type Deck = "vocab" | "kanji";
@@ -56,12 +70,19 @@ type Phase =
   | { kind: "ready" }
   | { kind: "playing"; deck: Deck };
 
-type VocabFilter = "all" | "verbs" | "adjectives" | "nouns" | "conjugation";
+type VocabFilter =
+  | "all"
+  | "verbs"
+  | "adjectives"
+  | "nouns"
+  | "adverbs"
+  | "conjugation";
 
 type Props = {
   verbItems: VerbFavoriteItem[];
   adjectiveItems: AdjectiveFavoriteItem[];
   nounItems: NounFavoriteItem[];
+  adverbItems: AdverbFavoriteItem[];
   conjugationItems: ConjugationFavoriteItem[];
   kanjiItems: KanjiFavoriteItem[];
   userId: string;
@@ -71,6 +92,7 @@ export default function ReviewsClient({
   verbItems,
   adjectiveItems,
   nounItems,
+  adverbItems,
   conjugationItems,
   kanjiItems,
   userId,
@@ -89,7 +111,14 @@ export default function ReviewsClient({
     setFlipped(false);
     setVocabQueue([]);
     setKanjiQueue([]);
-  }, [verbItems, adjectiveItems, nounItems, conjugationItems, kanjiItems]);
+  }, [
+    verbItems,
+    adjectiveItems,
+    nounItems,
+    adverbItems,
+    conjugationItems,
+    kanjiItems,
+  ]);
 
   // Keyboard — Space / Enter flip, ← / → navigate.
   useEffect(() => {
@@ -125,6 +154,11 @@ export default function ReviewsClient({
       cardId: it.cardId,
       fields: it.fields,
     }));
+    const adverbs: VocabItem[] = adverbItems.map((it) => ({
+      kind: "adverb",
+      cardId: it.cardId,
+      fields: it.fields,
+    }));
     const conjugations: VocabItem[] = conjugationItems.map((it) => ({
       kind: "conjugation",
       cardId: it.cardId,
@@ -133,9 +167,17 @@ export default function ReviewsClient({
     if (vocabFilter === "verbs") return verbs;
     if (vocabFilter === "adjectives") return adjectives;
     if (vocabFilter === "nouns") return nouns;
+    if (vocabFilter === "adverbs") return adverbs;
     if (vocabFilter === "conjugation") return conjugations;
-    return [...verbs, ...adjectives, ...nouns, ...conjugations];
-  }, [verbItems, adjectiveItems, nounItems, conjugationItems, vocabFilter]);
+    return [...verbs, ...adjectives, ...nouns, ...adverbs, ...conjugations];
+  }, [
+    verbItems,
+    adjectiveItems,
+    nounItems,
+    adverbItems,
+    conjugationItems,
+    vocabFilter,
+  ]);
 
   function startVocab() {
     if (filteredVocabPool.length === 0) return;
@@ -205,6 +247,7 @@ export default function ReviewsClient({
       verbItems.length +
       adjectiveItems.length +
       nounItems.length +
+      adverbItems.length +
       conjugationItems.length +
       kanjiItems.length;
     if (totalFavorites === 0) {
@@ -236,6 +279,7 @@ export default function ReviewsClient({
           verbCount={verbItems.length}
           adjectiveCount={adjectiveItems.length}
           nounCount={nounItems.length}
+          adverbCount={adverbItems.length}
           conjugationCount={conjugationItems.length}
           filteredCount={filteredVocabPool.length}
           onStart={startVocab}
@@ -265,7 +309,9 @@ export default function ReviewsClient({
               ? "Adjective"
               : item.kind === "noun"
                 ? "Noun"
-                : "Conjugation"
+                : item.kind === "adverb"
+                  ? "Adverb"
+                  : "Conjugation"
         }
         progress={`${index + 1} / ${vocabQueue.length}`}
         flipped={flipped}
@@ -282,7 +328,10 @@ export default function ReviewsClient({
           <VerbCardFaces item={item} />
         ) : item.kind === "adjective" ? (
           <AdjectiveCardFaces item={item} />
-        ) : item.kind === "noun" ? (
+        ) : item.kind === "noun" || item.kind === "adverb" ? (
+          // Adverbs and nouns share the same three-slot render shape
+          // (japanese / hiragana / english), so one face component
+          // handles both without a bespoke AdverbCardFaces.
           <NounCardFaces item={item} />
         ) : (
           <ConjugationCardFaces item={item} />
@@ -325,6 +374,7 @@ function VocabDeckCard({
   verbCount,
   adjectiveCount,
   nounCount,
+  adverbCount,
   conjugationCount,
   filteredCount,
   onStart,
@@ -334,6 +384,7 @@ function VocabDeckCard({
   verbCount: number;
   adjectiveCount: number;
   nounCount: number;
+  adverbCount: number;
   conjugationCount: number;
   filteredCount: number;
   onStart: () => void;
@@ -362,7 +413,13 @@ function VocabDeckCard({
       <div className="mt-4 flex flex-wrap gap-1.5">
         <FilterPill
           label="All"
-          count={verbCount + adjectiveCount + nounCount + conjugationCount}
+          count={
+            verbCount +
+            adjectiveCount +
+            nounCount +
+            adverbCount +
+            conjugationCount
+          }
           active={filter === "all"}
           onClick={() => onFilterChange("all")}
         />
@@ -383,6 +440,12 @@ function VocabDeckCard({
           count={nounCount}
           active={filter === "nouns"}
           onClick={() => onFilterChange("nouns")}
+        />
+        <FilterPill
+          label="Adverbs"
+          count={adverbCount}
+          active={filter === "adverbs"}
+          onClick={() => onFilterChange("adverbs")}
         />
         <FilterPill
           label="Conjugation"
@@ -683,6 +746,11 @@ function AdjectiveCardFaces({
             {f.hiragana && (
               <div className="jp mt-1 text-sm text-muted">{f.hiragana}</div>
             )}
+            {f.adjective_class && (
+              <div className="mt-2">
+                <AdjectiveClassChip cls={f.adjective_class} />
+              </div>
+            )}
           </div>
           <Row label="Long form" value={f.long_form} />
           <Row label="Short form" value={f.short_form} />
@@ -696,13 +764,14 @@ function AdjectiveCardFaces({
 }
 
 // =============================================================
-// Noun card faces — English on front, JP + reading on back.
-// Kana-only nouns (パン) render the reading once, never twice.
+// Noun / adverb card faces — English on front, JP + reading on back.
+// Kana-only entries (パン, ぴったり) render the reading once,
+// never twice.
 // =============================================================
 function NounCardFaces({
   item,
 }: {
-  item: Extract<VocabItem, { kind: "noun" }>;
+  item: Extract<VocabItem, { kind: "noun" } | { kind: "adverb" }>;
 }) {
   const f = item.fields;
   const kanaOnly =

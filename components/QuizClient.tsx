@@ -13,6 +13,7 @@ import PreQuizScreen from "@/components/PreQuizScreen";
 import VerbFlashcardClient from "@/components/VerbFlashcardClient";
 import AdjectiveFlashcardClient from "@/components/AdjectiveFlashcardClient";
 import NounFlashcardClient from "@/components/NounFlashcardClient";
+import MixedVocabFlashcardClient from "@/components/MixedVocabFlashcardClient";
 
 type Props = {
   cards: Card[];
@@ -91,14 +92,37 @@ export default function QuizClient({
       ),
     [cards]
   );
-  const isNounFlashcardLevel = useMemo(
-    () =>
-      cards.length > 0 &&
-      cards.every(
-        (c) => (c.fields as any)?.card_type === "noun_flashcard"
-      ),
-    [cards]
-  );
+  // Nouns AND adverbs share the exact same UI (noun_flashcard client),
+  // so a level that only contains one *or the other* — or both mixed —
+  // still routes here. Keeps the "single-type" path fast without
+  // needing a mixed dispatcher.
+  const isNounOrAdverbFlashcardLevel = useMemo(() => {
+    if (cards.length === 0) return false;
+    return cards.every((c) => {
+      const t = (c.fields as any)?.card_type;
+      return t === "noun_flashcard" || t === "adverb_flashcard";
+    });
+  }, [cards]);
+  // "Mixed vocab" = the deck holds only vocab flashcard types AND at
+  // least two distinct types are present. This is the Beginner level's
+  // territory: nouns + verbs + adjectives + adverbs sharing one screen.
+  const isMixedVocabFlashcardLevel = useMemo(() => {
+    if (cards.length === 0) return false;
+    const kinds = new Set<string>();
+    for (const c of cards) {
+      const t = (c.fields as any)?.card_type;
+      if (
+        t !== "noun_flashcard" &&
+        t !== "adverb_flashcard" &&
+        t !== "verb_flashcard" &&
+        t !== "adjective_flashcard"
+      ) {
+        return false;
+      }
+      kinds.add(t);
+    }
+    return kinds.size >= 2;
+  }, [cards]);
 
   if (isVerbFlashcardLevel) {
     return (
@@ -122,9 +146,20 @@ export default function QuizClient({
     );
   }
 
-  if (isNounFlashcardLevel) {
+  if (isNounOrAdverbFlashcardLevel) {
     return (
       <NounFlashcardClient
+        cards={cards}
+        slug={slug}
+        levelId={levelId}
+        levelName={levelName}
+      />
+    );
+  }
+
+  if (isMixedVocabFlashcardLevel) {
+    return (
+      <MixedVocabFlashcardClient
         cards={cards}
         slug={slug}
         levelId={levelId}
