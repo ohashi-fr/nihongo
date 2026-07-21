@@ -111,6 +111,13 @@ export default async function ModulePage({
     ...Array.from(groups.values()),
   ].sort((a, b) => a.order_index - b.order_index);
 
+  // "Beginner"-named levels get their own highlighted section above the
+  // numbered ones, rather than slotting into the 01/02/03 sequence.
+  const beginnerEntries = entries.filter(
+    (e) => e.kind === "level" && e.level.name.startsWith("Beginner")
+  );
+  const restEntries = entries.filter((e) => !beginnerEntries.includes(e));
+
   return (
     <section>
       <Link
@@ -130,23 +137,47 @@ export default async function ModulePage({
           No levels yet.
         </p>
       ) : (
-        <ul className="surface divide-y divide-border overflow-hidden">
-          {entries.map((e) =>
-            e.kind === "level" ? (
-              <FlatLevelRow
-                key={`lv-${e.level.id}`}
-                slug={mod.slug}
-                level={e.level}
-              />
-            ) : (
-              <GroupRow
-                key={`grp-${e.name}`}
-                slug={mod.slug}
-                group={e}
-              />
-            )
+        <>
+          {beginnerEntries.length > 0 && (
+            <ul className="surface mb-8 divide-y divide-border overflow-hidden">
+              {beginnerEntries.map((e) =>
+                e.kind === "level" ? (
+                  <FlatLevelRow
+                    key={`lv-${e.level.id}`}
+                    slug={mod.slug}
+                    level={e.level}
+                  />
+                ) : (
+                  <GroupRow key={`grp-${e.name}`} slug={mod.slug} group={e} />
+                )
+              )}
+            </ul>
           )}
-        </ul>
+
+          {beginnerEntries.length > 0 && restEntries.length > 0 && (
+            <div className="my-8 flex items-center gap-3">
+              <div className="h-px flex-1 bg-border" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">
+                All levels
+              </span>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+          )}
+
+          <ul className="surface divide-y divide-border overflow-hidden">
+            {restEntries.map((e) =>
+              e.kind === "level" ? (
+                <FlatLevelRow
+                  key={`lv-${e.level.id}`}
+                  slug={mod.slug}
+                  level={e.level}
+                />
+              ) : (
+                <GroupRow key={`grp-${e.name}`} slug={mod.slug} group={e} />
+              )
+            )}
+          </ul>
+        </>
       )}
     </section>
   );
@@ -202,23 +233,8 @@ function GroupRow({
         className="group flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-soft"
       >
         <div className="flex min-w-0 items-center gap-3">
-          <span
-            aria-hidden
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent-100 text-accent-700"
-          >
-            {/* folder-like glyph — signals "opens a group" */}
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3 6h5l2 2h11v9a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" />
-            </svg>
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent-100 text-[11px] font-bold text-accent-700">
+            {String(group.order_index ?? 0).padStart(2, "0")}
           </span>
           <span className="truncate font-semibold text-ink">
             {group.name}
