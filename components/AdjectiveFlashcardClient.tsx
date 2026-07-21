@@ -49,8 +49,8 @@ type Props = {
 };
 
 const MODES: PreQuizMode[] = [
-  { value: "en_jp", label: "EN → JP" },
   { value: "jp_en", label: "JP → EN" },
+  { value: "en_jp", label: "EN → JP" },
   { value: "mix", label: "Mix" },
 ];
 

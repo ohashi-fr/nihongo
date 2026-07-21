@@ -233,7 +233,7 @@ function GroupRow({
         className="group flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-soft"
       >
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent-100 text-[11px] font-bold text-accent-700">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-[11px] font-bold text-primary">
             {String(group.order_index ?? 0).padStart(2, "0")}
           </span>
           <span className="truncate font-semibold text-ink">
