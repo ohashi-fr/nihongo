@@ -163,7 +163,7 @@ export default function AddCardForm({
         .update(contentFields)
         .eq("id", existingCard.id)
         .select(
-          "id, deck_id, user_id, kanji, reading, meaning_en, note, created_at"
+          "id, deck_id, user_id, kanji, reading, meaning_en, note, created_at, example_jp, example_en, example_reading, example_source"
         )
         .single();
 
@@ -183,17 +183,43 @@ export default function AddCardForm({
     }
 
     // ── ADD — INSERT a new row ─────────────────────────────────
+    // Look up an example sentence up front so we can bake it into
+    // the INSERT (avoids a second round-trip). Failures here are
+    // silent — the card is created without an example if the RPC
+    // errors or returns nothing.
+    type PickBest = {
+      jp_text: string | null;
+      en_text: string | null;
+      reading: string | null;
+      source: string | null;
+    };
+    let example: PickBest | null = null;
+    try {
+      const { data: rpcData } = await supabase.rpc("pick_best_example", {
+        p_kanji: contentFields.kanji,
+        p_reading: contentFields.reading,
+      });
+      if (rpcData) example = rpcData as unknown as PickBest;
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.warn("[pick_best_example] failed:", e);
+    }
+
     const insertPayload = {
       ...contentFields,
       deck_id: deckId,
       user_id: userId,
+      example_jp: example ? example.jp_text : null,
+      example_en: example ? example.en_text : null,
+      example_reading: example ? example.reading : null,
+      example_source: example ? example.source : null,
     };
 
     const { data, error } = await supabase
       .from("custom_cards")
       .insert(insertPayload)
       .select(
-        "id, deck_id, user_id, kanji, reading, meaning_en, note, created_at"
+        "id, deck_id, user_id, kanji, reading, meaning_en, note, created_at, example_jp, example_en, example_reading, example_source"
       )
       .single();
 
@@ -275,7 +301,17 @@ export default function AddCardForm({
           >
             CC-BY-SA 4.0
           </a>
-          ). Nothing matches? Fill the fields below manually.
+          ). Example sentences from{" "}
+          <a
+            href="https://tatoeba.org/"
+            target="_blank"
+            rel="noreferrer noopener"
+            className="underline decoration-dotted underline-offset-2 hover:text-ink"
+          >
+            Tatoeba
+          </a>{" "}
+          (CC-BY 2.0 FR). Nothing matches? Fill the fields below
+          manually.
         </p>
       </div>
 

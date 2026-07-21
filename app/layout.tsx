@@ -113,6 +113,30 @@ export default function RootLayout({
               </a>{" "}
               (CC-BY-SA 4.0).
             </div>
+            {/* Tatoeba attribution — required by the sentences licence
+                (CC-BY 2.0 FR). Sits next to the JMdict credit so
+                everything data-related is grouped visually. */}
+            <div className="mt-1 text-[10px] leading-snug">
+              Example sentences from{" "}
+              <a
+                href="https://tatoeba.org/"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="underline decoration-dotted underline-offset-2 hover:text-ink"
+              >
+                Tatoeba
+              </a>{" "}
+              (
+              <a
+                href="https://creativecommons.org/licenses/by/2.0/fr/"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="underline decoration-dotted underline-offset-2 hover:text-ink"
+              >
+                CC-BY 2.0 FR
+              </a>
+              ).
+            </div>
           </footer>
         </div>
         {/* Sticky mobile-only bottom nav — hides itself on focused

@@ -7,6 +7,8 @@ import type { Card } from "@/lib/types";
 import PreQuizScreen, { type PreQuizMode } from "@/components/PreQuizScreen";
 import { createClient } from "@/lib/supabase/client";
 import FavoriteStar from "@/components/FavoriteStar";
+import ExampleBlock from "@/components/ExampleBlock";
+import { parseExample } from "@/lib/exampleSentence";
 
 /**
  * Flip-flashcard client for the "N5 Nouns" module (and any future
@@ -23,11 +25,20 @@ import FavoriteStar from "@/components/FavoriteStar";
  * duplicate under itself.
  */
 
+/**
+ * NounFields also covers `adverb_flashcard`. Adverbs share the exact
+ * same three-slot shape as nouns (japanese / hiragana / english), so
+ * we widen the discriminator rather than duplicate a whole new client.
+ * The `card_type` is preserved on parse so downstream code (Reviews
+ * bucketing, filter pills) can still distinguish them.
+ */
 export type NounFields = {
-  card_type: "noun_flashcard";
+  card_type: "noun_flashcard" | "adverb_flashcard";
   japanese: string;
   hiragana: string;
   english: string;
+  /** Optional example sentence (populated by the Tatoeba backfill). */
+  example?: import("@/lib/exampleSentence").ExampleSentence;
 };
 
 type Direction = "en_jp" | "jp_en" | "mix";
@@ -62,11 +73,25 @@ function shuffle<T>(arr: T[]): T[] {
 
 export function parseNounFields(c: Card): NounFields {
   const f = c.fields as any;
+  const rawType = f?.card_type;
+  // Preserve the discriminator (adverbs run through this parser too)
+  // so downstream filters and buckets can tell them apart.
+  const cardType: NounFields["card_type"] =
+    rawType === "adverb_flashcard" ? "adverb_flashcard" : "noun_flashcard";
+  const hiragana = String(f.hiragana ?? "");
+  const rawJapanese = String(f.japanese ?? "");
+  // Kana-only entries (typically adverbs like ぴったり, or nouns like
+  // パン when written from a katakana source) may arrive with an
+  // empty `japanese`. Fall back to hiragana so the display always
+  // has a primary word, and mark it kana-only by setting the two
+  // equal — that's exactly what `isKanaOnly` looks for downstream.
+  const japanese = rawJapanese.length > 0 ? rawJapanese : hiragana;
   return {
-    card_type: "noun_flashcard",
-    japanese: f.japanese ?? "",
-    hiragana: f.hiragana ?? "",
+    card_type: cardType,
+    japanese,
+    hiragana,
     english: f.english ?? "",
+    ...(f.example ? { example: f.example } : {}),
   };
 }
 
@@ -405,6 +430,7 @@ function BackContent({
           </div>
         )}
       </div>
+      <ExampleBlock example={parseExample(fields.example)} />
     </div>
   );
 }

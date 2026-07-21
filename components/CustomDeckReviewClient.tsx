@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import type { CustomCard, CustomDeck } from "@/lib/customDecks";
+import ExampleBlock from "@/components/ExampleBlock";
 
 /**
  * Flip-flashcard review flow for user-authored custom decks.
@@ -160,6 +161,19 @@ export default function CustomDeckReviewClient({ deck, cards }: Props) {
             {card.note && (
               <div className="mt-4 max-w-full text-center text-sm italic text-muted">
                 {card.note}
+              </div>
+            )}
+            {card.example_jp && (
+              <div className="mt-4 w-full max-w-full">
+                <ExampleBlock
+                  example={{
+                    jp: card.example_jp,
+                    en: card.example_en,
+                    reading: card.example_reading,
+                    source:
+                      card.example_source ?? "Tatoeba (CC-BY 2.0 FR)",
+                  }}
+                />
               </div>
             )}
             <div className="mt-6 text-xs uppercase tracking-[0.25em] text-muted">

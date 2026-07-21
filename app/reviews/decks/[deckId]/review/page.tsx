@@ -34,7 +34,7 @@ export default async function CustomDeckReviewPage({
     supabase
       .from("custom_cards")
       .select(
-        "id, deck_id, user_id, kanji, reading, meaning_en, note, created_at"
+        "id, deck_id, user_id, kanji, reading, meaning_en, note, created_at, example_jp, example_en, example_reading, example_source"
       )
       .eq("deck_id", params.deckId)
       .order("created_at", { ascending: false }),

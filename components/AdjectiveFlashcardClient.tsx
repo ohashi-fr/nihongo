@@ -7,8 +7,18 @@ import type { Card } from "@/lib/types";
 import PreQuizScreen, { type PreQuizMode } from "@/components/PreQuizScreen";
 import { createClient } from "@/lib/supabase/client";
 import FavoriteStar from "@/components/FavoriteStar";
+import ExampleBlock from "@/components/ExampleBlock";
+import { parseExample } from "@/lib/exampleSentence";
 
-// Field shape persisted by `seed_adjectives.sql`.
+// Field shape persisted by `seed_adjectives.sql` (older) and by
+// `seed_beginner_lessons.sql` (newer — always populates `adjective_class`).
+//
+// `adjective_class` distinguishes い-adjectives from な-adjectives and is
+// rendered as a small kana chip on the card faces so the learner can
+// tell them apart at a glance. This is display-only — long_form /
+// short_form are always the pre-computed strings from the seed JSON, we
+// NEVER conjugate at render time (guarantees we can't produce garbage
+// like 便利いです for a な-adjective).
 export type AdjectiveFields = {
   card_type: "adjective_flashcard";
   kanji: string;
@@ -17,6 +27,10 @@ export type AdjectiveFields = {
   short_form: string;
   definition_en: string;
   opposite: string;
+  /** `"i"` for い-adjectives, `"na"` for な-adjectives. Absent on legacy cards. */
+  adjective_class?: "i" | "na";
+  /** Optional example sentence (populated by the Tatoeba backfill). */
+  example?: import("@/lib/exampleSentence").ExampleSentence;
 };
 
 type Direction = "en_jp" | "jp_en" | "mix";
@@ -51,6 +65,11 @@ function shuffle<T>(arr: T[]): T[] {
 
 export function parseAdjectiveFields(c: Card): AdjectiveFields {
   const f = c.fields as any;
+  const rawClass = typeof f.adjective_class === "string"
+    ? f.adjective_class.toLowerCase()
+    : "";
+  const adjectiveClass: AdjectiveFields["adjective_class"] =
+    rawClass === "i" || rawClass === "na" ? rawClass : undefined;
   return {
     card_type: "adjective_flashcard",
     kanji: f.kanji ?? "",
@@ -59,7 +78,34 @@ export function parseAdjectiveFields(c: Card): AdjectiveFields {
     short_form: f.short_form ?? "",
     definition_en: f.definition_en ?? "",
     opposite: f.opposite ?? "",
+    ...(adjectiveClass ? { adjective_class: adjectiveClass } : {}),
+    ...(f.example ? { example: f.example } : {}),
   };
+}
+
+/**
+ * Small "い" / "な" chip shown next to the Japanese form. Kept
+ * exportable so the mixed-vocab client (Beginner level) can reuse the
+ * exact same styling and avoid drifting between screens.
+ */
+export function AdjectiveClassChip({
+  cls,
+  size = "sm",
+}: {
+  cls: AdjectiveFields["adjective_class"];
+  size?: "sm" | "md";
+}) {
+  if (!cls) return null;
+  const label = cls === "i" ? "い" : "な";
+  const dim = size === "md" ? "px-2 py-0.5 text-sm" : "px-1.5 py-0 text-xs";
+  return (
+    <span
+      title={cls === "i" ? "i-adjective" : "na-adjective"}
+      className={`jp inline-flex items-center rounded-full border border-primary/25 bg-primary-50 font-semibold text-primary ${dim}`}
+    >
+      {label}
+    </span>
+  );
 }
 
 export default function AdjectiveFlashcardClient({
@@ -300,11 +346,23 @@ export default function AdjectiveFlashcardClient({
                     {f.hiragana}
                   </div>
                 )}
+                {f.adjective_class && (
+                  <div className="mt-4">
+                    <AdjectiveClassChip cls={f.adjective_class} size="md" />
+                  </div>
+                )}
               </>
             ) : (
-              <div className="text-center text-3xl font-medium">
-                {f.definition_en}
-              </div>
+              <>
+                <div className="text-center text-3xl font-medium">
+                  {f.definition_en}
+                </div>
+                {f.adjective_class && (
+                  <div className="mt-4">
+                    <AdjectiveClassChip cls={f.adjective_class} size="md" />
+                  </div>
+                )}
+              </>
             )}
             <div className="mt-6 text-xs uppercase tracking-[0.25em] text-muted">
               {item.dir === "jp_en" ? "Japanese" : "English"}
@@ -379,6 +437,11 @@ function BackContent({
         {fields.hiragana && (
           <div className="jp mt-1 text-sm text-muted">{fields.hiragana}</div>
         )}
+        {fields.adjective_class && (
+          <div className="mt-2">
+            <AdjectiveClassChip cls={fields.adjective_class} />
+          </div>
+        )}
         {frontDir === "jp_en" && fields.definition_en && (
           <div className="mt-2 text-sm font-medium uppercase tracking-wide text-muted">
             — {fields.definition_en}
@@ -391,6 +454,8 @@ function BackContent({
       {fields.opposite ? (
         <Row label="Opposite" value={fields.opposite} />
       ) : null}
+
+      <ExampleBlock example={parseExample(fields.example)} />
     </div>
   );
 }

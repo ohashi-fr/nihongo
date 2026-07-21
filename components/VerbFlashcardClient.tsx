@@ -9,6 +9,8 @@ import VerbCheatSheet from "@/components/VerbCheatSheet";
 import { deriveHiragana } from "@/lib/verbReadings";
 import { createClient } from "@/lib/supabase/client";
 import FavoriteStar from "@/components/FavoriteStar";
+import ExampleBlock from "@/components/ExampleBlock";
+import { parseExample } from "@/lib/exampleSentence";
 
 // FSRS rating UI removed — see lib/fsrs.ts to re-enable spaced
 // repetition later. The card_reviews table is still in the schema.
@@ -23,6 +25,8 @@ export type VerbFields = {
   masu_form: string;
   potential_form: string;
   translation_en: string;
+  /** Optional example sentence (populated by the Tatoeba backfill). */
+  example?: import("@/lib/exampleSentence").ExampleSentence;
 };
 
 type Direction = "en_jp" | "jp_en" | "mix";
@@ -452,6 +456,8 @@ function BackContent({
         value={deriveHiragana(fields.potential_form, dict)}
         jp
       />
+
+      <ExampleBlock example={parseExample(fields.example)} />
     </div>
   );
 }

@@ -25,6 +25,11 @@ export type CustomCard = {
   meaning_en: string;
   note: string | null;
   created_at: string;
+  /** Attached example sentence — see supabase/migrate_custom_cards_examples.sql. */
+  example_jp: string | null;
+  example_en: string | null;
+  example_reading: string | null;
+  example_source: string | null;
 };
 
 /** Deck with the count of cards it owns, for list rendering. */

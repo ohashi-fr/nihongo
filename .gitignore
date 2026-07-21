@@ -29,6 +29,11 @@ yarn-error.log*
 # vercel
 .vercel
 
+# large raw data dumps (Tatoeba corpus) — exceed GitHub's 100MB file limit,
+# kept locally only for scripts/ingest_tatoeba_examples.mjs
+supabase/data/sentences.csv
+supabase/data/links.csv
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

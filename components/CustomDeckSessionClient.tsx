@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { revalidateDeck } from "@/app/reviews/actions";
 import ProgressBar from "@/components/ui/ProgressBar";
+import ExampleBlock from "@/components/ExampleBlock";
 import type { CustomCard, CustomDeck } from "@/lib/customDecks";
 import {
   BOX_INTERVALS,
@@ -399,6 +400,20 @@ export default function CustomDeckSessionClient({
             {current!.card.note && (
               <div className="mt-4 max-w-full text-center text-sm italic text-muted">
                 {current!.card.note}
+              </div>
+            )}
+            {current!.card.example_jp && (
+              <div className="mt-4 w-full max-w-full">
+                <ExampleBlock
+                  example={{
+                    jp: current!.card.example_jp,
+                    en: current!.card.example_en,
+                    reading: current!.card.example_reading,
+                    source:
+                      current!.card.example_source ??
+                      "Tatoeba (CC-BY 2.0 FR)",
+                  }}
+                />
               </div>
             )}
             <div className="mt-6 text-xs uppercase tracking-[0.25em] text-muted">
