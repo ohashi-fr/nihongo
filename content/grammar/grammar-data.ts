@@ -231,7 +231,7 @@ export const groups: Group[] = [
           label: "Watch out",
           items: [
             "{{naadj:na-adj}} and {{nom:noun}} keep **だ** before と (not ひまと おもいます).",
-            "To say “I think NOT”, negate the inner verb: こない**と** おもいます (rather than こると おもいません).",
+            "To say “I think NOT”, negate the inner verb: こない**と** おもいます (rather than くると おもいません).",
           ],
         },
         examples: [
@@ -837,7 +837,7 @@ export const groups: Group[] = [
           {
             type: "rule",
             label: "Rule",
-            lines: ["{{compteur:counter}} + **目（め）** → 2つめ、3にんめ、3つめ"],
+            lines: ["{{compteur:counter}} + **目（め）** → ふたつめ、さんにんめ、みっつめ"],
           },
         ],
         attention: {
