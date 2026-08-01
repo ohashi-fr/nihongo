@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>初級1 文法 — Récap midterm</title>
+<style>
+  :root{
+    --verbe:#2e7d32;      /* vert */
+    --verbe-bg:#e8f5e9;
+    --compteur:#c2185b;   /* rose */
+    --compteur-bg:#fce4ec;
+    --nom:#b8860b;        /* jaune/ocre lisible */
+    --nom-bg:#fff8e1;
+    --adj:#1565c0;        /* bleu */
+    --adj-bg:#e3f2fd;
+    --naadj:#e65100;      /* orange */
+    --naadj-bg:#fff3e0;
+    --ink:#1a1a1a;
+    --paper:#fbfaf7;
+    --line:#e5e1d8;
+    --soft:#6b6b6b;
+    --attn:#8a5a00;
+    --attn-bg:#fff6e0;
+    --group:#3a3a3a;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    line-height:1.55; font-size:16px;
+  }
+  .wrap{max-width:860px; margin:0 auto; padding:32px 22px 80px;}
+
+  header.top{border-bottom:3px solid var(--ink); padding-bottom:14px; margin-bottom:8px;}
+  header.top h1{font-size:26px; margin:0 0 4px; letter-spacing:.5px;}
+  header.top p{margin:0; color:var(--soft); font-size:14px;}
+
+  /* Légende couleurs */
+  .legend{
+    display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 26px;
+    padding:12px 14px; background:#fff; border:1px solid var(--line); border-radius:10px;
+  }
+  .legend .pill{font-size:13px; font-weight:600; padding:3px 10px; border-radius:20px;}
+  .leg-note{width:100%; font-size:12px; color:var(--soft); margin-top:4px;}
+
+  /* pastilles type de mot */
+  .w{padding:1px 5px; border-radius:5px; font-weight:600; white-space:nowrap;}
+  .verbe{color:var(--verbe); background:var(--verbe-bg);}
+  .compteur{color:var(--compteur); background:var(--compteur-bg);}
+  .nom{color:var(--nom); background:var(--nom-bg);}
+  .adj{color:var(--adj); background:var(--adj-bg);}
+  .naadj{color:var(--naadj); background:var(--naadj-bg);}
+
+  /* Sommaire */
+  nav.toc{background:#fff; border:1px solid var(--line); border-radius:10px; padding:16px 20px; margin-bottom:30px;}
+  nav.toc h2{margin:0 0 10px; font-size:15px; text-transform:uppercase; letter-spacing:1px; color:var(--soft);}
+  nav.toc ol{margin:0; padding-left:20px; columns:2; column-gap:28px;}
+  nav.toc li{margin-bottom:5px; break-inside:avoid;}
+  nav.toc a{color:var(--ink); text-decoration:none; font-size:14px;}
+  nav.toc a:hover{text-decoration:underline;}
+
+  /* Groupe */
+  .group{margin:40px 0 8px;}
+  .group-h{
+    display:flex; align-items:baseline; gap:10px;
+    border-bottom:2px solid var(--group); padding-bottom:6px; margin-bottom:4px;
+  }
+  .group-h .jp{font-size:22px; font-weight:700;}
+  .group-h .fr{font-size:13px; color:var(--soft); text-transform:uppercase; letter-spacing:1px;}
+
+  /* Carte notion */
+  .card{
+    background:#fff; border:1px solid var(--line); border-left:5px solid var(--group);
+    border-radius:10px; padding:18px 20px; margin:16px 0;
+  }
+  .card h3{margin:0 0 2px; font-size:19px;}
+  .card h3 .num{color:var(--soft); font-weight:700; font-size:15px; margin-right:8px;}
+  .card h3 .kanji{color:var(--soft); font-weight:500; font-size:15px; margin-left:8px;}
+  .obj{font-size:14px; color:#333; margin:6px 0 12px; font-style:italic;}
+  .obj .ex-fr{font-style:normal; color:var(--soft); display:block; margin-top:3px; font-size:13px;}
+
+  .block-label{font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.7px; color:var(--soft); margin:12px 0 5px;}
+
+  /* Règle : formules */
+  .rule{background:#f7f6f2; border-radius:8px; padding:10px 12px; font-size:15px; margin:4px 0;}
+  .rule .arrow{color:var(--soft); margin:0 6px;}
+
+  table{border-collapse:collapse; width:100%; margin:8px 0; font-size:14px;}
+  th,td{border:1px solid var(--line); padding:6px 9px; text-align:left; vertical-align:top;}
+  th{background:#f2f0ea; font-weight:600; font-size:13px;}
+
+  /* Attention */
+  .attn{background:var(--attn-bg); border-left:3px solid var(--attn); border-radius:6px; padding:9px 12px; margin:10px 0; font-size:14px;}
+  .attn .block-label{color:var(--attn); margin-top:0;}
+  .attn ul{margin:4px 0 0; padding-left:18px;}
+  .attn li{margin-bottom:4px;}
+
+  /* Exemples */
+  .ex{margin:8px 0 0; padding-left:0; list-style:none;}
+  .ex li{margin-bottom:7px; padding-left:18px; position:relative; font-size:15px;}
+  .ex li::before{content:"›"; position:absolute; left:2px; color:var(--soft); font-weight:700;}
+  .ex .t{color:var(--soft); font-size:13px; margin-left:6px;}
+
+  .jp-line{font-size:16px;}
+
+  .todo{display:inline-block; font-size:11px; font-weight:700; color:#fff; background:#c0392b; padding:1px 7px; border-radius:10px; margin-left:8px; vertical-align:middle;}
+
+  /* Checklist */
+  .checklist{background:#1a1a1a; color:#f4f4f4; border-radius:12px; padding:22px 26px; margin-top:44px;}
+  .checklist h2{margin:0 0 14px; font-size:20px;}
+  .checklist ol{margin:0; padding-left:22px;}
+  .checklist li{margin-bottom:9px; font-size:15px;}
+  .checklist .w{filter:brightness(1.25);}
+
+  .backtop{display:block; text-align:right; font-size:12px; color:var(--soft); text-decoration:none; margin-top:6px;}
+
+  @media print{
+    body{background:#fff; font-size:12px;}
+    .card,nav.toc,.legend{break-inside:avoid;}
+    .checklist{background:#fff; color:#000; border:2px solid #000;}
+    .checklist .w{filter:none;}
+    .backtop{display:none;}
+    a{color:#000; text-decoration:none;}
+  }
+  @media(max-width:620px){
+    nav.toc ol{columns:1;}
+    .group-h{flex-direction:column; gap:2px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="top" id="top">
+  <h1>初級1 文法ノート — Récap midterm</h1>
+  <p>35 notions regroupées · objectif · règle · points d'attention · exemples</p>
+</header>
+
+<div class="legend">
+  <span class="pill verbe">🟢 動詞 verbe</span>
+  <span class="pill compteur">🩷 時数詞 compteur</span>
+  <span class="pill nom">🟡 名詞 nom</span>
+  <span class="pill adj">🔵 形容詞 い-adjectif</span>
+  <span class="pill naadj">🟠 なにでの形容名詞 な-adjectif</span>
+  <span class="leg-note">Code couleur inspiré de la méthode SNG. Les exemples sont en kana (kanji entre parenthèses quand utile).</span>
+</div>
+
+<!-- SOMMAIRE -->
+<nav class="toc">
+  <h2>Sommaire</h2>
+  <ol>
+    <li><a href="#socle">Le socle : la forme courte</a></li>
+    <li><a href="#g-certitude">Certitude &amp; opinion (もう/まだ · でしょう · 思う)</a></li>
+    <li><a href="#g-raison">Donner une raison (から / ので)</a></li>
+    <li><a href="#g-toki">Situer dans le temps (とき)</a></li>
+    <li><a href="#g-verbtypes">Types de verbes (transitif / intransitif)</a></li>
+    <li><a href="#g-opposition">Exprimer l'opposition (でも · が · けれども)</a></li>
+    <li><a href="#g-adjlink">Enchaîner les qualificatifs</a></li>
+    <li><a href="#g-onaji">Identique / différent (同じ)</a></li>
+    <li><a href="#g-permission">Permission (てもいい)</a></li>
+    <li><a href="#g-choix">Proposer un choix (それとも)</a></li>
+    <li><a href="#g-lieu">Particules de lieu (に・で・を)</a></li>
+    <li><a href="#g-but">Aller pour faire (に + verbe de direction)</a></li>
+    <li><a href="#g-relative">Décrire un nom (relative · ことができる)</a></li>
+    <li><a href="#g-existence">Existence &amp; localisation (ある / いる · にも / には)</a></li>
+    <li><a href="#g-rang">Le Nième (〜目)</a></li>
+    <li><a href="#g-comparaison">Comparer (より · 一番 · ほど)</a></li>
+    <li><a href="#g-sa">Adjectif → nom (〜さ)</a></li>
+    <li><a href="#g-ordre">Ordonner &amp; enchaîner des actions (まず · て · ないで)</a></li>
+    <li><a href="#g-change">Devenir / rendre (なる / する)</a></li>
+    <li><a href="#g-adverbe">Adjectif → adverbe</a></li>
+    <li><a href="#g-sou">Avoir l'air de (〜そう)</a></li>
+    <li><a href="#g-decision">Décider de (にする / ことにする)</a></li>
+    <li><a href="#checklist">✅ Checklist express</a></li>
+  </ol>
+</nav>
+
+<!-- SOCLE -->
+<section class="group" id="socle">
+  <div class="group-h"><span class="jp">みじかいかたち</span><span class="fr">Le socle · forme courte (短い形)</span></div>
+  <div class="card" style="border-left-color:var(--ink)">
+    <div class="obj">Presque toutes les notions se branchent sur la forme courte. À maîtriser en premier.</div>
+    <table>
+      <tr><th></th><th>Présent +</th><th>Présent −</th><th>Passé +</th><th>Passé −</th></tr>
+      <tr><td><span class="w verbe">Verbe</span></td><td>のむ</td><td>のまない</td><td>のんだ</td><td>のまなかった</td></tr>
+      <tr><td><span class="w adj">い-adj</span></td><td>たかい</td><td>たかくない</td><td>たかかった</td><td>たかくなかった</td></tr>
+      <tr><td><span class="w naadj">な-adj</span></td><td>ひまだ</td><td>ひまじゃない</td><td>ひまだった</td><td>ひまじゃなかった</td></tr>
+      <tr><td><span class="w nom">Nom</span></td><td>あめだ</td><td>あめじゃない</td><td>あめだった</td><td>あめじゃなかった</td></tr>
+    </table>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      Exception : <span class="w adj">いい</span> → よくない / よかった / よくなかった (jamais いくない).
+    </div>
+  </div>
+</section>
+
+<!-- GROUPE CERTITUDE -->
+<section class="group" id="g-certitude">
+  <div class="group-h"><span class="jp">かくしんと いけん</span><span class="fr">Certitude &amp; opinion</span></div>
+
+  <div class="card">
+    <h3><span class="num">1</span>もう ／ まだ</h3>
+    <div class="obj">Dire ce qui est déjà fait ou pas encore.
+      <span class="ex-fr">« J'ai déjà mangé » / « Je n'ai pas encore mangé ».</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><b>もう</b> + affirmatif (passé) = déjà <span class="arrow">·</span> <b>まだ</b> + 〜ていません = pas encore <span class="arrow">·</span> <b>まだ</b> + affirmatif = encore</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li>Réponse « pas encore » = <b>いいえ、まだです</b> ou 〜ていません — jamais 〜ませんでした.</li>
+        <li>もう + négatif change de sens : もう ありません = il n'y en a <b>plus</b>.</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>もう ひるごはんを たべましたか。→ はい、もう たべました。／ いいえ、まだです。</li>
+      <li>でんしゃは もう でました。</li>
+      <li>まだ しゅくだいが あります。<span class="t">j'ai encore des devoirs</span></li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="num">2</span>ぶんまつひょうげん <span class="kanji">文末表現</span></h3>
+    <div class="obj">Doser à quel point on est sûr de ce qu'on affirme.
+      <span class="ex-fr">« C'est sûr » → « c'est peut-être » → « je ne sais pas si… ».</span></div>
+    <div class="block-label">Règle · échelle de certitude</div>
+    <table>
+      <tr><th>Expression</th><th>Certitude</th></tr>
+      <tr><td>です・ます</td><td>100 %</td></tr>
+      <tr><td>〜と おもいます</td><td>90 %</td></tr>
+      <tr><td>〜でしょう</td><td>80 %</td></tr>
+      <tr><td>〜だろうと おもいます</td><td>70 %</td></tr>
+      <tr><td>〜かもしれません</td><td>60 %</td></tr>
+      <tr><td>〜か〜か わかりません</td><td>50 %</td></tr>
+      <tr><td>〜かどうか わかりません</td><td>40 %</td></tr>
+    </table>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li>Ces formes suivent la <b>forme courte</b> : さむいと おもいます、あめでしょう.</li>
+        <li><b>〜か〜か</b> = « si X ou Y » (2 options nommées) ; <b>〜かどうか</b> = « si oui ou non » (1 seule chose).</li>
+        <li>かもしれません se colle sans だ : あめ<b>かもしれません</b> (× あめだかも).</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>この みかんは あまいか すっぱいか わかりません。</li>
+      <li>あしたは あめ かもしれません。</li>
+      <li>こんしゅうは ひまですが、らいしゅうは いそがしいだろうと おもいます。</li>
+      <li>あの スーパーは あまり たかくないと おもいます。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="num">3</span>どうし「おもう」 <span class="kanji">動詞「思う」</span></h3>
+    <div class="obj">Donner son opinion ou une supposition.
+      <span class="ex-fr">« Je pense qu'il va venir. »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule">[forme courte] + <b>と おもいます</b></div>
+    <table>
+      <tr><th>Devant と</th><th>Forme</th></tr>
+      <tr><td><span class="w verbe">Verbe</span></td><td>くる → くると おもいます</td></tr>
+      <tr><td><span class="w adj">い-adj</span></td><td>さむい → さむいと おもいます</td></tr>
+      <tr><td><span class="w naadj">な-adj</span></td><td>ひま<b>だ</b> → ひまだと おもいます</td></tr>
+      <tr><td><span class="w nom">Nom</span></td><td>やすみ<b>だ</b> → やすみだと おもいます</td></tr>
+    </table>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li><span class="w naadj">な-adj</span> et <span class="w nom">nom</span> gardent <b>だ</b> devant と (× ひまと おもいます).</li>
+        <li>Pour « je pense que NON », on nie le verbe interne : こない<b>と</b> おもいます (plutôt que こると おもいません).</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>あ、きょうは やすみだと おもいますよ。</li>
+      <li>リーさんは きょう くると おもいます。</li>
+      <li>いいえ、まだ さむいと おもいます。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE RAISON -->
+<section class="group" id="g-raison">
+  <div class="group-h"><span class="jp">りゆう</span><span class="fr">Donner une raison</span></div>
+  <div class="card">
+    <h3><span class="num">4</span>から ／ ので</h3>
+    <div class="obj">Expliquer la cause de quelque chose. Deux variantes selon le ton.
+      <span class="ex-fr">« Comme il pleut, je ne sors pas. »</span></div>
+
+    <div class="block-label">Sous-notion A — から (subjectif, oral)</div>
+    <div class="rule">[raison, forme polie <u>ou</u> courte] <b>から</b>、[résultat]</div>
+    <p style="font-size:14px;margin:6px 0 0;">Ton direct, personnel. Accepte です／ます devant (あついですから). Peut finir une réponse seule : 「どうして？」→「さむいからです。」</p>
+
+    <div class="block-label">Sous-notion B — ので (doux, poli, objectif)</div>
+    <div class="rule">[raison, <b>forme courte</b>] <b>ので</b>、[résultat]</div>
+    <table>
+      <tr><th>Devant ので</th><th>Forme</th></tr>
+      <tr><td><span class="w verbe">Verbe</span></td><td>くる ので</td></tr>
+      <tr><td><span class="w adj">い-adj</span></td><td>いたい ので</td></tr>
+      <tr><td><span class="w naadj">な-adj</span></td><td>すき<b>な</b> ので</td></tr>
+      <tr><td><span class="w nom">Nom</span></td><td>びょうき<b>な</b> ので</td></tr>
+    </table>
+    <div class="attn">
+      <div class="block-label">Point d'attention — LE piège</div>
+      <ul>
+        <li><b>な</b>ので mais <b>だ</b>から. Pour <span class="w naadj">な-adj</span> et <span class="w nom">nom</span> : すき<b>な</b>ので / あめ<b>だ</b>から.</li>
+        <li>ので est plus poli → idéal pour une demande : さむいので、まどを しめて いただけませんか。</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>びょうきなので、びょういんへ いきます。</li>
+      <li>コーヒーが すきなので、よく のみます。</li>
+      <li>きのう あめが ふったから、せんたくできませんでした。</li>
+      <li>じかんが ないから、はやく してください。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE TOKI -->
+<section class="group" id="g-toki">
+  <div class="group-h"><span class="jp">とき</span><span class="fr">Situer dans le temps</span></div>
+  <div class="card">
+    <h3><span class="num">5</span>「とき」＋ げんけい／た <span class="kanji">時 · 原形／た</span></h3>
+    <div class="obj">Dire « quand… » et surtout <b>à quel moment</b> l'action se passe selon le temps du verbe.
+      <span class="ex-fr">« Quand je bois du café, j'ajoute du sucre. »</span></div>
+
+    <div class="block-label">Règle — ce qui va devant とき</div>
+    <table>
+      <tr><th>Devant とき</th><th>Forme</th></tr>
+      <tr><td><span class="w nom">Nom</span></td><td>+ <b>の</b> → がくせいの とき</td></tr>
+      <tr><td><span class="w naadj">な-adj</span></td><td>+ <b>な</b> → ひまな とき</td></tr>
+      <tr><td><span class="w adj">い-adj</span></td><td>tel quel → あつい とき</td></tr>
+      <tr><td><span class="w verbe">Verbe</span></td><td>forme dictionnaire ou た (voir ci-dessous)</td></tr>
+    </table>
+
+    <div class="block-label">Règle — verbe : dictionnaire vs た (le cœur de la notion)</div>
+    <div class="rule"><span class="w verbe">Verbe dictionnaire</span> + とき → l'action principale a lieu <b>avant / pendant</b></div>
+    <div class="rule"><span class="w verbe">Verbe た</span> + とき → l'action principale a lieu <b>après</b> que l'action de とき est finie</div>
+    <p style="font-size:14px;margin:8px 0 0;">Autrement dit : le temps devant とき ne dépend pas de « quand ça se passe vraiment », mais de <b>l'ordre des deux actions</b> entre elles.</p>
+
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li><span class="w nom">Nom</span> + とき = <b>の</b> ; <span class="w naadj">な-adj</span> + とき = <b>な</b>. Ne pas inverser.</li>
+        <li>とき ne prend jamais です／ます／ません devant.</li>
+        <li>ごはんを <b>たべる</b> とき = avant de manger (いただきます) ; ごはんを <b>たべた</b> とき = après avoir mangé (ごちそうさま).</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>がくせいの とき、えいごを べんきょうしました。</li>
+      <li>ひまな ときに テレビを みます。</li>
+      <li>べんきょうする とき、じしょが いります。</li>
+      <li>にほんへ くる とき、たくさん ほんを もって きました。<span class="t">apporté avant de venir</span></li>
+      <li>くにへ かえった とき、ともだちに あいました。<span class="t">vus après être rentré</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE TYPES DE VERBES -->
+<section class="group" id="g-verbtypes">
+  <div class="group-h"><span class="jp">どうしの タイプ</span><span class="fr">Types de verbes</span></div>
+  <div class="card">
+    <h3><span class="num">6</span>どうしの タイプ <span class="kanji">動詞のタイプ</span></h3>
+    <div class="obj">Choisir la bonne particule selon la structure du verbe.
+      <span class="ex-fr">« La porte s'ouvre » (seule) vs « j'ouvre la porte ».</span></div>
+    <div class="block-label">Règle — 3 types</div>
+    <table>
+      <tr><th>Type</th><th>Structure</th><th>Sens</th></tr>
+      <tr><td><b>Type 1</b></td><td><span class="w nom">Nom</span> が + <span class="w verbe">verbe</span></td><td>action qui se produit seule (intransitif)</td></tr>
+      <tr><td><b>Type 2</b></td><td><span class="w nom">Nom</span> を + <span class="w verbe">verbe</span></td><td>action faite par quelqu'un (transitif)</td></tr>
+      <tr><td><b>Type 3</b></td><td><span class="w nom">Nom</span> に + <span class="w nom">Nom</span> を + <span class="w verbe">verbe</span></td><td>action avec destinataire (donner/montrer à qqn)</td></tr>
+    </table>
+    <div class="block-label">Paires intransitif / transitif à mémoriser</div>
+    <table>
+      <tr><th>Type 1 · intransitif (が)</th><th>Type 2 · transitif (を)</th></tr>
+      <tr><td>みえます <span class="t">se voit</span></td><td>みます <span class="t">regarder</span></td></tr>
+      <tr><td>きこえます <span class="t">s'entend</span></td><td>ききます <span class="t">écouter</span></td></tr>
+      <tr><td>つきます <span class="t">s'allume</span></td><td>つけます <span class="t">allumer</span></td></tr>
+      <tr><td>きえます <span class="t">s'éteint</span></td><td>けします <span class="t">éteindre</span></td></tr>
+      <tr><td>あきます <span class="t">s'ouvre</span></td><td>あけます <span class="t">ouvrir</span></td></tr>
+      <tr><td>しまります <span class="t">se ferme</span></td><td>しめます <span class="t">fermer</span></td></tr>
+    </table>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <span class="w verbe">みえます</span> / <span class="w verbe">きこえます</span> = perception involontaire, toujours <b>が</b> : ふじさん<b>が</b> みえます。
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>ふじさんが みえます。<span class="t">Type 1</span></li>
+      <li>せんせいが テレビを みます。<span class="t">Type 2</span></li>
+      <li>せんせいが がくせいに しゃしんを みせます。<span class="t">Type 3</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE OPPOSITION -->
+<section class="group" id="g-opposition">
+  <div class="group-h"><span class="jp">ぎゃくせつ</span><span class="fr">Exprimer l'opposition (« mais »)</span></div>
+  <div class="card">
+    <h3><span class="num">7</span>でも ／ けれども ／ しかし ／ が</h3>
+    <div class="obj">Relier deux idées opposées. Le choix dépend de <b>où</b> se place le « mais » et du registre.
+      <span class="ex-fr">« C'est bon, mais un peu cher. »</span></div>
+
+    <div class="block-label">Sous-notion A — nouvelle phrase (でも · しかし)</div>
+    <div class="rule">Phrase 1<b>。</b> <b>でも</b> / <b>しかし</b>、 Phrase 2<b>。</b></div>
+    <p style="font-size:14px;margin:6px 0 0;">Formalité : <b>でも</b> (familier) → <b>しかし</b> (formel/écrit). Se met en tête, après un point.</p>
+
+    <div class="block-label">Sous-notion B — même phrase (が · けれども)</div>
+    <div class="rule">Proposition 1 <b>が</b> / <b>けれども</b>、 proposition 2<b>。</b></div>
+    <p style="font-size:14px;margin:6px 0 0;"><b>が</b> suit la forme polie (〜です<b>が</b>) ; <b>けれども</b> suit la forme courte.</p>
+
+    <div class="attn">
+      <div class="block-label">Point d'attention — LE piège d'exam</div>
+      <b>でも・しかし</b> ouvrent une <b>NOUVELLE phrase</b> · <b>が・けれども</b> relient l'intérieur d'<b>UNE seule</b> phrase.
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>この ほんは おもしろいです<b>が</b>、すこし むずかしいです。</li>
+      <li>かんこくの りょうりです<b>が</b>、あまり からく ありません。</li>
+      <li>きのうは あたまが いたかった<b>けれども</b>、やすみませんでした。</li>
+      <li>はるに なりました。<b>でも</b>、あたたかく なりません。</li>
+      <li>にほんの きものは きれいです。<b>しかし</b>、とても たかいです。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE ADJ LINK -->
+<section class="group" id="g-adjlink">
+  <div class="group-h"><span class="jp">けいようしの せつぞく</span><span class="fr">Enchaîner les qualificatifs</span></div>
+  <div class="card">
+    <h3><span class="num">8</span>けいようし などの せつぞく <span class="kanji">形容詞などの接続</span></h3>
+    <div class="obj">Relier deux qualificatifs devant un nom.
+      <span class="ex-fr">« Un restaurant pas cher et bon. »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><span class="w adj">い-adj</span> : い → <b>くて</b> → やすくて おいしい</div>
+    <div class="rule"><span class="w naadj">な-adj</span> / <span class="w nom">nom</span> : <b>で</b> → しずかで おおきい</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li><span class="w adj">いい</span> → <b>よくて</b> (× いくて).</li>
+        <li><span class="w naadj">な-adj</span> garde son な devant le nom final : やすくて きれい<b>な</b> シャツ.</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>しろくて いい へやです。</li>
+      <li>やすくて きれいな シャツを かいました。</li>
+      <li>げんきで おもしろい がくせいです。</li>
+      <li>きれいで しずかな こうえんです。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE ONAJI -->
+<section class="group" id="g-onaji">
+  <div class="group-h"><span class="jp">おなじ</span><span class="fr">Identique / différent</span></div>
+  <div class="card">
+    <h3><span class="num">9</span>おなじ <span class="kanji">同じ</span></h3>
+    <div class="obj">Dire que deux choses sont pareilles ou différentes.
+      <span class="ex-fr">« A et B ont le même anniversaire. »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule">A と B は <b>おなじです</b> / <b>おなじじゃ ありません</b> <span class="arrow">·</span> A と B は <b>ちがいます</b></div>
+    <div class="rule">おなじ + <span class="w nom">nom</span> (おなじ ほん) <span class="arrow">·</span> おなじように + <span class="w verbe">verbe</span></div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li>おなじ est un <span class="w naadj">な-adj</span> mais <b>ne prend PAS な</b> devant un nom : ○ おなじ ほん / × おなじ<b>な</b> ほん.</li>
+        <li>« différent » n'est pas un adjectif mais le <span class="w verbe">verbe</span> ちがいます.</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>たなかさんと マリさんは たんじょうびが おなじです。</li>
+      <li>A と B は ちがいます。</li>
+      <li>せんせいと おなじように かいて ください。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE PERMISSION -->
+<section class="group" id="g-permission">
+  <div class="group-h"><span class="jp">きょか</span><span class="fr">Demander une permission</span></div>
+  <div class="card">
+    <h3><span class="num">10</span>〜てもいいですか</h3>
+    <div class="obj">Demander ou donner une permission, et dire « pas besoin de ».
+      <span class="ex-fr">« Je peux prendre une photo ? »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><span class="w verbe">Verbe て</span> + も いいですか → puis-je ?</div>
+    <div class="rule"><span class="w verbe">Verbe なくて</span> + も いいです → pas besoin de</div>
+    <p style="font-size:14px;margin:6px 0 0;">Registre montant : 〜てもいいですか → 〜てもかまいませんか → 〜てもよろしいでしょうか.</p>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li>La négation passe par la forme ない → なくて : たべ<b>なくて</b>もいいです.</li>
+        <li>Bien construire la forme て : とる → とっ<b>て</b> → とっ<b>ても</b> (× とっと).</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>すみませんが、まどを あけてもいいですか。</li>
+      <li>すみません、ここで しゃしんを とってもいいですか。</li>
+      <li>こちらに すわってもよろしいでしょうか。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE CHOIX -->
+<section class="group" id="g-choix">
+  <div class="group-h"><span class="jp">それとも</span><span class="fr">Proposer un choix</span></div>
+  <div class="card">
+    <h3><span class="num">11</span>せつぞくし「それとも」 <span class="kanji">接続詞「それとも」</span></h3>
+    <div class="obj">Proposer de choisir entre deux questions.
+      <span class="ex-fr">« On mange, ou bien on va au ciné ? »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule">〜ますか／ですか。 <b>それとも</b> 〜ますか／ですか。</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      それとも relie <b>deux questions</b>, pas deux noms dans une affirmation (pour ça : や／か). Chaque membre garde son か.
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>しょくじしましょうか。それとも えいがを みましょうか。</li>
+      <li>ジュースが いいですか。それとも コーラが いいですか。</li>
+      <li>スーパーで かいますか。それとも コンビニで かいますか。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE LIEU -->
+<section class="group" id="g-lieu">
+  <div class="group-h"><span class="jp">ばしょの じょし</span><span class="fr">Particules de lieu</span></div>
+  <div class="card">
+    <h3><span class="num">12</span>かんけいじょし「に・で・を」 <span class="kanji">関係助詞</span></h3>
+    <div class="obj">Choisir に / で / を autour d'un lieu selon le rapport à l'action.
+      <span class="ex-fr">« Entrer dans / agir dans / sortir d'un lieu. »</span></div>
+    <div class="block-label">Règle — le trio sur un même lieu</div>
+    <div class="rule"><span class="w nom">Lieu</span> <b>に</b> はいります → entrer dans</div>
+    <div class="rule"><span class="w nom">Lieu</span> <b>で</b> 〜します → agir dans</div>
+    <div class="rule"><span class="w nom">Lieu</span> <b>を</b> でます → sortir de</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      を marque aussi la <b>sortie</b> (でます), pas seulement l'objet direct.
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>デパート<b>に</b> はいります。／ デパート<b>で</b> かいものします。／ デパート<b>を</b> でます。</li>
+      <li>きっさてん<b>に</b> はいります。／ きっさてん<b>で</b> コーヒーを のみます。／ きっさてん<b>を</b> でます。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE BUT -->
+<section class="group" id="g-but">
+  <div class="group-h"><span class="jp">に ＋ ほうこうの どうし</span><span class="fr">Aller pour faire</span></div>
+  <div class="card">
+    <h3><span class="num">13</span>「に」＋ ほうこうの どうし <span class="kanji">に＋方向の動詞</span></h3>
+    <div class="obj">Exprimer le but d'un déplacement.
+      <span class="ex-fr">« Je vais à Shinjuku pour manger. »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><span class="w nom">Lieu</span> へ + <span class="w verbe">base ます</span> + に + いきます／きます／かえります</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li>On enlève ます : たべ<b>ます</b> → たべ<b>に</b>.</li>
+        <li>Noms en する : だし<b>に</b> / べんきょう<b>に</b> ou べんきょうし<b>に</b>.</li>
+        <li>L'objet reste avant la base : てがみ<b>を</b> だし<b>に</b> いきます.</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>ゆうびんきょくへ てがみを だしに いきます。</li>
+      <li>おそばを たべに いきましょう。</li>
+      <li>にほんへ にほんごの べんきょうに きました。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE RELATIVE -->
+<section class="group" id="g-relative">
+  <div class="group-h"><span class="jp">めいしを せつめいする</span><span class="fr">Décrire un nom · capacité</span></div>
+
+  <div class="card">
+    <h3><span class="num">14</span>どうし ＋ めいし <span class="kanji">動詞＋名詞 (proposition relative)</span></h3>
+    <div class="obj">Décrire un nom avec une phrase entière placée <b>avant</b> lui.
+      <span class="ex-fr">« Le livre que j'ai acheté hier. »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule">[phrase en <b>forme courte</b>] + <span class="w nom">nom</span> — sans particule entre les deux</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li>Le sujet <b>interne</b> à la description prend <b>が</b>, pas は : （わたし<b>が</b>）かった ほん.</li>
+        <li><span class="w verbe">Verbe</span> en forme courte : かった (× かいました) devant le nom.</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>これは、きのう かった ほんです。</li>
+      <li>リーさんは あかい シャツを きている ひとです。</li>
+      <li>あした みる えいがは なんですか。</li>
+      <li>けさ みた サッカーの しあいです。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="num">15</span>ことが できる</h3>
+    <div class="obj">Exprimer une capacité ou une possibilité (registre formel).
+      <span class="ex-fr">« Je sais lire les kanji. »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><span class="w verbe">Verbe dictionnaire</span> + ことが できます</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li>Verbe en <b>forme dictionnaire</b> : のむ ことが できます (× のみます ことが).</li>
+        <li>L'objet garde <b>を</b> : かんじ<b>を</b> よむ ことが できます.</li>
+        <li>À ne pas confondre avec 〜た ことが あります (expérience passée).</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>かんじを よむ ことが できます。</li>
+      <li>おさけを のむ ことが できません。</li>
+      <li>にほんりょうりを つくる ことが できますか。→ ええ、できます。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE EXISTENCE -->
+<section class="group" id="g-existence">
+  <div class="group-h"><span class="jp">そんざいと ばしょ</span><span class="fr">Existence &amp; localisation</span></div>
+
+  <div class="card">
+    <h3><span class="num">16</span>どうし「ある／いる」 <span class="kanji">存在</span></h3>
+    <div class="obj">Dire où se trouve une chose ou une personne.
+      <span class="ex-fr">« Le stylo est sur le bureau. »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><span class="w nom">Chose / plante</span> は <span class="w nom">lieu</span> に <b>あります</b></div>
+    <div class="rule"><span class="w nom">Personne / animal</span> は <span class="w nom">lieu</span> に <b>います</b></div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      あります = inanimé · います = vivant. Honorifique de います : いらっしゃいます.
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>ペンは つくえの うえに あります。</li>
+      <li>たなかさんは 2かいに います。</li>
+      <li>せんせいは きょうしつに いらっしゃいます。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="num">17</span>かんけいじょし ＋ せんたくじょし <span class="kanji">に＋も / に＋は</span></h3>
+    <div class="obj">Dire « à X aussi et à Y aussi », ou opposer deux lieux.
+      <span class="ex-fr">« Il y a des grands magasins à Shinjuku comme à Ikebukuro. »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><span class="w nom">Lieu</span> <b>にも</b> … <span class="w nom">Lieu</span> <b>にも</b> あります／います → « à l'un aussi et à l'autre aussi »</div>
+    <div class="rule"><span class="w nom">Lieu</span> <b>には</b> ありません → contraste : « à ce lieu-là, par contre, il n'y en a pas »</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <b>にも</b> = に (lieu) + も (aussi) · <b>には</b> = に + は (contraste). C'est le も / は qui change tout le sens.
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>デパートは しんじゅくにも いけぶくろにも あります。<span class="t">aux deux endroits</span></li>
+      <li>きょうしつは 1かいにも 2かいにも あります。</li>
+      <li>デパートは たかだのばばに ありません。しんじゅく<b>には</b> あります。<span class="t">à Shinjuku par contre, oui</span></li>
+      <li>アメリカにも フランスにも ともだちが います。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE RANG -->
+<section class="group" id="g-rang">
+  <div class="group-h"><span class="jp">〜め</span><span class="fr">Le Nième</span></div>
+  <div class="card">
+    <h3><span class="num">18</span>じすうし ＋ め <span class="kanji">時数詞＋目</span></h3>
+    <div class="obj">Dire la position de quelque chose dans une série.
+      <span class="ex-fr">« La 3ᵉ personne à partir de la droite. »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><span class="w compteur">compteur</span> + <b>目（め）</b> → 2つめ、3にんめ、3つめ</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      Sans 目 = on <b>compte</b> (ふたつ = deux). Avec 目 = on <b>classe</b> (ふたつめ = le deuxième). Souvent avec から pour le point de départ.
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>デパートは かどから 3つめです。</li>
+      <li>みぎから 3にんめが ハンさんです。</li>
+      <li>たかだのばばは、いけぶくろから 2つめです。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE COMPARAISON -->
+<section class="group" id="g-comparaison">
+  <div class="group-h"><span class="jp">ひかく</span><span class="fr">Comparer</span></div>
+  <div class="card">
+    <h3><span class="num">19</span>ひかくの ひょうげん <span class="kanji">比較</span></h3>
+    <div class="obj">Comparer des éléments : à deux, un extrême, ou « pas autant que ».
+      <span class="ex-fr">« Je préfère le poisson à la viande. »</span></div>
+
+    <div class="block-label">Sous-notion A — comparer deux éléments</div>
+    <div class="rule"><b>Q :</b> A と B と どちらの ほうが 〜ですか</div>
+    <div class="rule"><b>R :</b> A <b>より</b> B <b>の ほうが</b> 〜です</div>
+    <p style="font-size:14px;margin:6px 0 0;">より se colle à l'élément <b>battu</b>. どちらも 〜です = « les deux ».</p>
+
+    <div class="block-label">Sous-notion B — superlatif (le plus…)</div>
+    <div class="rule">[groupe]の なか<b>で</b> 〜<b>が いちばん</b> 〜です</div>
+    <p style="font-size:14px;margin:6px 0 0;">La question utilise なに／だれ／どれ<b>が</b> (jamais は). L'élément choisi prend が.</p>
+
+    <div class="block-label">Sous-notion C — pas autant que</div>
+    <div class="rule">A も 〜ですが、 B <b>ほど じゃありません</b></div>
+    <p style="font-size:14px;margin:6px 0 0;">ほど est <b>toujours</b> suivi d'une négation. Jamais ほどです.</p>
+
+    <div class="attn">
+      <div class="block-label">Point d'attention — les 3 mots-clés</div>
+      <b>より</b> (le battu) · <b>のほうが</b> (le gagnant) · <b>ほど + négatif</b> (pas au niveau de).
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>うえださんと きむらさんと どちらの ほうが せが たかいですか。→ うえださんより きむらさんの ほうが せが たかいです。</li>
+      <li>くだものの なかで さくらんぼが いちばん すきです。</li>
+      <li>にほんで いちばん たかい やまは ふじさんです。</li>
+      <li>ラーメンも すきですが、おすしほど じゃ ありません。</li>
+      <li>しんかんせんは ひこうきほど はやく ありません。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE SA -->
+<section class="group" id="g-sa">
+  <div class="group-h"><span class="jp">〜さ</span><span class="fr">Adjectif → nom</span></div>
+  <div class="card">
+    <h3><span class="num">20</span>けいようし ＋ さ <span class="kanji">形容詞＋さ</span></h3>
+    <div class="obj">Transformer un adjectif en nom de mesure.
+      <span class="ex-fr">« La hauteur, le poids, la taille de… »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><span class="w adj">い-adj</span> (retirer い) / <span class="w naadj">な-adj</span> + <b>さ</b> → たかい → たかさ</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      Surtout pour les mesures : たかさ (hauteur), おもさ (poids), ひろさ (superficie), ながさ (longueur). Ne pas confondre avec 〜そう (apparence).
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>へやの ひろさは どのぐらいですか。</li>
+      <li>スカイツリーの たかさは 634メートルです。</li>
+      <li>ひこうきに のる ときに かばんの おもさを はかります。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE ORDRE / ENCHAINEMENT -->
+<section class="group" id="g-ordre">
+  <div class="group-h"><span class="jp">こうどうを つなぐ</span><span class="fr">Ordonner &amp; enchaîner des actions</span></div>
+
+  <div class="card">
+    <h3><span class="num">21</span>まず ／ それから</h3>
+    <div class="obj">Ordonner des étapes successives.
+      <span class="ex-fr">« D'abord…, ensuite… »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><b>まず</b>、〜。 <b>それから</b>、〜。</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      それから enchaîne des actions (≠ それとも qui propose un choix).
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>まず、ひらがなを べんきょうします。それから、カタカナを べんきょうします。</li>
+      <li>まず、なまえを いって ください。それから、よんで ください。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="num">22</span>どうし て、どうし ／ どうし ないで、どうし</h3>
+    <div class="obj">Deux actions liées : l'une <b>puis</b> l'autre, ou l'une <b>sans</b> l'autre. Sens opposés, à ne pas confondre.
+      <span class="ex-fr">« Je rentre et je mange » vs « j'étudie sans regarder la télé ».</span></div>
+
+    <div class="block-label">Sous-notion A — て : faire X, puis Y</div>
+    <div class="rule"><span class="w verbe">Verbe て</span>、 <span class="w verbe">verbe</span>。 → actions successives, même sujet</div>
+
+    <div class="block-label">Sous-notion B — ないで : faire Y sans faire X</div>
+    <div class="rule"><span class="w verbe">Verbe ないで</span>、 <span class="w verbe">verbe</span>。 → « sans / au lieu de »</div>
+
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li>Le temps est porté par le <b>dernier</b> verbe.</li>
+        <li>Bien maîtriser て (かえる → かえって) et ない (みる → みないで).</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>いえへ かえって、ごはんを たべます。<span class="t">puis</span></li>
+      <li>ともだちに あって、いっしょに しょくじしました。<span class="t">puis</span></li>
+      <li>テレビを みないで、べんきょうしました。<span class="t">sans</span></li>
+      <li>さとうを いれないで、コーヒーを のみます。<span class="t">sans</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE CHANGEMENT -->
+<section class="group" id="g-change">
+  <div class="group-h"><span class="jp">なる ／ する</span><span class="fr">Devenir / rendre</span></div>
+  <div class="card">
+    <h3><span class="num">23</span>なる ／ する — changement d'état</h3>
+    <div class="obj">Un changement <b>subi</b> (なる, ça devient) ou <b>voulu</b> (する, je rends). Même mécanisme, actif vs passif.
+      <span class="ex-fr">« Il fait plus chaud » vs « je réchauffe la soupe ».</span></div>
+
+    <div class="block-label">Sous-notion A — なる : devenir (subi)</div>
+    <div class="rule"><span class="w adj">い-adj</span> → <b>く</b> なる → あたたかく なります</div>
+    <div class="rule"><span class="w naadj">な-adj</span> / <span class="w nom">nom</span> → <b>に</b> なる → しずかに / しゃちょうに なります</div>
+    <div class="rule"><span class="w verbe">Verbe potentiel</span> + <b>ように</b> なる → en venir à pouvoir : たべられるように なりました</div>
+
+    <div class="block-label">Sous-notion B — する : rendre (voulu)</div>
+    <div class="rule"><span class="w adj">い-adj</span> → <b>く</b> する → おおきく します</div>
+    <div class="rule"><span class="w naadj">な-adj</span> → <b>に</b> する → しずかに します</div>
+
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li>Même bascule pour les deux : <span class="w adj">い-adj</span> → <b>く</b> · <span class="w naadj">な-adj</span> → <b>に</b>.</li>
+        <li><b>なる</b> = ça devient tout seul · <b>する</b> = je le rends volontairement.</li>
+        <li>〜ようになる = acquisition progressive d'une capacité.</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>びょうきでしたが、げんきに なりました。<span class="t">devenu</span></li>
+      <li>もうすぐ あたたかく なります。<span class="t">devient</span></li>
+      <li>にほんごが すこし わかるように なりました。<span class="t">j'en suis venu à comprendre</span></li>
+      <li>へやを きれいに します。<span class="t">je rends</span></li>
+      <li>この スープは ぬるいですね。あたたかく しましょう。<span class="t">rendons-la chaude</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE ADVERBE -->
+<section class="group" id="g-adverbe">
+  <div class="group-h"><span class="jp">けいようし → ふくし</span><span class="fr">Adjectif → adverbe</span></div>
+  <div class="card">
+    <h3><span class="num">24</span>けいようし ＋ どうし <span class="kanji">形容詞＋動詞 (adverbe)</span></h3>
+    <div class="obj">Transformer un adjectif en adverbe pour modifier un verbe.
+      <span class="ex-fr">« Écris grand. » / « Écris proprement. »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><span class="w adj">い-adj</span> : い → <b>く</b> + <span class="w verbe">verbe</span> → おおきく かきます</div>
+    <div class="rule"><span class="w naadj">な-adj</span> : + <b>に</b> + <span class="w verbe">verbe</span> → きれいに かきます</div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      Même logique que « devenir / rendre » : <span class="w adj">い-adj</span> → く · <span class="w naadj">な-adj</span> → に.
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>おおきく かいて ください。</li>
+      <li>ひらがなを きれいに かきましょう。</li>
+      <li>にほんごの うたを じょうずに うたいたいんです。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE SOU -->
+<section class="group" id="g-sou">
+  <div class="group-h"><span class="jp">〜そう</span><span class="fr">Avoir l'air de</span></div>
+  <div class="card">
+    <h3><span class="num">25</span>〜そう — apparence</h3>
+    <div class="obj">Dire qu'une chose <b>a l'air</b> de… (impression visuelle).
+      <span class="ex-fr">« Ce gâteau a l'air bon. »</span></div>
+
+    <div class="block-label">Sous-notion A — forme de base</div>
+    <div class="rule"><span class="w adj">い-adj</span> (retirer い) + そうです → おいしそうです</div>
+    <div class="rule"><span class="w verbe">Verbe</span> (base ます) + そうです → ふりそうです <span class="t">ça a l'air d'aller pleuvoir</span></div>
+    <div class="rule">négatif : 〜く<b>なさ</b>そうです → たかくなさそうです</div>
+
+    <div class="block-label">Sous-notion B — devant un nom / un verbe</div>
+    <div class="rule">〜<b>そうな</b> + <span class="w nom">nom</span> → おもしろそうな ほん</div>
+    <div class="rule">〜<b>そうに</b> + <span class="w verbe">verbe</span> → おいしそうに たべます</div>
+
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li>Exceptions : <span class="w adj">いい</span> → よさそう · ない → なさそう.</li>
+        <li>そう d'<b>apparence</b> (base ます / adj sans い) ≠ そう d'<b>ouï-dire</b> (forme courte + そうだ : びょうきだったそうです = « il paraît que »).</li>
+        <li>Devant nom → そう<b>な</b> · devant verbe → そう<b>に</b>.</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>この ケーキは おいしそうです。</li>
+      <li>あめが ふりそうです。</li>
+      <li>この みせは、あんまり たかくなさそうです。</li>
+      <li>これは、おもしろそうな ほんですね。</li>
+      <li>がくせいが たのしそうに はなして います。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- GROUPE DECISION -->
+<section class="group" id="g-decision">
+  <div class="group-h"><span class="jp">きめる</span><span class="fr">Décider de</span></div>
+  <div class="card">
+    <h3><span class="num">26</span>〜にする ／ 〜ことにする</h3>
+    <div class="obj">Exprimer un choix ou une décision.
+      <span class="ex-fr">« Je vais prendre un café. » / « J'ai décidé de déménager. »</span></div>
+    <div class="block-label">Règle</div>
+    <div class="rule"><span class="w nom">Nom</span> / <span class="w compteur">compteur</span> + <b>に します</b> → コーヒーに します <span class="t">choix</span></div>
+    <div class="rule"><span class="w verbe">Verbe dictionnaire / ない</span> + こと + <b>に します</b> → いくことにします <span class="t">décision d'action</span></div>
+    <div class="attn">
+      <div class="block-label">Point d'attention</div>
+      <ul>
+        <li>〜にする pour un <b>choix</b> (menu, date) · 〜ことにする pour <b>décider une action</b>.</li>
+        <li>Négation : 〜ない<b>ことにします</b> (je décide de ne pas…).</li>
+        <li>Nuance : 〜ことに<b>する</b> = je décide · 〜ことに<b>なる</b> = c'est décidé (par l'extérieur).</li>
+      </ul>
+    </div>
+    <div class="block-label">Exemples</div>
+    <ul class="ex">
+      <li>コーヒーに します。</li>
+      <li>パーティーは らいしゅうに しましょう。</li>
+      <li>いまの へやは せまいから、ひっこしすることに しました。</li>
+      <li>あしたから たばこを すわないことに します。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- CHECKLIST -->
+<section class="checklist" id="checklist">
+  <h2>✅ Checklist express avant l'exam</h2>
+  <ol>
+    <li><b>だから ↔ なので</b> — だ pour から, な pour ので.</li>
+    <li><b>でも・しかし = nouvelle phrase</b> / <b>が・けれども = même phrase</b>.</li>
+    <li><b>とき</b> : <span class="w nom">nom</span>+の, <span class="w naadj">な-adj</span>+な · verbe dictionnaire (avant) vs た (après).</li>
+    <li><b>ことができます</b> (capacité, verbe dictionnaire + を) ↔ <b>たことがあります</b> (expérience).</li>
+    <li><span class="w verbe">みえます・きこえます</span> → particule <b>が</b> (perception involontaire).</li>
+    <li>Relative : sujet interne en <b>が</b>, verbe en forme courte.</li>
+    <li>Comparaison : <b>より</b> (battu) / <b>のほうが</b> (gagnant) / <b>ほど + négatif</b>.</li>
+    <li><b>にも</b> (aussi) ↔ <b>には</b> (contraste).</li>
+    <li>Changement : <span class="w adj">い-adj</span> → <b>く</b>, <span class="w naadj">な-adj</span> → <b>に</b> (なる / する / adverbe).</li>
+    <li><b>なる</b> (subi) ↔ <b>する</b> (voulu) ↔ <b>にする</b> (décision).</li>
+    <li><b>そう</b> apparence (base ます / adj sans い) ↔ <b>そう</b> ouï-dire (forme courte + だそう).</li>
+    <li><span class="w adj">いい</span> → <b>よくて / よくない / よさそう</b> (jamais いく…).</li>
+    <li>Permission : とる → とっ<b>て</b> → とっ<b>ても</b> (× とっと).</li>
+    <li><b>目</b> : sans = on compte · avec = on classe (le Nième).</li>
+  </ol>
+  <a href="#top" class="backtop">↑ haut de page</a>
+</section>
+
+</div>
+</body>
+</html>

@@ -40,11 +40,34 @@ export default async function HomePage() {
 
       {error ? (
         <ErrorBox message={error.message} />
-      ) : !modules || modules.length === 0 ? (
-        <EmptyState />
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {modules.map((m) => {
+          <Link
+            href="/grammar"
+            className="card-tile group flex flex-col items-center text-center"
+          >
+            <div className="flex h-28 w-28 items-center justify-center">
+              <Image
+                src="/icons/zen-garden.png"
+                alt=""
+                width={112}
+                height={112}
+                className="h-28 w-28 object-contain drop-shadow-sm transition group-hover:scale-105"
+              />
+            </div>
+            <h2 className="mt-4 text-xl font-bold text-ink">Grammar</h2>
+            <p className="mt-2 line-clamp-2 text-sm text-muted">
+              Reference notes for every notion — objective, rule, examples.
+            </p>
+            <div className="mt-6 flex w-full items-center justify-between border-t border-border pt-4 text-xs">
+              <span className="font-medium text-muted">26 notions</span>
+              <span className="font-semibold text-primary transition group-hover:translate-x-0.5">
+                Open →
+              </span>
+            </div>
+          </Link>
+
+          {modules?.map((m) => {
             const iconSrc = SLUG_ICON[m.slug] ?? FALLBACK_ICON;
             return (
               <Link
@@ -82,21 +105,6 @@ export default async function HomePage() {
         </div>
       )}
     </section>
-  );
-}
-
-function EmptyState() {
-  return (
-    <div className="rounded-2xl border border-dashed border-border bg-white/60 p-10 text-center">
-      <p className="text-muted">No modules yet.</p>
-      <p className="mt-2 text-sm text-muted">
-        Sign in to{" "}
-        <Link href="/admin" className="font-medium text-primary underline">
-          admin
-        </Link>{" "}
-        to create one, or run the seed SQL.
-      </p>
-    </div>
   );
 }
 

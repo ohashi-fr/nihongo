@@ -47,6 +47,19 @@ const config: Config = {
           50: "#ECFDF5",
           700: "#047857",
         },
+        // Grammar module — soft pastel tags for word nature (verb /
+        // counter / noun / i-adj). na-adj reuses the brand accent
+        // (accent-700 / accent-50) rather than a new hue.
+        nature: {
+          verbe: "#3F7A5C",
+          verbeBg: "#E7F3EC",
+          compteur: "#A14D74",
+          compteurBg: "#FBEAF1",
+          nom: "#9C7A1F",
+          nomBg: "#FBF3DD",
+          adj: "#3B5FA0",
+          adjBg: "#EAF0FB",
+        },
       },
       fontFamily: {
         sans: ["var(--font-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
