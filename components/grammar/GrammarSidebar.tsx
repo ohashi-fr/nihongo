@@ -11,17 +11,27 @@ type Props = {
   className?: string;
 };
 
-function ItemButton({
+/**
+ * One notion entry, styled as an encapsulated card — matches the level
+ * rows on the Vocabulary/module pages (number badge, label, → chevron),
+ * with a Japanese subtitle line added underneath.
+ *
+ * `highlight` gives the inactive card an accent tint, used only for the
+ * "start here" socle entry so it stands out above the numbered notions.
+ */
+function NotionCard({
   active,
   onClick,
-  number,
+  badge,
   subtitle,
+  highlight = false,
   children,
 }: {
   active: boolean;
   onClick: () => void;
-  number?: React.ReactNode;
+  badge?: React.ReactNode;
   subtitle?: string;
+  highlight?: boolean;
   children: React.ReactNode;
 }) {
   return (
@@ -29,27 +39,39 @@ function ItemButton({
       type="button"
       onClick={onClick}
       aria-current={active ? "true" : undefined}
-      className={`group/item flex w-full items-start gap-2 rounded-xl px-3 py-2 text-left text-sm leading-snug transition ${
+      className={`group/card flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left shadow-card transition hover:-translate-y-0.5 hover:shadow-cardHover ${
         active
-          ? "bg-primary font-semibold text-white shadow-soft"
-          : "text-sumi hover:bg-soft"
+          ? "bg-primary"
+          : highlight
+          ? "border border-accent-200 bg-accent-50"
+          : "bg-white"
       }`}
     >
-      {number !== undefined && (
+      {badge !== undefined && (
         <span
-          className={`mt-0.5 shrink-0 text-xs font-semibold tabular-nums ${
-            active ? "text-white/70" : "text-muted"
+          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-[11px] font-bold ${
+            active
+              ? "bg-white/15 text-white"
+              : highlight
+              ? "bg-accent-500 text-white"
+              : "bg-primary-50 text-primary"
           }`}
         >
-          {number}
+          {badge}
         </span>
       )}
       <span className="min-w-0 flex-1">
-        <span className="block">{children}</span>
+        <span
+          className={`block truncate text-sm font-semibold ${
+            active ? "text-white" : "text-ink"
+          }`}
+        >
+          {children}
+        </span>
         {subtitle && (
           <span
-            className={`jp mt-0.5 block truncate text-[11px] font-normal ${
-              active ? "text-white/60" : "text-muted/80"
+            className={`jp mt-0.5 block truncate text-[11px] ${
+              active ? "text-white/70" : "text-muted"
             }`}
           >
             {subtitle}
@@ -58,13 +80,13 @@ function ItemButton({
       </span>
       <span
         aria-hidden
-        className={`mt-0.5 shrink-0 self-start text-sm transition ${
+        className={`shrink-0 text-sm font-semibold transition ${
           active
-            ? "text-white/70"
-            : "text-primary-300 opacity-0 group-hover/item:opacity-100"
+            ? "text-white/80"
+            : "text-primary opacity-0 group-hover/card:opacity-100 group-hover/card:translate-x-0.5"
         }`}
       >
-        ›
+        →
       </span>
     </button>
   );
@@ -80,19 +102,25 @@ export default function GrammarSidebar({
 }: Props) {
   return (
     <nav aria-label="Grammar notions" className={className}>
-      <div className="mb-3">
-        <ItemButton active={selectedId === "socle"} onClick={() => onSelect("socle")}>
+      <div className="mb-6">
+        <NotionCard
+          active={selectedId === "socle"}
+          onClick={() => onSelect("socle")}
+          badge="★"
+          subtitle={socle.jpTitle}
+          highlight
+        >
           {socle.sidebarLabel}
-        </ItemButton>
+        </NotionCard>
       </div>
 
-      <ul className="space-y-5">
+      <ul className="space-y-6">
         {groups.map((group) => (
           <li key={group.id}>
-            <div className="mb-1.5 px-3 text-[11px] font-bold uppercase tracking-[0.09em] text-muted">
+            <div className="mb-2 px-1 text-[11px] font-bold uppercase tracking-[0.09em] text-muted">
               {group.title}
             </div>
-            <ul className="space-y-0.5">
+            <ul className="space-y-2">
               {group.notions.map((notion) => {
                 const id = String(notion.number);
                 const jpSubtitle = notion.titleKanji
@@ -100,14 +128,14 @@ export default function GrammarSidebar({
                   : notion.titleJp;
                 return (
                   <li key={id}>
-                    <ItemButton
+                    <NotionCard
                       active={selectedId === id}
                       onClick={() => onSelect(id)}
-                      number={notion.number}
+                      badge={String(notion.number).padStart(2, "0")}
                       subtitle={jpSubtitle}
                     >
                       {notion.sidebarLabel}
-                    </ItemButton>
+                    </NotionCard>
                   </li>
                 );
               })}
@@ -116,10 +144,14 @@ export default function GrammarSidebar({
         ))}
       </ul>
 
-      <div className="mt-5 border-t border-border pt-3">
-        <ItemButton active={selectedId === "checklist"} onClick={() => onSelect("checklist")}>
+      <div className="mt-6 border-t border-border pt-5">
+        <NotionCard
+          active={selectedId === "checklist"}
+          onClick={() => onSelect("checklist")}
+          badge="✓"
+        >
           {checklist.sidebarLabel}
-        </ItemButton>
+        </NotionCard>
       </div>
     </nav>
   );
