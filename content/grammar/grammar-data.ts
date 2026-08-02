@@ -686,7 +686,7 @@ export const groups: Group[] = [
           label: "Watch out",
           items: [
             "Drop ます: たべ**ます** → たべ**に**.",
-            "する-nouns: だし**に** / べんきょう**に** or べんきょうし**に**.",
+            "する-nouns: べんきょう**に** or べんきょうし**に**.",
             "The object stays before the stem: てがみ**を** だし**に** いきます.",
           ],
         },
