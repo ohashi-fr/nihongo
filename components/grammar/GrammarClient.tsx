@@ -8,7 +8,9 @@ import type {
   SocleSection,
 } from "@/content/grammar/grammar-data";
 import { getNotionByNumber } from "@/content/grammar/grammar-data";
+import { grammarQuizQuestions } from "@/content/grammar/grammar-quiz";
 import GrammarSidebar from "./GrammarSidebar";
+import GrammarQuiz from "./GrammarQuiz";
 import { NotionDetail, SocleDetail, ChecklistDetail } from "./GrammarDetail";
 
 type Props = {
@@ -19,7 +21,7 @@ type Props = {
 
 function normalizeId(raw: string | null): string {
   if (!raw) return "socle";
-  if (raw === "socle" || raw === "checklist") return raw;
+  if (raw === "socle" || raw === "checklist" || raw === "quiz") return raw;
   const n = Number(raw);
   return getNotionByNumber(n) ? String(n) : "socle";
 }
@@ -42,18 +44,25 @@ export default function GrammarClient({ groups, socle, checklist }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlId]);
 
-  function handleSelect(id: string) {
-    setSelectedId(id);
-    setMobileView("detail");
-    router.replace(id === "socle" ? "/grammar" : `/grammar?n=${id}`, { scroll: false });
-    // The list → detail swap happens in place (no route change), so the
-    // browser won't scroll for us — do it manually so the new notion opens
-    // at the top instead of wherever the previous one had been scrolled to.
+  // The list → detail swap happens in place (no route change), so the
+  // browser won't scroll for us — do it manually so new content opens at
+  // the top instead of wherever the previous screen had been scrolled to.
+  // On desktop the detail pane scrolls internally; on mobile the whole
+  // window does. Also handed to GrammarQuiz so its own phase changes
+  // (setup → playing → results) reset scroll the same way.
+  function scrollDetailToTop() {
     if (typeof window !== "undefined" && window.innerWidth < 1024) {
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
     } else {
       detailRef.current?.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
     }
+  }
+
+  function handleSelect(id: string) {
+    setSelectedId(id);
+    setMobileView("detail");
+    router.replace(id === "socle" ? "/grammar" : `/grammar?n=${id}`, { scroll: false });
+    scrollDetailToTop();
   }
 
   function handleBack() {
@@ -64,6 +73,15 @@ export default function GrammarClient({ groups, socle, checklist }: Props) {
   const detail = (() => {
     if (selectedId === "socle") return <SocleDetail socle={socle} />;
     if (selectedId === "checklist") return <ChecklistDetail checklist={checklist} />;
+    if (selectedId === "quiz") {
+      return (
+        <GrammarQuiz
+          questions={grammarQuizQuestions}
+          onExit={() => handleSelect("socle")}
+          scrollToTop={scrollDetailToTop}
+        />
+      );
+    }
     const notion = getNotionByNumber(Number(selectedId));
     if (!notion) return <SocleDetail socle={socle} />;
     const group = groups.find((g) => g.notions.some((n) => n.number === notion.number));

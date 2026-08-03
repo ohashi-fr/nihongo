@@ -92,6 +92,77 @@ function NotionCard({
   );
 }
 
+/**
+ * The quiz entry point — deliberately styled apart from the notion
+ * cards (orange accent, not white/blue) so it reads as an action to
+ * take, not a lesson to read.
+ */
+function QuizCard({
+  active,
+  onClick,
+}: {
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-current={active ? "true" : undefined}
+      className={`group/card flex w-full items-center gap-3 rounded-2xl px-3.5 py-3 text-left shadow-card transition hover:-translate-y-0.5 hover:shadow-cardHover ${
+        active ? "bg-accent-700" : "bg-accent"
+      }`}
+    >
+      <span
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${
+          active ? "bg-white/15" : "bg-white/40"
+        }`}
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          className={`h-5 w-5 ${active ? "text-white" : "text-primary"}`}
+          aria-hidden
+        >
+          <path
+            d="M9 12.5l2 2 4-4.5M12 3a9 9 0 100 18 9 9 0 000-18z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </span>
+      <span className="min-w-0 flex-1">
+        <span
+          className={`block truncate text-sm font-bold ${
+            active ? "text-white" : "text-primary"
+          }`}
+        >
+          Test yourself
+        </span>
+        <span
+          className={`mt-0.5 block truncate text-[11px] font-medium ${
+            active ? "text-white/70" : "text-primary/70"
+          }`}
+        >
+          Practice all notions · MCQ
+        </span>
+      </span>
+      <span
+        aria-hidden
+        className={`shrink-0 text-sm font-semibold transition ${
+          active
+            ? "text-white/80"
+            : "text-primary opacity-70 group-hover/card:opacity-100 group-hover/card:translate-x-0.5"
+        }`}
+      >
+        →
+      </span>
+    </button>
+  );
+}
+
 export default function GrammarSidebar({
   groups,
   socle,
@@ -102,6 +173,10 @@ export default function GrammarSidebar({
 }: Props) {
   return (
     <nav aria-label="Grammar notions" className={className}>
+      <div className="mb-3">
+        <QuizCard active={selectedId === "quiz"} onClick={() => onSelect("quiz")} />
+      </div>
+
       <div className="mb-6">
         <NotionCard
           active={selectedId === "socle"}

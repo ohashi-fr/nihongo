@@ -67,6 +67,12 @@ export interface ExampleLine {
 
 export interface Notion {
   number: number;
+  /**
+   * Stable string key for this notion (not in the source HTML). Used to
+   * link external content — currently the grammar quiz — back to a
+   * notion without depending on its numeric position.
+   */
+  slug: string;
   /** Short, plain-English topic label for the sidebar (not in the source HTML). */
   sidebarLabel: string;
   titleJp: string;
@@ -143,6 +149,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 1,
+        slug: "mou-mada",
         sidebarLabel: "Already / not yet",
         titleJp: "もう ／ まだ",
         objective: "Say whether something is already done or not yet done.",
@@ -171,6 +178,7 @@ export const groups: Group[] = [
       },
       {
         number: 2,
+        slug: "certainty-degrees",
         sidebarLabel: "Degrees of certainty",
         titleJp: "ぶんまつひょうげん",
         titleKanji: "文末表現",
@@ -209,6 +217,7 @@ export const groups: Group[] = [
       },
       {
         number: 3,
+        slug: "to-omou",
         sidebarLabel: "Giving an opinion (to think)",
         titleJp: "どうし「おもう」",
         titleKanji: "動詞「思う」",
@@ -249,6 +258,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 4,
+        slug: "kara-node",
         sidebarLabel: "Reasons — kara / node",
         titleJp: "から ／ ので",
         objective:
@@ -314,6 +324,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 5,
+        slug: "toki",
         sidebarLabel: "Time — toki",
         titleJp: "「とき」＋ げんけい／た",
         titleKanji: "時 · 原形／た",
@@ -371,6 +382,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 6,
+        slug: "verb-types",
         sidebarLabel: "Transitive vs intransitive verbs",
         titleJp: "どうしの タイプ",
         titleKanji: "動詞のタイプ",
@@ -434,6 +446,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 7,
+        slug: "contrast",
         sidebarLabel: "Expressing contrast (but)",
         titleJp: "でも ／ けれども ／ しかし ／ が",
         objective:
@@ -488,6 +501,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 8,
+        slug: "linking-adjectives",
         sidebarLabel: "Linking two descriptive words",
         titleJp: "けいようし などの せつぞく",
         titleKanji: "形容詞などの接続",
@@ -526,6 +540,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 9,
+        slug: "same-different",
         sidebarLabel: "Same vs different",
         titleJp: "おなじ",
         titleKanji: "同じ",
@@ -563,6 +578,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 10,
+        slug: "permission",
         sidebarLabel: "Asking permission",
         titleJp: "〜てもいいですか",
         objective: "Ask for or give permission, and say “no need to”.",
@@ -604,6 +620,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 11,
+        slug: "choice-soretomo",
         sidebarLabel: "Offering a choice",
         titleJp: "せつぞくし「それとも」",
         titleKanji: "接続詞「それとも」",
@@ -633,6 +650,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 12,
+        slug: "particles-place",
         sidebarLabel: "Place particles — ni / de / wo",
         titleJp: "かんけいじょし「に・で・を」",
         titleKanji: "関係助詞",
@@ -668,6 +686,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 13,
+        slug: "going-to-do",
         sidebarLabel: "Going somewhere to do something",
         titleJp: "「に」＋ ほうこうの どうし",
         titleKanji: "に＋方向の動詞",
@@ -705,6 +724,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 14,
+        slug: "describe-noun",
         sidebarLabel: "Describing a noun (relative clauses)",
         titleJp: "どうし ＋ めいし",
         titleKanji: "動詞＋名詞 (proposition relative)",
@@ -733,6 +753,7 @@ export const groups: Group[] = [
       },
       {
         number: 15,
+        slug: "ability",
         sidebarLabel: "Expressing ability",
         titleJp: "ことが できる",
         objective: "Express an ability or a possibility (formal register).",
@@ -763,6 +784,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 16,
+        slug: "existence-aru-iru",
         sidebarLabel: "Existence — aru vs iru",
         titleJp: "どうし「ある／いる」",
         titleKanji: "存在",
@@ -790,6 +812,7 @@ export const groups: Group[] = [
       },
       {
         number: 17,
+        slug: "nimo-niwa",
         sidebarLabel: "Place particles — nimo / niwa",
         titleJp: "かんけいじょし ＋ せんたくじょし",
         titleKanji: "に＋も / に＋は",
@@ -828,6 +851,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 18,
+        slug: "ordinal-numbers",
         sidebarLabel: "Counting vs ranking",
         titleJp: "じすうし ＋ め",
         titleKanji: "時数詞＋目",
@@ -861,6 +885,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 19,
+        slug: "comparison",
         sidebarLabel: "Making comparisons",
         titleJp: "ひかくの ひょうげん",
         titleKanji: "比較",
@@ -934,6 +959,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 20,
+        slug: "sa-nominalizer",
         sidebarLabel: "Adjective → noun (~sa)",
         titleJp: "けいようし ＋ さ",
         titleKanji: "形容詞＋さ",
@@ -967,6 +993,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 21,
+        slug: "sequencing-actions",
         sidebarLabel: "Sequencing actions",
         titleJp: "まず ／ それから",
         objective: "Order a sequence of steps.",
@@ -985,6 +1012,7 @@ export const groups: Group[] = [
       },
       {
         number: 22,
+        slug: "te-naide",
         sidebarLabel: "Linking actions — te vs naide",
         titleJp: "どうし て、どうし ／ どうし ないで、どうし",
         objective:
@@ -1036,6 +1064,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 23,
+        slug: "naru-suru",
         sidebarLabel: "Becoming vs making — naru / suru",
         titleJp: "なる ／ する — changement d'état",
         objective:
@@ -1095,6 +1124,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 24,
+        slug: "adjective-adverb",
         sidebarLabel: "Adjective → adverb",
         titleJp: "けいようし ＋ どうし",
         titleKanji: "形容詞＋動詞 (adverbe)",
@@ -1129,6 +1159,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 25,
+        slug: "sou-seeming",
         sidebarLabel: "Looking like / seeming — ~sou",
         titleJp: "〜そう — apparence",
         objective: "Say that something **looks like** it is… (visual impression).",
@@ -1187,6 +1218,7 @@ export const groups: Group[] = [
     notions: [
       {
         number: 26,
+        slug: "decision",
         sidebarLabel: "Deciding on something",
         titleJp: "〜にする ／ 〜ことにする",
         objective: "Express a choice or a decision.",
@@ -1254,6 +1286,20 @@ export const allNotions: Notion[] = groups.flatMap((g) => g.notions);
 
 export function getNotionByNumber(n: number): Notion | undefined {
   return allNotions.find((notion) => notion.number === n);
+}
+
+// Some external content (the grammar quiz) keys a question to a topic
+// that's finer-grained than a notion — e.g. "superlative" is the
+// 一番 sub-point inside the "comparison" notion (19), not its own
+// notion. Aliases resolve those keys to the notion that actually
+// covers them, so "Review this notion" still lands somewhere useful.
+const NOTION_SLUG_ALIASES: Record<string, string> = {
+  superlative: "comparison",
+};
+
+export function getNotionBySlug(slug: string): Notion | undefined {
+  const resolved = NOTION_SLUG_ALIASES[slug] ?? slug;
+  return allNotions.find((notion) => notion.slug === resolved);
 }
 
 export const totalGroupCount = groups.length;
