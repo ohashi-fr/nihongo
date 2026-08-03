@@ -35,6 +35,15 @@ function shortLabel(label: string): string {
   return idx === -1 ? label : label.slice(0, idx);
 }
 
+// Some questions end with an English hint in parentheses, e.g.
+// "でんしゃは バス ____ はやいです。(faster than the bus)". That's as much
+// of a giveaway as sentence_gloss, so it's stripped for display while
+// answering — the underlying data is untouched (still used verbatim in
+// the explanation/correction afterward).
+function stripEnglishHint(question: string): string {
+  return question.replace(/\s*\([^)]*\)\s*$/, "");
+}
+
 /** Link to the matching reference notion, opened in a new tab so an
  * in-progress quiz round is never lost. Returns null if the question's
  * notion doesn't resolve to a lesson (shouldn't happen with valid data). */
@@ -74,11 +83,15 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
 
   const [phase, setPhase] = useState<Phase>("setup");
   const [scope, setScope] = useState<string>("all");
-  const [count, setCount] = useState<number | "all">(10);
+  const [count, setCount] = useState<number | "all">("all");
+  // The full notion list is collapsed by default (too cluttered to show
+  // upfront) — revealed on demand via a "Select a specific notion" toggle.
+  const [showScopePicker, setShowScopePicker] = useState(false);
 
   const [order, setOrder] = useState<RoundQuestion[]>([]);
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
+  const [showGloss, setShowGloss] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [notionStats, setNotionStats] = useState<Record<string, NotionStat>>({});
   const [savedSession, setSavedSession] = useState(false);
@@ -96,7 +109,7 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
   function selectScope(slug: string) {
     setScope(slug);
     const newPool = slug === "all" ? questions : questions.filter((q) => q.notion === slug);
-    setCount(newPool.length <= 10 ? "all" : 10);
+    setCount(slug === "all" || newPool.length <= 10 ? "all" : 10);
   }
 
   function startQuiz() {
@@ -108,6 +121,7 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
     setOrder(round);
     setIndex(0);
     setPicked(null);
+    setShowGloss(false);
     setCorrectCount(0);
     setNotionStats({});
     setSavedSession(false);
@@ -137,13 +151,13 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
         },
       };
     });
-    if (wasCorrect) {
-      window.setTimeout(() => advance(), 2000);
-    }
+    // No auto-advance, even on a correct answer — the user always
+    // reviews the explanation and clicks Continue themselves.
   }
 
   function advance() {
     setPicked(null);
+    setShowGloss(false);
     if (index + 1 >= total) {
       setPhase("results");
       scrollToTop();
@@ -215,21 +229,36 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
           <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted">
             Focus
           </p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <ScopePill
               label="All notions"
               selected={scope === "all"}
-              onClick={() => selectScope("all")}
+              onClick={() => {
+                selectScope("all");
+                setShowScopePicker(false);
+              }}
             />
-            {scopeOptions.map((opt) => (
-              <ScopePill
-                key={opt.slug}
-                label={shortLabel(opt.label)}
-                selected={scope === opt.slug}
-                onClick={() => selectScope(opt.slug)}
-              />
-            ))}
+            <button
+              type="button"
+              onClick={() => setShowScopePicker((v) => !v)}
+              className="text-sm font-medium text-primary transition hover:text-primary-700"
+            >
+              {showScopePicker ? "Hide notion list" : "Select a specific notion →"}
+            </button>
           </div>
+
+          {showScopePicker && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {scopeOptions.map((opt) => (
+                <ScopePill
+                  key={opt.slug}
+                  label={shortLabel(opt.label)}
+                  selected={scope === opt.slug}
+                  onClick={() => selectScope(opt.slug)}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="mt-6">
@@ -355,13 +384,32 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
       </div>
 
       <div className="text-center">
-        <div className="text-[11px] font-bold uppercase tracking-[0.08em] text-accent-700">
-          {shortLabel(current.notion_label)}
+        <div className="jp text-2xl leading-relaxed text-ink sm:text-3xl">
+          {stripEnglishHint(current.question)}
         </div>
-        <div className="jp mt-3 text-2xl leading-relaxed text-ink sm:text-3xl">
-          {current.question}
+        <div className="mt-3 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setShowGloss((v) => !v)}
+            aria-expanded={showGloss}
+            aria-label={
+              showGloss ? "Hide English translation" : "Show English translation"
+            }
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold transition ${
+              showGloss
+                ? "bg-primary text-white"
+                : "bg-soft text-muted hover:bg-primary-50 hover:text-primary"
+            }`}
+          >
+            <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-current text-[10px] font-bold italic">
+              i
+            </span>
+            {showGloss ? "Hide translation" : "View translation"}
+          </button>
         </div>
-        <div className="mt-3 text-sm text-muted">{current.sentence_gloss}</div>
+        {showGloss && (
+          <p className="mt-2 text-sm text-muted">{current.sentence_gloss}</p>
+        )}
       </div>
 
       <div className="mt-7 grid grid-cols-1 gap-2.5">
@@ -412,14 +460,16 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
           <p className="mt-1.5 text-sm leading-relaxed text-sumi">
             {current.explanation}
           </p>
-          {!wasCorrect && (
-            <div className="mt-3 flex items-center justify-between gap-3">
-              <ReviewNotionLink notionSlug={current.notion} />
-              <button onClick={advance} className="btn-primary">
-                Next →
-              </button>
-            </div>
-          )}
+          <div
+            className={`mt-3 flex items-center gap-3 ${
+              wasCorrect ? "justify-end" : "justify-between"
+            }`}
+          >
+            {!wasCorrect && <ReviewNotionLink notionSlug={current.notion} />}
+            <button onClick={advance} className="btn-primary">
+              Continue →
+            </button>
+          </div>
         </div>
       )}
     </div>

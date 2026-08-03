@@ -40,7 +40,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "mou-mada",
     "notion_label": "もう / まだ (already / not yet)",
-    "question": "この みせには、その ほんは ____ ありません。(there are no more)",
+    "question": "この みせには、その ほんは ____ ありません。",
     "sentence_gloss": "This shop has ____ that book (none left).",
     "choices": ["もう", "まだ", "もうすぐ", "まだまだ"],
     "answer": "もう",
@@ -49,7 +49,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "mou-mada",
     "notion_label": "もう / まだ (already / not yet)",
-    "question": "____ しゅくだいが あります。まだ おわって いません。(I still have homework)",
+    "question": "____ しゅくだいが あります。まだ おわって いません。",
     "sentence_gloss": "I ____ have homework. It's not finished.",
     "choices": ["まだ", "もう", "もうすぐ", "まだです"],
     "answer": "まだ",
@@ -77,7 +77,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "to-omou",
     "notion_label": "と おもいます (giving an opinion)",
-    "question": "リーさんは きょう ____ と おもいます。(I don't think Lee will come)",
+    "question": "リーさんは きょう ____ と おもいます。",
     "sentence_gloss": "I think Lee won't come today.",
     "choices": ["こない", "くる", "きません", "こなくて"],
     "answer": "こない",
@@ -105,7 +105,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "kara-node",
     "notion_label": "から / ので (reasons)",
-    "question": "さむい ____、まどを しめて いただけませんか。(polite request)",
+    "question": "さむい ____、まどを しめて いただけませんか。",
     "sentence_gloss": "Since it's cold, could you close the window?",
     "choices": ["ので", "だから", "なので", "からだ"],
     "answer": "ので",
@@ -124,7 +124,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "toki",
     "notion_label": "とき (situating in time)",
-    "question": "にほんへ ____ とき、たくさん ほんを もって きました。(bought before coming)",
+    "question": "にほんへ ____ とき、たくさん ほんを もって きました。",
     "sentence_gloss": "When coming to Japan, I brought many books (bought before departure).",
     "choices": ["くる", "きた", "きて", "きます"],
     "answer": "くる",
@@ -133,7 +133,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "toki",
     "notion_label": "とき (situating in time)",
-    "question": "くにへ ____ とき、ともだちに あいました。(met after returning)",
+    "question": "くにへ ____ とき、ともだちに あいました。",
     "sentence_gloss": "When I returned to my country, I met friends (after arriving).",
     "choices": ["かえった", "かえる", "かえって", "かえります"],
     "answer": "かえった",
@@ -164,7 +164,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
     "notion_label": "でも / が / けれども (contrast)",
     "question": "はるに なりました。____、あたたかく なりません。",
     "sentence_gloss": "Spring has come. But it isn't getting warm.",
-    "choices": ["でも", "が", "けれけれ", "ので"],
+    "choices": ["でも", "が", "けれども", "ので"],
     "answer": "でも",
     "explanation": "After a full stop, you start a new sentence with でも (or しかし). が and けれども join clauses within a single sentence, so they can't follow a period."
   },
@@ -199,9 +199,9 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "linking-adjectives",
     "notion_label": "linking descriptive words (くて / で)",
-    "question": "この りょうりは ____、やすいです。(good and cheap)",
+    "question": "この りょうりは ____、やすいです。",
     "sentence_gloss": "This dish is good and cheap.",
-    "choices": ["よくて", "いくて", "いいくて", "で"],
+    "choices": ["で", "いくて", "いいくて", "よくて"],
     "answer": "よくて",
     "explanation": "いい is irregular: its te-form (linking form) shifts to よくて (never いくて or いいくて)."
   },
@@ -218,7 +218,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "same-different",
     "notion_label": "おなじ (same / different)",
-    "question": "わたしと あなたの いけんは ____。(are different)",
+    "question": "わたしと あなたの いけんは ____。",
     "sentence_gloss": "My opinion and yours are different.",
     "choices": ["ちがいます", "ちがいです", "おなじじゃない", "ちがうです"],
     "answer": "ちがいます",
@@ -227,7 +227,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "same-different",
     "notion_label": "おなじ (same / different)",
-    "question": "せんせいと ____ ように かいて ください。(the same way as)",
+    "question": "せんせいと ____ ように かいて ください。",
     "sentence_gloss": "Please write the same way as the teacher.",
     "choices": ["おなじ", "おなじな", "おなじの", "ちがう"],
     "answer": "おなじ",
@@ -237,7 +237,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "permission",
     "notion_label": "〜てもいい (permission)",
-    "question": "しゃしんを ____ もいいですか。(may I take?)",
+    "question": "しゃしんを ____ もいいですか。",
     "sentence_gloss": "May I take a photo?",
     "choices": ["とって", "とっと", "とりて", "とった"],
     "answer": "とって",
@@ -246,7 +246,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "permission",
     "notion_label": "〜てもいい (permission)",
-    "question": "あした ____ もいいです。(you don't need to come)",
+    "question": "あした ____ もいいです。",
     "sentence_gloss": "You don't have to come tomorrow.",
     "choices": ["こなくて", "こないで", "こなくても", "きなくて"],
     "answer": "こなくて",
@@ -303,7 +303,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "going-to-do",
     "notion_label": "〜に いきます (going somewhere to do something)",
-    "question": "レストランへ ____ に いきます。(to eat)",
+    "question": "レストランへ ____ に いきます。",
     "sentence_gloss": "I'm going to the restaurant to eat.",
     "choices": ["たべ", "たべる", "たべて", "たべます"],
     "answer": "たべ",
@@ -312,7 +312,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "going-to-do",
     "notion_label": "〜に いきます (going somewhere to do something)",
-    "question": "としょかんへ ほんを ____ に いきます。(to borrow)",
+    "question": "としょかんへ ほんを ____ に いきます。",
     "sentence_gloss": "I'm going to the library to borrow a book.",
     "choices": ["かり", "かりる", "かりて", "かります"],
     "answer": "かり",
@@ -321,7 +321,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "going-to-do",
     "notion_label": "〜に いきます (going somewhere to do something)",
-    "question": "デパートへ かいもの ____ いきます。(to shop)",
+    "question": "デパートへ かいもの ____ いきます。",
     "sentence_gloss": "I'm going to the department store to shop.",
     "choices": ["に", "を", "で", "へ"],
     "answer": "に",
@@ -331,7 +331,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "describe-noun",
     "notion_label": "relative clauses (describing a noun)",
-    "question": "きのう ____ ほんは おもしろかったです。(the book I read)",
+    "question": "きのう ____ ほんは おもしろかったです。",
     "sentence_gloss": "The book I read yesterday was interesting.",
     "choices": ["よんだ", "よみました", "よむの", "よんで"],
     "answer": "よんだ",
@@ -340,7 +340,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "describe-noun",
     "notion_label": "relative clauses (describing a noun)",
-    "question": "せが ____ ひとは だれですか。(the tall person)",
+    "question": "せが ____ ひとは だれですか。",
     "sentence_gloss": "Who is the tall person?",
     "choices": ["たかい", "たかいの", "たかくて", "たかいです"],
     "answer": "たかい",
@@ -349,11 +349,11 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "describe-noun",
     "notion_label": "relative clauses (describing a noun)",
-    "question": "リーさん ____ つくった りょうりは おいしいです。(the dish Lee made)",
-    "sentence_gloss": "The dish Lee made is delicious.",
-    "choices": ["が", "は", "を", "の"],
-    "answer": "が",
-    "explanation": "Inside a relative clause, the internal subject is marked by が (or sometimes の), never は: リーさんが つくった りょうり."
+    "question": "ちちが ____ りょうりは とても おいしいです。",
+    "sentence_gloss": "The dish my father makes is very delicious.",
+    "choices": ["つくる", "つくります", "つくって", "つくるの"],
+    "answer": "つくる",
+    "explanation": "A relative clause modifying a noun uses the SHORT form directly: つくる りょうり. Polite forms (つくります) never appear inside the clause before the noun."
   },
 
   {
@@ -377,7 +377,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "ability",
     "notion_label": "たことがある (experience) vs ことができる (ability)",
-    "question": "にほんへ ____ ことが あります。(I have been to Japan)",
+    "question": "にほんへ ____ ことが あります。",
     "sentence_gloss": "I have been to Japan (experience).",
     "choices": ["いった", "いく", "いって", "いき"],
     "answer": "いった",
@@ -387,16 +387,16 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "nimo-niwa",
     "notion_label": "にも / には",
-    "question": "きょうしつ ____ だれも いません。(no one in the classroom either)",
-    "sentence_gloss": "There's no one in the classroom either.",
+    "question": "きのうは としょかんへ いきました。こうえん____ いきました。",
+    "sentence_gloss": "Yesterday I went to the library. I went to the park too.",
     "choices": ["にも", "には", "でも", "からも"],
     "answer": "にも",
-    "explanation": "にも adds 'also / either' to a place: きょうしつにも. には would mark contrast/topic, not addition."
+    "explanation": "にも adds 'also / too' to a place or destination: こうえんにも いきました. には would mark contrast/topic, not addition."
   },
   {
     "notion": "nimo-niwa",
     "notion_label": "にも / には",
-    "question": "この へや ____ まどが ありませんが、となりの へやには あります。(contrast)",
+    "question": "この へや ____ まどが ありませんが、となりの へやには あります。",
     "sentence_gloss": "This room has no window, but the next room does.",
     "choices": ["には", "にも", "では", "からは"],
     "answer": "には",
@@ -406,7 +406,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "ordinal-numbers",
     "notion_label": "〜目 (ordinal numbers)",
-    "question": "デパートは かどから 3つ____ です。(the 3rd building)",
+    "question": "デパートは かどから 3つ____ です。",
     "sentence_gloss": "The department store is the 3rd one from the corner.",
     "choices": ["め", "ばん", "つ", "にん"],
     "answer": "め",
@@ -416,7 +416,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "comparison",
     "notion_label": "comparisons (より / のほうが / ほど)",
-    "question": "でんしゃは バス ____ はやいです。(faster than the bus)",
+    "question": "でんしゃは バス ____ はやいです。",
     "sentence_gloss": "The train is faster than the bus.",
     "choices": ["より", "のほうが", "ほど", "から"],
     "answer": "より",
@@ -425,7 +425,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "comparison",
     "notion_label": "comparisons (より / のほうが / ほど)",
-    "question": "でんしゃ ____ はやいです。(the train is faster — the winner)",
+    "question": "でんしゃ ____ はやいです。",
     "sentence_gloss": "The train is the faster one.",
     "choices": ["のほうが", "より", "ほど", "だけ"],
     "answer": "のほうが",
@@ -434,7 +434,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "comparison",
     "notion_label": "comparisons (より / のほうが / ほど)",
-    "question": "バスは でんしゃ ____ はやくないです。(not as fast as)",
+    "question": "バスは でんしゃ ____ はやくないです。",
     "sentence_gloss": "The bus is not as fast as the train.",
     "choices": ["ほど", "より", "のほうが", "くらい"],
     "answer": "ほど",
@@ -443,7 +443,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "superlative",
     "notion_label": "一番 (superlative)",
-    "question": "くだものの なか____ さくらんぼが いちばん すきです。(among fruits)",
+    "question": "くだものの なか____ さくらんぼが いちばん すきです。",
     "sentence_gloss": "Among fruits, I like cherries the most.",
     "choices": ["で", "に", "を", "から"],
     "answer": "で",
@@ -453,7 +453,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "sa-nominalizer",
     "notion_label": "〜さ (adjective → noun)",
-    "question": "この やまの ____ は 3776メートルです。(the height)",
+    "question": "この やまの ____ は 3776メートルです。",
     "sentence_gloss": "This mountain's height is 3776 m.",
     "choices": ["たかさ", "たかい", "たかく", "たかいの"],
     "answer": "たかさ",
@@ -462,7 +462,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "sa-nominalizer",
     "notion_label": "〜さ (adjective → noun)",
-    "question": "この もんだいの ____ が わかりません。(the difficulty)",
+    "question": "この もんだいの ____ が わかりません。",
     "sentence_gloss": "I don't understand the difficulty of this problem.",
     "choices": ["むずかしさ", "むずかしい", "むずかしくて", "むずかしいこと"],
     "answer": "むずかしさ",
@@ -472,7 +472,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "naru-suru",
     "notion_label": "なる / する (become / make)",
-    "question": "もうすぐ あたたか____ なります。(it becomes warm)",
+    "question": "もうすぐ あたたか____ なります。",
     "sentence_gloss": "It will become warm soon.",
     "choices": ["く", "に", "で", "だ"],
     "answer": "く",
@@ -481,7 +481,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "naru-suru",
     "notion_label": "なる / する (become / make)",
-    "question": "びょうきでしたが、げんき____ なりました。(became healthy)",
+    "question": "びょうきでしたが、げんき____ なりました。",
     "sentence_gloss": "I was sick, but I got better.",
     "choices": ["に", "く", "で", "だ"],
     "answer": "に",
@@ -490,7 +490,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "naru-suru",
     "notion_label": "なる / する (become / make)",
-    "question": "へやを きれい____ します。(I make the room clean)",
+    "question": "へやを きれい____ します。",
     "sentence_gloss": "I'll make the room clean.",
     "choices": ["に", "く", "で", "な"],
     "answer": "に",
@@ -499,7 +499,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "naru-suru",
     "notion_label": "なる / する (become / make)",
-    "question": "にほんごが わかる____ なりました。(came to be able to understand)",
+    "question": "にほんごが わかる____ なりました。",
     "sentence_gloss": "I've come to understand Japanese.",
     "choices": ["ように", "くに", "に", "こと"],
     "answer": "ように",
@@ -519,7 +519,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "adjective-adverb",
     "notion_label": "adjective → adverb",
-    "question": "ひらがなを ____ かきましょう。(write neatly)",
+    "question": "ひらがなを ____ かきましょう。",
     "sentence_gloss": "Let's write hiragana neatly.",
     "choices": ["きれいに", "きれいく", "きれいで", "きれいな"],
     "answer": "きれいに",
@@ -528,7 +528,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "adjective-adverb",
     "notion_label": "adjective → adverb",
-    "question": "じを ____ かいて ください。(write big)",
+    "question": "じを ____ かいて ください。",
     "sentence_gloss": "Please write big.",
     "choices": ["おおきく", "おおきに", "おおきくて", "おおきいに"],
     "answer": "おおきく",
@@ -538,7 +538,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "sou-seeming",
     "notion_label": "〜そう (looks like / seeming)",
-    "question": "この ケーキは ____ です。(looks delicious)",
+    "question": "この ケーキは ____ です。",
     "sentence_gloss": "This cake looks delicious.",
     "choices": ["おいしそう", "おいしいそう", "おいしくそう", "おいしなそう"],
     "answer": "おいしそう",
@@ -547,7 +547,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "sou-seeming",
     "notion_label": "〜そう (looks like / seeming)",
-    "question": "あめが ____ です。(looks like it will rain)",
+    "question": "あめが ____ です。",
     "sentence_gloss": "It looks like it's going to rain.",
     "choices": ["ふりそう", "ふるそう", "ふってそう", "ふりそうだそう"],
     "answer": "ふりそう",
@@ -556,7 +556,7 @@ export const grammarQuizQuestions: GrammarQuizQuestion[] = [
   {
     "notion": "sou-seeming",
     "notion_label": "〜そう (looks like / seeming)",
-    "question": "これは ____ ほんですね。(an interesting-looking book)",
+    "question": "これは ____ ほんですね。",
     "sentence_gloss": "This looks like an interesting book.",
     "choices": ["おもしろそうな", "おもしろそうに", "おもしろいそうな", "おもしろそう"],
     "answer": "おもしろそうな",
