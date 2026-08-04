@@ -1,10 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { getNotionBySlug } from "@/content/grammar/grammar-data";
 import type { GrammarQuizQuestion } from "@/content/grammar/grammar-quiz";
+import {
+  ContinueButton,
+  Pill,
+  QuizProgressHeader,
+  ResultsActions,
+  ResultsSummary,
+  ReviewNotionLink,
+} from "./QuizShared";
 
 type Phase = "setup" | "playing" | "results";
 
@@ -42,24 +48,6 @@ function shortLabel(label: string): string {
 // the explanation/correction afterward).
 function stripEnglishHint(question: string): string {
   return question.replace(/\s*\([^)]*\)\s*$/, "");
-}
-
-/** Link to the matching reference notion, opened in a new tab so an
- * in-progress quiz round is never lost. Returns null if the question's
- * notion doesn't resolve to a lesson (shouldn't happen with valid data). */
-function ReviewNotionLink({ notionSlug }: { notionSlug: string }) {
-  const notion = getNotionBySlug(notionSlug);
-  if (!notion) return null;
-  return (
-    <Link
-      href={`/grammar?n=${notion.number}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-1 text-sm font-semibold text-primary transition hover:text-primary-700"
-    >
-      Review this notion →
-    </Link>
-  );
 }
 
 type Props = {
@@ -230,8 +218,9 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
             Focus
           </p>
           <div className="flex flex-wrap items-center gap-2">
-            <ScopePill
+            <Pill
               label="All notions"
+              jp
               selected={scope === "all"}
               onClick={() => {
                 selectScope("all");
@@ -250,9 +239,10 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
           {showScopePicker && (
             <div className="mt-3 flex flex-wrap gap-2">
               {scopeOptions.map((opt) => (
-                <ScopePill
+                <Pill
                   key={opt.slug}
                   label={shortLabel(opt.label)}
+                  jp
                   selected={scope === opt.slug}
                   onClick={() => selectScope(opt.slug)}
                 />
@@ -267,15 +257,19 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
           </p>
           <div className="flex flex-wrap gap-2">
             {visibleCountChoices.map((c) => (
-              <CountPill
+              <Pill
                 key={c}
                 label={String(c)}
+                tone="accent"
+                bold
                 selected={count === c}
                 onClick={() => setCount(c)}
               />
             ))}
-            <CountPill
+            <Pill
               label={`All (${pool.length})`}
+              tone="accent"
+              bold
               selected={count === "all"}
               onClick={() => setCount("all")}
             />
@@ -296,19 +290,13 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
 
   // ─── RESULTS ────────────────────────────────────────────────────────
   if (phase === "results") {
-    const pct = total === 0 ? 0 : Math.round((correctCount / total) * 100);
     const missed = Object.values(notionStats)
       .filter((s) => s.correct < s.total)
       .sort((a, b) => a.correct / a.total - b.correct / b.total);
 
     return (
       <div className="mx-auto max-w-2xl text-center">
-        <div className="jp text-4xl">お疲れ様</div>
-        <h2 className="mt-3 text-2xl font-bold text-ink">Round complete</h2>
-        <p className="mt-2 text-muted">
-          {correctCount} / {total} correct
-        </p>
-        <div className="my-6 text-5xl font-bold text-primary">{pct}%</div>
+        <ResultsSummary correct={correctCount} total={total} />
 
         {missed.length > 0 && (
           <div className="mb-8 text-left">
@@ -334,25 +322,7 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
           </div>
         )}
 
-        <div className="flex flex-col items-center gap-2">
-          <button onClick={retry} className="btn-accent w-full justify-center !rounded-2xl !py-3 sm:w-auto sm:px-10">
-            Retry — new shuffled round
-          </button>
-          <div className="mt-1 flex items-center gap-4">
-            <button
-              onClick={backToSetup}
-              className="text-sm font-medium text-muted transition hover:text-primary"
-            >
-              Change focus
-            </button>
-            <button
-              onClick={onExit}
-              className="text-sm font-medium text-muted transition hover:text-primary"
-            >
-              Back to grammar
-            </button>
-          </div>
-        </div>
+        <ResultsActions onRetry={retry} onChangeScope={backToSetup} onExit={onExit} />
       </div>
     );
   }
@@ -364,24 +334,11 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <div className="mb-5 flex items-center justify-between text-sm text-muted">
-        <span>
-          Question {index + 1} / {total}
-        </span>
-        <button
-          onClick={onExit}
-          className="text-sm font-medium text-muted transition hover:text-primary"
-        >
-          Exit quiz
-        </button>
-      </div>
-
-      <div className="progress-track mb-6">
-        <div
-          className="progress-fill"
-          style={{ width: `${((index + (picked !== null ? 1 : 0)) / total) * 100}%` }}
-        />
-      </div>
+      <QuizProgressHeader
+        label={`Question ${index + 1} / ${total}`}
+        progressPct={((index + (picked !== null ? 1 : 0)) / total) * 100}
+        onExit={onExit}
+      />
 
       <div className="text-center">
         <div className="jp text-2xl leading-relaxed text-ink sm:text-3xl">
@@ -466,62 +423,10 @@ export default function GrammarQuiz({ questions, onExit, scrollToTop }: Props) {
             }`}
           >
             {!wasCorrect && <ReviewNotionLink notionSlug={current.notion} />}
-            <button onClick={advance} className="btn-primary">
-              Continue →
-            </button>
+            <ContinueButton onClick={advance} />
           </div>
         </div>
       )}
     </div>
-  );
-}
-
-function ScopePill({
-  label,
-  selected,
-  onClick,
-}: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={selected}
-      className={`jp rounded-full px-3.5 py-1.5 text-sm font-medium transition ${
-        selected
-          ? "bg-primary text-white shadow-soft"
-          : "bg-soft text-sumi hover:bg-primary-50"
-      }`}
-    >
-      {label}
-    </button>
-  );
-}
-
-function CountPill({
-  label,
-  selected,
-  onClick,
-}: {
-  label: string;
-  selected: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={selected}
-      className={`rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
-        selected
-          ? "bg-accent text-primary shadow-soft"
-          : "bg-soft text-sumi hover:bg-accent-100"
-      }`}
-    >
-      {label}
-    </button>
   );
 }

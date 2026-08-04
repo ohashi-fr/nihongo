@@ -9,8 +9,11 @@ import type {
 } from "@/content/grammar/grammar-data";
 import { getNotionByNumber } from "@/content/grammar/grammar-data";
 import { grammarQuizQuestions } from "@/content/grammar/grammar-quiz";
+import { examQuiz, totalExamBlankCount } from "@/content/grammar/exam-quiz";
 import GrammarSidebar from "./GrammarSidebar";
+import QuizChooser from "./QuizChooser";
 import GrammarQuiz from "./GrammarQuiz";
+import ExamQuiz from "./ExamQuiz";
 import { NotionDetail, SocleDetail, ChecklistDetail } from "./GrammarDetail";
 
 type Props = {
@@ -19,9 +22,11 @@ type Props = {
   checklist: ChecklistSection;
 };
 
+const QUIZ_IDS = new Set(["quiz", "quiz-mcq", "quiz-exam"]);
+
 function normalizeId(raw: string | null): string {
   if (!raw) return "socle";
-  if (raw === "socle" || raw === "checklist" || raw === "quiz") return raw;
+  if (raw === "socle" || raw === "checklist" || QUIZ_IDS.has(raw)) return raw;
   const n = Number(raw);
   return getNotionByNumber(n) ? String(n) : "socle";
 }
@@ -75,8 +80,28 @@ export default function GrammarClient({ groups, socle, checklist }: Props) {
     if (selectedId === "checklist") return <ChecklistDetail checklist={checklist} />;
     if (selectedId === "quiz") {
       return (
+        <QuizChooser
+          onSelectMcq={() => handleSelect("quiz-mcq")}
+          onSelectExam={() => handleSelect("quiz-exam")}
+          mcqQuestionCount={grammarQuizQuestions.length}
+          examBlankCount={totalExamBlankCount}
+          examSectionCount={examQuiz.sections.length}
+        />
+      );
+    }
+    if (selectedId === "quiz-mcq") {
+      return (
         <GrammarQuiz
           questions={grammarQuizQuestions}
+          onExit={() => handleSelect("socle")}
+          scrollToTop={scrollDetailToTop}
+        />
+      );
+    }
+    if (selectedId === "quiz-exam") {
+      return (
+        <ExamQuiz
+          exam={examQuiz}
           onExit={() => handleSelect("socle")}
           scrollToTop={scrollDetailToTop}
         />

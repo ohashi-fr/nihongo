@@ -146,7 +146,7 @@ function QuizCard({
             active ? "text-white/70" : "text-primary/70"
           }`}
         >
-          Practice all notions · MCQ
+          MCQ quiz · Mock exam N5
         </span>
       </span>
       <span
@@ -174,7 +174,10 @@ export default function GrammarSidebar({
   return (
     <nav aria-label="Grammar notions" className={className}>
       <div className="mb-3">
-        <QuizCard active={selectedId === "quiz"} onClick={() => onSelect("quiz")} />
+        <QuizCard
+          active={selectedId === "quiz" || selectedId === "quiz-mcq" || selectedId === "quiz-exam"}
+          onClick={() => onSelect("quiz")}
+        />
       </div>
 
       <div className="mb-6">
