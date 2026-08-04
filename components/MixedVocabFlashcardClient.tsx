@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import type { Card } from "@/lib/types";
 import PreQuizScreen, { type PreQuizMode } from "@/components/PreQuizScreen";
-import { createClient } from "@/lib/supabase/client";
+import { useFavorites } from "@/lib/hooks/useFavorites";
 import FavoriteStar from "@/components/FavoriteStar";
 import ExampleBlock from "@/components/ExampleBlock";
 import { parseExample } from "@/lib/exampleSentence";
@@ -252,88 +252,7 @@ export default function MixedVocabFlashcardClient({
   const [flipped, setFlipped] = useState(false);
 
   // ── Auth + favorites (same pattern as the other flashcard clients) ──
-  const [userId, setUserId] = useState<string | null>(null);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    const supabase = createClient();
-    let active = true;
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!active) return;
-      setUserId(user?.id ?? null);
-    });
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
-      setUserId(session?.user?.id ?? null);
-    });
-    return () => {
-      active = false;
-      sub.subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!userId) {
-      setFavorites(new Set());
-      return;
-    }
-    const supabase = createClient();
-    const cardIds = parsedCards.map((c) => c.id);
-    if (cardIds.length === 0) return;
-    let cancelled = false;
-    (async () => {
-      const { data } = await supabase
-        .from("favorites")
-        .select("card_id")
-        .eq("user_id", userId)
-        .in("card_id", cardIds);
-      if (cancelled) return;
-      setFavorites(new Set((data ?? []).map((r: { card_id: string }) => r.card_id)));
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [userId, parsedCards]);
-
-  async function toggleFavorite(cardId: string) {
-    if (!userId) return;
-    const isFav = favorites.has(cardId);
-    setFavorites((prev) => {
-      const next = new Set(prev);
-      if (isFav) next.delete(cardId);
-      else next.add(cardId);
-      return next;
-    });
-    const supabase = createClient();
-    if (isFav) {
-      const { error } = await supabase
-        .from("favorites")
-        .delete()
-        .eq("user_id", userId)
-        .eq("card_id", cardId);
-      if (error) {
-        // eslint-disable-next-line no-console
-        console.error("[favorites] delete failed:", error);
-        setFavorites((prev) => {
-          const next = new Set(prev);
-          next.add(cardId);
-          return next;
-        });
-      }
-    } else {
-      const { error } = await supabase
-        .from("favorites")
-        .insert({ user_id: userId, card_id: cardId });
-      if (error) {
-        // eslint-disable-next-line no-console
-        console.error("[favorites] insert failed:", error);
-        setFavorites((prev) => {
-          const next = new Set(prev);
-          next.delete(cardId);
-          return next;
-        });
-      }
-    }
-  }
+  const { userId, favorites, toggleFavorite } = useFavorites(parsedCards);
 
   useEffect(() => {
     setIndex(0);

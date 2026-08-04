@@ -171,10 +171,6 @@ export default function QuizClient({
   const modeParam = searchParams.get("mode");
   const mode: "normal" | "mcq" = modeParam === "mcq" ? "mcq" : "normal";
 
-  // TEMP: confirm the URL param is being read. Remove after verifying.
-  // eslint-disable-next-line no-console
-  console.log("[QuizClient] mode read from URL:", modeParam, "→", mode);
-
   // Show the pre-quiz screen only for MCQ-enabled levels and only on the
   // first visit (before a mode has been picked). Once `?mode=` is in the
   // URL we render the actual quiz.

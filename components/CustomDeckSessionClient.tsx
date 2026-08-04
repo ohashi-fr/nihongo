@@ -148,13 +148,6 @@ export default function CustomDeckSessionClient({
     // the current session immediately.
     const nextQueue: SessionItem[] = queue.slice(1);
 
-    // TEMP debug — prove the queue drops to 0 on the right click.
-    // Safe to remove once verified.
-    // eslint-disable-next-line no-console
-    console.log(
-      `[session] queue ${queue.length} -> ${nextQueue.length}  (${rating})`
-    );
-
     // ── One mutation, forced sync commit ─────────────────────────
     //   `flushSync` makes React commit these state updates
     //   *immediately*, before the browser paints again. That
