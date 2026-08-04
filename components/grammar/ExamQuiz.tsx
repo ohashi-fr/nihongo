@@ -72,10 +72,13 @@ function splitPrompt(prompt: string): string[] {
 // adjective chain. Also grows live with whatever the user has typed so
 // far — typed romaji (e.g. "tabemasu") runs longer than the kana it
 // converts to ("たべます"), and the field shouldn't clip it while typing.
+// The floor is generous on purpose: full-width kana glyphs render wider
+// than the `ch` unit assumes, so a tight floor reads as cramped before
+// the field has a chance to grow.
 function blankWidthCh(variants: string[], currentValue: string): number {
   const maxLen = Math.max(...getKanaVariants(variants).map((v) => v.length), 1);
   const typedLen = currentValue.length;
-  return Math.min(24, Math.max(4, maxLen + 2, typedLen + 2));
+  return Math.min(26, Math.max(7, maxLen + 3, typedLen + 3));
 }
 
 /**

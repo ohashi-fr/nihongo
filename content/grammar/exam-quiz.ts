@@ -590,7 +590,9 @@ export const examQuiz: Exam =
           "answers": [
             [
               "はなせる",
-              "話せる"
+              "話せる",
+              "はなせるように",
+              "話せるように"
             ]
           ],
           "grammar_reference": "L3-2文31",
