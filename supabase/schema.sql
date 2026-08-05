@@ -79,3 +79,17 @@ create policy "levels write" on module_levels
 create policy "cards write" on cards
   for all using (auth.role() = 'authenticated')
   with check (auth.role() = 'authenticated');
+
+-- =========================================================
+-- Base table privileges
+-- =========================================================
+-- RLS policies above only decide which ROWS a role can see/touch —
+-- they don't grant the role access to the TABLE itself. New Supabase
+-- projects get that base grant automatically, but it's not guaranteed
+-- (and can be revoked), so we set it explicitly here. Without this,
+-- queries fail with "permission denied for table X" before RLS is
+-- even evaluated. Safe to re-run — GRANT is idempotent.
+grant usage on schema public to anon, authenticated;
+grant select on modules, module_levels, cards, sessions to anon, authenticated;
+grant insert, update, delete on modules, module_levels, cards to authenticated;
+grant insert on sessions to anon, authenticated;
