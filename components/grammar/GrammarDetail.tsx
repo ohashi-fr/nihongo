@@ -77,7 +77,7 @@ export function NotionDetail({
         </div>
       )}
       <h2 className="flex flex-wrap items-baseline gap-2.5 text-xl font-bold text-ink sm:text-2xl">
-        <span className="text-sm font-bold text-muted">{notion.number}</span>
+        <span className="text-sm font-bold text-muted">{notion.courseNumber ?? notion.number}</span>
         <span className="jp">{notion.titleJp}</span>
         {notion.titleKanji && (
           <span className="jp text-sm font-medium text-muted">{notion.titleKanji}</span>

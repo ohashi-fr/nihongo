@@ -5,49 +5,128 @@ import { useRouter, useSearchParams } from "next/navigation";
 import type {
   ChecklistSection,
   Group,
+  Notion,
   SocleSection,
 } from "@/content/grammar/grammar-data";
-import { getNotionByNumber } from "@/content/grammar/grammar-data";
 import { grammarQuizQuestions } from "@/content/grammar/grammar-quiz";
 import { examQuiz, totalExamBlankCount } from "@/content/grammar/exam-quiz";
+import SectionHeader from "@/components/ui/SectionHeader";
+import GrammarModuleTabs from "./GrammarModuleTabs";
 import GrammarSidebar from "./GrammarSidebar";
 import QuizChooser from "./QuizChooser";
 import GrammarQuiz from "./GrammarQuiz";
 import ExamQuiz from "./ExamQuiz";
 import { NotionDetail, SocleDetail, ChecklistDetail } from "./GrammarDetail";
 
-type Props = {
+/** One level of the Grammar page (e.g. 初級1 · L1–L3). */
+export interface GrammarModule {
+  id: string;
+  /** Shown on the tab itself. */
+  tabLabel: string;
+  /** Shown in the dynamic page subtitle, e.g. "初級1 (L1–L3)". */
+  subtitleLabel: string;
   groups: Group[];
-  socle: SocleSection;
   checklist: ChecklistSection;
+  /** Only the first module currently has a "short form" primer. */
+  socle?: SocleSection;
+  /** Whether the "Test yourself" quiz entry applies to this module. */
+  hasQuiz?: boolean;
+}
+
+type Props = {
+  modules: GrammarModule[];
 };
 
 const QUIZ_IDS = new Set(["quiz", "quiz-mcq", "quiz-exam"]);
 
-function normalizeId(raw: string | null): string {
-  if (!raw) return "socle";
-  if (raw === "socle" || raw === "checklist" || QUIZ_IDS.has(raw)) return raw;
-  const n = Number(raw);
-  return getNotionByNumber(n) ? String(n) : "socle";
+function flatten(groups: Group[]): Notion[] {
+  return groups.flatMap((g) => g.notions);
 }
 
-export default function GrammarClient({ groups, socle, checklist }: Props) {
+function findByNumber(modules: GrammarModule[], n: number) {
+  for (const m of modules) {
+    const notion = flatten(m.groups).find((notion) => notion.number === n);
+    if (notion) return { module: m, notion };
+  }
+  return null;
+}
+
+function findBySlug(modules: GrammarModule[], slug: string) {
+  for (const m of modules) {
+    const notion = flatten(m.groups).find((notion) => notion.slug === slug);
+    if (notion) return { module: m, notion };
+  }
+  return null;
+}
+
+function defaultSelectedId(module: GrammarModule): string {
+  if (module.socle) return "socle";
+  const first = flatten(module.groups)[0];
+  return first ? first.slug : "checklist";
+}
+
+/**
+ * Resolves the active module + selected id from the URL. `n` accepts a
+ * special id, a notion slug, or (for backward compatibility with old
+ * links) a bare running number — in which case the module is inferred
+ * from whichever module actually owns that number, ignoring `m`.
+ */
+function resolveState(modules: GrammarModule[], searchParams: URLSearchParams) {
+  const rawN = searchParams.get("n");
+  const rawM = searchParams.get("m");
+  const moduleFromM = modules.find((m) => m.id === rawM);
+
+  if (rawN && QUIZ_IDS.has(rawN)) {
+    const active =
+      (moduleFromM?.hasQuiz ? moduleFromM : undefined) ??
+      modules.find((m) => m.hasQuiz) ??
+      modules[0];
+    return { module: active, selectedId: rawN };
+  }
+
+  if (rawN === "checklist") {
+    const active = moduleFromM ?? modules[0];
+    return { module: active, selectedId: "checklist" };
+  }
+
+  if (rawN === "socle") {
+    const active = moduleFromM ?? modules[0];
+    return { module: active, selectedId: active.socle ? "socle" : defaultSelectedId(active) };
+  }
+
+  if (rawN) {
+    const found = /^\d+$/.test(rawN)
+      ? findByNumber(modules, Number(rawN))
+      : findBySlug(modules, rawN);
+    if (found) return { module: found.module, selectedId: found.notion.slug };
+  }
+
+  const active = moduleFromM ?? modules[0];
+  return { module: active, selectedId: defaultSelectedId(active) };
+}
+
+export default function GrammarClient({ modules }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const urlId = normalizeId(searchParams.get("n"));
+  const initial = useMemo(() => resolveState(modules, searchParams), []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const [selectedId, setSelectedId] = useState(urlId);
+  const [activeModuleId, setActiveModuleId] = useState(initial.module.id);
+  const [selectedId, setSelectedId] = useState(initial.selectedId);
   const [mobileView, setMobileView] = useState<"list" | "detail">(
     searchParams.get("n") ? "detail" : "list"
   );
   const detailRef = useRef<HTMLDivElement>(null);
 
+  const activeModule = modules.find((m) => m.id === activeModuleId) ?? modules[0];
+
   // Keep local state in sync when the URL changes externally (back/forward,
   // or a direct link).
   useEffect(() => {
-    setSelectedId(urlId);
+    const next = resolveState(modules, searchParams);
+    setActiveModuleId(next.module.id);
+    setSelectedId(next.selectedId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlId]);
+  }, [searchParams]);
 
   // The list → detail swap happens in place (no route change), so the
   // browser won't scroll for us — do it manually so new content opens at
@@ -63,11 +142,31 @@ export default function GrammarClient({ groups, socle, checklist }: Props) {
     }
   }
 
+  function buildUrl(moduleId: string, id: string): string {
+    const module = modules.find((m) => m.id === moduleId) ?? modules[0];
+    const params = new URLSearchParams();
+    if (moduleId !== modules[0].id) params.set("m", moduleId);
+    if (id !== defaultSelectedId(module)) params.set("n", id);
+    const qs = params.toString();
+    return qs ? `/grammar?${qs}` : "/grammar";
+  }
+
   function handleSelect(id: string) {
     setSelectedId(id);
     setMobileView("detail");
-    router.replace(id === "socle" ? "/grammar" : `/grammar?n=${id}`, { scroll: false });
+    router.replace(buildUrl(activeModuleId, id), { scroll: false });
     scrollDetailToTop();
+  }
+
+  function handleModuleChange(moduleId: string) {
+    if (moduleId === activeModuleId) return;
+    const module = modules.find((m) => m.id === moduleId);
+    if (!module) return;
+    const id = defaultSelectedId(module);
+    setActiveModuleId(moduleId);
+    setSelectedId(id);
+    setMobileView("list");
+    router.replace(buildUrl(moduleId, id), { scroll: false });
   }
 
   function handleBack() {
@@ -75,9 +174,15 @@ export default function GrammarClient({ groups, socle, checklist }: Props) {
     window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
   }
 
+  const notionCount = flatten(activeModule.groups).length;
+
   const detail = (() => {
-    if (selectedId === "socle") return <SocleDetail socle={socle} />;
-    if (selectedId === "checklist") return <ChecklistDetail checklist={checklist} />;
+    if (selectedId === "socle" && activeModule.socle) {
+      return <SocleDetail socle={activeModule.socle} />;
+    }
+    if (selectedId === "checklist") {
+      return <ChecklistDetail checklist={activeModule.checklist} />;
+    }
     if (selectedId === "quiz") {
       return (
         <QuizChooser
@@ -93,7 +198,7 @@ export default function GrammarClient({ groups, socle, checklist }: Props) {
       return (
         <GrammarQuiz
           questions={grammarQuizQuestions}
-          onExit={() => handleSelect("socle")}
+          onExit={() => handleSelect(defaultSelectedId(activeModule))}
           scrollToTop={scrollDetailToTop}
         />
       );
@@ -102,47 +207,72 @@ export default function GrammarClient({ groups, socle, checklist }: Props) {
       return (
         <ExamQuiz
           exam={examQuiz}
-          onExit={() => handleSelect("socle")}
+          onExit={() => handleSelect(defaultSelectedId(activeModule))}
           scrollToTop={scrollDetailToTop}
         />
       );
     }
-    const notion = getNotionByNumber(Number(selectedId));
-    if (!notion) return <SocleDetail socle={socle} />;
-    const group = groups.find((g) => g.notions.some((n) => n.number === notion.number));
+    const notion = flatten(activeModule.groups).find((n) => n.slug === selectedId);
+    if (!notion) {
+      return activeModule.socle ? (
+        <SocleDetail socle={activeModule.socle} />
+      ) : (
+        <ChecklistDetail checklist={activeModule.checklist} />
+      );
+    }
+    const group = activeModule.groups.find((g) => g.notions.some((n) => n.slug === notion.slug));
     return <NotionDetail notion={notion} groupLabel={group?.title} />;
   })();
 
   return (
-    <div className="lg:grid lg:grid-cols-[300px_1fr] lg:gap-8">
-      {/* Sidebar */}
-      <div
-        className={`${mobileView === "list" ? "block" : "hidden"} lg:block lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-2`}
-      >
-        <GrammarSidebar
-          groups={groups}
-          socle={socle}
-          checklist={checklist}
-          selectedId={selectedId}
-          onSelect={handleSelect}
-        />
-      </div>
+    <div>
+      <SectionHeader
+        kicker="Reference"
+        title="Grammar"
+        subtitle={`${notionCount} notions from ${activeModule.subtitleLabel}, grouped by theme — objective, rule, key points, examples.`}
+      />
 
-      {/* Detail */}
-      <div className={`${mobileView === "detail" ? "block" : "hidden"} lg:block`}>
-        <button
-          type="button"
-          onClick={handleBack}
-          className="mb-4 inline-flex items-center text-sm font-medium text-muted transition hover:text-primary lg:hidden"
-        >
-          ← Back to notions
-        </button>
+      {modules.length > 1 && (
+        <div className="mb-6">
+          <GrammarModuleTabs
+            tabs={modules.map((m) => ({ id: m.id, label: m.tabLabel }))}
+            activeId={activeModuleId}
+            onChange={handleModuleChange}
+          />
+        </div>
+      )}
 
+      <div className="lg:grid lg:grid-cols-[300px_1fr] lg:gap-8">
+        {/* Sidebar */}
         <div
-          ref={detailRef}
-          className="rounded-2xl bg-white p-6 shadow-card sm:p-8 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto"
+          className={`${mobileView === "list" ? "block" : "hidden"} lg:block lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:pr-2`}
         >
-          {detail}
+          <GrammarSidebar
+            groups={activeModule.groups}
+            socle={activeModule.socle}
+            checklist={activeModule.checklist}
+            hasQuiz={activeModule.hasQuiz ?? false}
+            selectedId={selectedId}
+            onSelect={handleSelect}
+          />
+        </div>
+
+        {/* Detail */}
+        <div className={`${mobileView === "detail" ? "block" : "hidden"} lg:block`}>
+          <button
+            type="button"
+            onClick={handleBack}
+            className="mb-4 inline-flex items-center text-sm font-medium text-muted transition hover:text-primary lg:hidden"
+          >
+            ← Back to notions
+          </button>
+
+          <div
+            ref={detailRef}
+            className="rounded-2xl bg-white p-6 shadow-card sm:p-8 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto"
+          >
+            {detail}
+          </div>
         </div>
       </div>
     </div>

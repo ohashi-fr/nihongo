@@ -4,8 +4,9 @@ import type { ChecklistSection, Group, SocleSection } from "@/content/grammar/gr
 
 type Props = {
   groups: Group[];
-  socle: SocleSection;
+  socle?: SocleSection;
   checklist: ChecklistSection;
+  hasQuiz?: boolean;
   selectedId: string;
   onSelect: (id: string) => void;
   className?: string;
@@ -167,30 +168,35 @@ export default function GrammarSidebar({
   groups,
   socle,
   checklist,
+  hasQuiz = false,
   selectedId,
   onSelect,
   className = "",
 }: Props) {
   return (
     <nav aria-label="Grammar notions" className={className}>
-      <div className="mb-3">
-        <QuizCard
-          active={selectedId === "quiz" || selectedId === "quiz-mcq" || selectedId === "quiz-exam"}
-          onClick={() => onSelect("quiz")}
-        />
-      </div>
+      {hasQuiz && (
+        <div className="mb-3">
+          <QuizCard
+            active={selectedId === "quiz" || selectedId === "quiz-mcq" || selectedId === "quiz-exam"}
+            onClick={() => onSelect("quiz")}
+          />
+        </div>
+      )}
 
-      <div className="mb-6">
-        <NotionCard
-          active={selectedId === "socle"}
-          onClick={() => onSelect("socle")}
-          badge="★"
-          subtitle={socle.jpTitle}
-          highlight
-        >
-          {socle.sidebarLabel}
-        </NotionCard>
-      </div>
+      {socle && (
+        <div className="mb-6">
+          <NotionCard
+            active={selectedId === "socle"}
+            onClick={() => onSelect("socle")}
+            badge="★"
+            subtitle={socle.jpTitle}
+            highlight
+          >
+            {socle.sidebarLabel}
+          </NotionCard>
+        </div>
+      )}
 
       <ul className="space-y-6">
         {groups.map((group) => (
@@ -200,7 +206,7 @@ export default function GrammarSidebar({
             </div>
             <ul className="space-y-2">
               {group.notions.map((notion) => {
-                const id = String(notion.number);
+                const id = notion.slug;
                 const jpSubtitle = notion.titleKanji
                   ? `${notion.titleJp} ${notion.titleKanji}`
                   : notion.titleJp;
@@ -209,7 +215,7 @@ export default function GrammarSidebar({
                     <NotionCard
                       active={selectedId === id}
                       onClick={() => onSelect(id)}
-                      badge={String(notion.number).padStart(2, "0")}
+                      badge={String(notion.courseNumber ?? notion.number).padStart(2, "0")}
                       subtitle={jpSubtitle}
                     >
                       {notion.sidebarLabel}

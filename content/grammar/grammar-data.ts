@@ -68,6 +68,12 @@ export interface ExampleLine {
 export interface Notion {
   number: number;
   /**
+   * Real course lesson number (e.g. 文法38…), when this notion comes from
+   * a module numbered independently of the app's running `number` order.
+   * Falls back to `number` in the UI when absent.
+   */
+  courseNumber?: number;
+  /**
    * Stable string key for this notion (not in the source HTML). Used to
    * link external content — currently the grammar quiz — back to a
    * notion without depending on its numeric position.
@@ -687,7 +693,7 @@ export const groups: Group[] = [
       {
         number: 13,
         slug: "going-to-do",
-        sidebarLabel: "Going somewhere to do something",
+        sidebarLabel: "Purpose of a trip",
         titleJp: "「に」＋ ほうこうの どうし",
         titleKanji: "に＋方向の動詞",
         objective: "Express the purpose of a trip.",
@@ -725,7 +731,7 @@ export const groups: Group[] = [
       {
         number: 14,
         slug: "describe-noun",
-        sidebarLabel: "Describing a noun (relative clauses)",
+        sidebarLabel: "Building relative clauses",
         titleJp: "どうし ＋ めいし",
         titleKanji: "動詞＋名詞 (proposition relative)",
         objective: "Describe a noun with a whole clause placed **before** it.",
@@ -960,7 +966,7 @@ export const groups: Group[] = [
       {
         number: 20,
         slug: "sa-nominalizer",
-        sidebarLabel: "Adjective → noun (~sa)",
+        sidebarLabel: "Adjective → noun conversion",
         titleJp: "けいようし ＋ さ",
         titleKanji: "形容詞＋さ",
         objective: "Turn an adjective into a noun of measurement.",
@@ -1065,8 +1071,8 @@ export const groups: Group[] = [
       {
         number: 23,
         slug: "naru-suru",
-        sidebarLabel: "Becoming vs making — naru / suru",
-        titleJp: "なる ／ する — changement d'état",
+        sidebarLabel: "Becoming vs. making",
+        titleJp: "なる ／ する",
         objective:
           "A change that **happens to something** (なる, it becomes) or is **caused** (する, I make it). Same mechanism, active vs passive.",
         exampleGloss: "“It's getting warmer” vs “I'm warming up the soup.”",
@@ -1160,8 +1166,8 @@ export const groups: Group[] = [
       {
         number: 25,
         slug: "sou-seeming",
-        sidebarLabel: "Looking like / seeming — ~sou",
-        titleJp: "〜そう — apparence",
+        sidebarLabel: "Looking like / seeming",
+        titleJp: "〜そう",
         objective: "Say that something **looks like** it is… (visual impression).",
         exampleGloss: "“This cake looks good.”",
         blocks: [
