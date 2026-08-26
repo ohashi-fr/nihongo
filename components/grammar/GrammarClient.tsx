@@ -10,12 +10,13 @@ import type {
 } from "@/content/grammar/grammar-data";
 import { grammarQuizQuestions } from "@/content/grammar/grammar-quiz";
 import { examQuiz, totalExamBlankCount } from "@/content/grammar/exam-quiz";
+import { trainingQuizLive, totalTrainingQuestionCount } from "@/content/grammar/training-quiz";
 import SectionHeader from "@/components/ui/SectionHeader";
 import GrammarModuleTabs from "./GrammarModuleTabs";
 import GrammarSidebar from "./GrammarSidebar";
 import QuizChooser from "./QuizChooser";
 import GrammarQuiz from "./GrammarQuiz";
-import ExamQuiz from "./ExamQuiz";
+import ExamQuiz, { TRAINING_SECTION_LABELS } from "./ExamQuiz";
 import { NotionDetail, SocleDetail, ChecklistDetail } from "./GrammarDetail";
 
 /** One level of the Grammar page (e.g. 初級1 · L1–L3). */
@@ -29,15 +30,24 @@ export interface GrammarModule {
   checklist: ChecklistSection;
   /** Only the first module currently has a "short form" primer. */
   socle?: SocleSection;
-  /** Whether the "Test yourself" quiz entry applies to this module. */
-  hasQuiz?: boolean;
+  /** Which "Test yourself" quizzes this module offers, and in what
+   * order they're shown. Omit/empty to hide "Test yourself" entirely
+   * for this module. */
+  quizzes?: QuizType[];
 }
+
+type QuizType = "mcq" | "exam" | "training";
 
 type Props = {
   modules: GrammarModule[];
 };
 
-const QUIZ_IDS = new Set(["quiz", "quiz-mcq", "quiz-exam"]);
+const QUIZ_IDS = new Set(["quiz", "quiz-mcq", "quiz-exam", "quiz-training"]);
+const QUIZ_ID_TYPE: Record<string, QuizType> = {
+  "quiz-mcq": "mcq",
+  "quiz-exam": "exam",
+  "quiz-training": "training",
+};
 
 function flatten(groups: Group[]): Notion[] {
   return groups.flatMap((g) => g.notions);
@@ -77,9 +87,15 @@ function resolveState(modules: GrammarModule[], searchParams: URLSearchParams) {
   const moduleFromM = modules.find((m) => m.id === rawM);
 
   if (rawN && QUIZ_IDS.has(rawN)) {
+    // For a specific quiz id, only a module that actually offers that
+    // quiz type qualifies; for the generic chooser ("quiz"), any module
+    // with at least one quiz does.
+    const type = QUIZ_ID_TYPE[rawN];
+    const offers = (m: GrammarModule) =>
+      type ? (m.quizzes?.includes(type) ?? false) : (m.quizzes?.length ?? 0) > 0;
     const active =
-      (moduleFromM?.hasQuiz ? moduleFromM : undefined) ??
-      modules.find((m) => m.hasQuiz) ??
+      (moduleFromM && offers(moduleFromM) ? moduleFromM : undefined) ??
+      modules.find(offers) ??
       modules[0];
     return { module: active, selectedId: rawN };
   }
@@ -184,13 +200,17 @@ export default function GrammarClient({ modules }: Props) {
       return <ChecklistDetail checklist={activeModule.checklist} />;
     }
     if (selectedId === "quiz") {
+      const offered = activeModule.quizzes ?? [];
       return (
         <QuizChooser
-          onSelectMcq={() => handleSelect("quiz-mcq")}
-          onSelectExam={() => handleSelect("quiz-exam")}
+          onSelectMcq={offered.includes("mcq") ? () => handleSelect("quiz-mcq") : undefined}
+          onSelectExam={offered.includes("exam") ? () => handleSelect("quiz-exam") : undefined}
+          onSelectTraining={offered.includes("training") ? () => handleSelect("quiz-training") : undefined}
           mcqQuestionCount={grammarQuizQuestions.length}
           examBlankCount={totalExamBlankCount}
           examSectionCount={examQuiz.sections.length}
+          trainingQuestionCount={totalTrainingQuestionCount}
+          trainingSectionCount={trainingQuizLive.sections.length}
         />
       );
     }
@@ -207,6 +227,18 @@ export default function GrammarClient({ modules }: Props) {
       return (
         <ExamQuiz
           exam={examQuiz}
+          onExit={() => handleSelect(defaultSelectedId(activeModule))}
+          scrollToTop={scrollDetailToTop}
+        />
+      );
+    }
+    if (selectedId === "quiz-training") {
+      return (
+        <ExamQuiz
+          exam={trainingQuizLive}
+          quizName="Training quiz"
+          sectionLabels={TRAINING_SECTION_LABELS}
+          referenceToNotion={{}}
           onExit={() => handleSelect(defaultSelectedId(activeModule))}
           scrollToTop={scrollDetailToTop}
         />
@@ -251,7 +283,7 @@ export default function GrammarClient({ modules }: Props) {
             groups={activeModule.groups}
             socle={activeModule.socle}
             checklist={activeModule.checklist}
-            hasQuiz={activeModule.hasQuiz ?? false}
+            quizzes={activeModule.quizzes ?? []}
             selectedId={selectedId}
             onSelect={handleSelect}
           />

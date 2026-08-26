@@ -4,12 +4,43 @@ import { useEffect, useMemo, useState } from "react";
 import { toHiragana } from "wanakana";
 import { createClient } from "@/lib/supabase/client";
 import type { Exam, ExamExample, ExamQuestion, ExamSection } from "@/content/grammar/exam-quiz";
+import type {
+  TrainingExam,
+  TrainingExample,
+  TrainingQuestion,
+  TrainingSection,
+  TrainingSectionType,
+} from "@/content/grammar/training-quiz";
 import {
   Pill,
   ResultsActions,
   ResultsSummary,
   ReviewNotionLink,
 } from "./QuizShared";
+
+// This renderer plays two data shapes: the N5 mock exam (always plain
+// fill-in-the-blank) and the training quiz (which also has multiple-choice
+// and free-production sections). Rather than merging their types — which
+// would force optional `type`/`options`/`scene` onto the mock exam's data
+// too — both stay as authored in their own files, and this component
+// narrows with `in` checks wherever a field only training data has.
+type AnyExam = Exam | TrainingExam;
+type AnySection = ExamSection | TrainingSection;
+type AnyQuestion = ExamQuestion | TrainingQuestion;
+type AnyExample = ExamExample | TrainingExample;
+
+function sectionType(section: AnySection): TrainingSectionType {
+  return "type" in section && section.type ? section.type : "fill_blank";
+}
+function questionOptions(question: AnyQuestion): string[] | undefined {
+  return "options" in question ? question.options : undefined;
+}
+function questionOptionsHiragana(question: AnyQuestion): string[] | undefined {
+  return "options_hiragana" in question ? question.options_hiragana : undefined;
+}
+function questionScene(question: AnyQuestion): string | undefined {
+  return "scene" in question ? question.scene : undefined;
+}
 
 type Phase = "setup" | "section" | "final";
 
@@ -34,10 +65,18 @@ function shuffle<T>(arr: T[]): T[] {
 // The setup screen's "Start with" picker needs to be readable to a
 // beginner who can't parse 助詞/動詞/形容詞 — the section itself still
 // runs entirely in Japanese, only this navigational label is English.
-const SECTION_ENGLISH_LABEL: Record<string, string> = {
+const MOCK_SECTION_LABELS: Record<string, string> = {
   問題1: "Particles",
   問題2: "Verbs",
   問題3: "Adjectives & nouns",
+};
+
+const TRAINING_SECTION_LABELS: Record<string, string> = {
+  問題1: "Particles & connectors",
+  問題2: "Verbs",
+  問題3: "Adjectives & nouns",
+  問題4: "Grammar choice",
+  問題5: "Giving & receiving",
 };
 
 function normalize(s: string): string {
@@ -61,6 +100,32 @@ function isBlankCorrect(userInput: string, variants: string[]): boolean {
   // Accept the raw input as typed (kana via IME) or, for convenience,
   // romaji converted to hiragana — comparison always happens in kana.
   return accepted.has(raw) || accepted.has(normalize(toHiragana(raw)));
+}
+
+/** multiple_choice: the pick is one of the option strings itself (not
+ * typed), so this is a plain membership check against answers[0]. */
+function isChoiceCorrect(selected: string, variants: string[]): boolean {
+  if (!selected) return false;
+  return variants.includes(selected);
+}
+
+// free_production phrasing varies a lot ("あげました" vs "あげたんです"), so
+// matching strips whitespace/punctuation and a small set of sentence-enders
+// and minor particles the meaning doesn't hinge on, rather than requiring
+// an exact character-for-character match. Deliberately conservative: it
+// only drops filler explicitly called out as ignorable, not particles that
+// change meaning (を/が/に stay).
+const FREE_PRODUCTION_IGNORE_RE = /(のは|には|んです|ですね|です|ね|よ|。|、|\s|　)/g;
+
+function normalizeLoose(s: string): string {
+  return toHiragana(normalize(s)).replace(FREE_PRODUCTION_IGNORE_RE, "");
+}
+
+function isFreeProductionCorrect(userInput: string, variants: string[]): boolean {
+  const raw = normalize(userInput);
+  if (!raw) return false;
+  const userLoose = normalizeLoose(raw);
+  return variants.some((v) => normalizeLoose(v) === userLoose);
 }
 
 function splitPrompt(prompt: string): string[] {
@@ -90,7 +155,7 @@ function blankWidthCh(variants: string[], currentValue: string): number {
  * matching notion's content); everything else is intentionally left
  * unmapped and the reference code is shown as plain text.
  */
-const REFERENCE_TO_NOTION: Record<string, string> = {
+const MOCK_REFERENCE_TO_NOTION: Record<string, string> = {
   "L1-1": "ability", // 北海道へ行ったことがありません — たことがある
   "L1-2文4": "to-omou", // ～と思います
   "L1-3文5": "kara-node", // から
@@ -119,7 +184,7 @@ const REFERENCE_TO_NOTION: Record<string, string> = {
   "L3-4文35": "sou-seeming", // ～そうな + noun
 };
 
-function ExampleBlock({ example }: { example: ExamExample }) {
+function ExampleBlock({ example }: { example: AnyExample }) {
   const parts = splitPrompt(example.prompt_hiragana);
   const hint = example.base_word_hiragana ?? example.base_word;
   return (
@@ -141,27 +206,90 @@ function ExampleBlock({ example }: { example: ExamExample }) {
   );
 }
 
-/** One question's fill-in row inside a section. Rendered for every
- * question in the section at once — there's no per-question navigation
- * anymore, the whole section is filled and checked together. */
-function QuestionRow({
+/** Shared card chrome for a question: number badge, optional scene/hint,
+ * the prompt/answer content, and — once submitted and wrong — a footer
+ * revealing the accepted answer(s) and a link back to the notion. */
+function QuestionCard({
+  id,
+  hint,
+  scene,
+  submitted,
+  allCorrect,
+  wrongFooter,
+  children,
+}: {
+  id: number;
+  hint?: string | null;
+  scene?: string;
+  submitted: boolean;
+  allCorrect: boolean;
+  wrongFooter?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-2xl bg-white p-4 shadow-soft">
+      <div className="flex items-start gap-3">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-[11px] font-bold text-primary">
+          {id}
+        </span>
+        <div className="min-w-0 flex-1">
+          {scene && (
+            <div className="jp mb-2 rounded-lg bg-soft px-3 py-2 text-xs leading-relaxed text-sumi">
+              {scene}
+            </div>
+          )}
+          {hint && <div className="jp mb-1 text-xs font-medium text-muted">→ from {hint}</div>}
+          {children}
+        </div>
+      </div>
+
+      {submitted && !allCorrect && wrongFooter && (
+        <div className="mt-3 ml-10 rounded-xl bg-red-50 p-3">{wrongFooter}</div>
+      )}
+    </div>
+  );
+}
+
+function GrammarRefFooter({
+  reference,
+  notionSlug,
+}: {
+  reference: string;
+  notionSlug?: string;
+}) {
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-3">
+      <span className="text-xs text-muted">{reference}</span>
+      {notionSlug && <ReviewNotionLink notionSlug={notionSlug} />}
+    </div>
+  );
+}
+
+/** fill_blank and free_production both type into inline blanks inside the
+ * sentence — they only differ in which correctness function graded them
+ * (decided by the caller), and free_production additionally shows a
+ * `scene` description above the prompt. */
+function TextBlankRow({
   question,
   values,
   onChange,
   submitted,
   blankResults,
+  referenceToNotion,
 }: {
-  question: ExamQuestion;
+  question: AnyQuestion;
   values: string[];
   onChange: (blankIndex: number, value: string) => void;
   submitted: boolean;
   blankResults?: boolean[];
+  referenceToNotion: Record<string, string>;
 }) {
   const parts = splitPrompt(question.prompt_hiragana);
   const blankCount = question.answers.length;
   const allCorrect = submitted && !!blankResults && blankResults.every(Boolean);
-  const notionSlug = REFERENCE_TO_NOTION[question.grammar_reference];
+  const notionSlug = referenceToNotion[question.grammar_reference];
   const hint = question.base_word_hiragana ?? question.base_word;
+  const scene = questionScene(question);
 
   const nodes: React.ReactNode[] = [];
   parts.forEach((part, i) => {
@@ -200,21 +328,14 @@ function QuestionRow({
   });
 
   return (
-    <div className="rounded-2xl bg-white p-4 shadow-soft">
-      <div className="flex items-start gap-3">
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-[11px] font-bold text-primary">
-          {question.id}
-        </span>
-        <div className="min-w-0 flex-1">
-          {hint && <div className="jp mb-1 text-xs font-medium text-muted">→ from {hint}</div>}
-          <div className="jp flex flex-wrap items-center gap-x-1 gap-y-2 text-base leading-loose text-ink">
-            {nodes}
-          </div>
-        </div>
-      </div>
-
-      {submitted && !allCorrect && (
-        <div className="mt-3 ml-10 rounded-xl bg-red-50 p-3">
+    <QuestionCard
+      id={question.id}
+      hint={hint}
+      scene={scene}
+      submitted={submitted}
+      allCorrect={allCorrect}
+      wrongFooter={
+        <>
           <ul className="space-y-1">
             {question.answers.map((variants, i) =>
               blankResults && blankResults[i] ? null : (
@@ -225,34 +346,131 @@ function QuestionRow({
               )
             )}
           </ul>
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            <span className="text-xs text-muted">{question.grammar_reference}</span>
-            {notionSlug && <ReviewNotionLink notionSlug={notionSlug} />}
-          </div>
-        </div>
-      )}
-    </div>
+          <GrammarRefFooter reference={question.grammar_reference} notionSlug={notionSlug} />
+        </>
+      }
+    >
+      <div className="jp flex flex-wrap items-center gap-x-1 gap-y-2 text-base leading-loose text-ink">
+        {nodes}
+      </div>
+    </QuestionCard>
+  );
+}
+
+/** multiple_choice: the blank is filled by picking one of `options`
+ * (shown via `options_hiragana` when present) rather than typing. */
+function ChoiceRow({
+  question,
+  value,
+  onChange,
+  submitted,
+  correct,
+  referenceToNotion,
+}: {
+  question: AnyQuestion;
+  value: string;
+  onChange: (value: string) => void;
+  submitted: boolean;
+  correct: boolean | null;
+  referenceToNotion: Record<string, string>;
+}) {
+  const opts = questionOptions(question) ?? [];
+  const optsHiragana = questionOptionsHiragana(question);
+  const parts = splitPrompt(question.prompt_hiragana);
+  const notionSlug = referenceToNotion[question.grammar_reference];
+  const variants = question.answers[0] ?? [];
+  const allCorrect = submitted && !!correct;
+
+  return (
+    <QuestionCard
+      id={question.id}
+      submitted={submitted}
+      allCorrect={allCorrect}
+      wrongFooter={
+        <>
+          <p className="jp text-sm text-sumi">
+            <span className="font-semibold">{variants.join(" / ")}</span>
+          </p>
+          <GrammarRefFooter reference={question.grammar_reference} notionSlug={notionSlug} />
+        </>
+      }
+    >
+      <p className="jp text-base leading-loose text-ink">
+        {parts[0]}
+        <span
+          className={`mx-1 inline-block min-w-[3ch] rounded-lg border-2 px-2 py-0.5 text-center align-baseline text-base ${
+            !submitted
+              ? "border-dashed border-primary-200 text-muted"
+              : correct
+                ? "border-success bg-success-50 text-success-700"
+                : "border-red-400 bg-red-50 text-red-700"
+          }`}
+        >
+          {value || "？"}
+        </span>
+        {parts[1]}
+      </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {opts.map((opt, i) => {
+          const label = optsHiragana?.[i] ?? opt;
+          const selected = value === opt;
+          return (
+            <button
+              key={opt}
+              type="button"
+              disabled={submitted}
+              onClick={() => onChange(opt)}
+              className={`jp rounded-full px-3.5 py-1.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                selected
+                  ? submitted
+                    ? correct
+                      ? "bg-success text-white"
+                      : "bg-red-400 text-white"
+                    : "bg-primary text-white shadow-soft"
+                  : "bg-soft text-sumi hover:bg-primary-50"
+              }`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+    </QuestionCard>
   );
 }
 
 type Props = {
-  exam: Exam;
+  exam: AnyExam;
   /** Leave the quiz and return to the grammar reference. */
   onExit: () => void;
   /** Reset the detail pane's scroll position (desktop) / window scroll
    * (mobile) — called on phase transitions so a new screen starts at
    * the top. */
   scrollToTop: () => void;
+  /** English name shown on the setup screen, e.g. "Mock exam · N5". */
+  quizName?: string;
+  /** section_id → short English label, for the "Start with" picker. */
+  sectionLabels?: Record<string, string>;
+  /** grammar_reference → grammar-data.ts notion slug, for "Review this
+   * notion" links. Omit for exams without a curated mapping. */
+  referenceToNotion?: Record<string, string>;
 };
 
-export default function ExamQuiz({ exam, onExit, scrollToTop }: Props) {
+export default function ExamQuiz({
+  exam,
+  onExit,
+  scrollToTop,
+  quizName = "Mock exam · N5",
+  sectionLabels = MOCK_SECTION_LABELS,
+  referenceToNotion = MOCK_REFERENCE_TO_NOTION,
+}: Props) {
   const [phase, setPhase] = useState<Phase>("setup");
   const [startSectionId, setStartSectionId] = useState<string>(exam.sections[0].section_id);
 
   // The run order rotates to start at whichever section the user picked,
   // then continues through the rest in their normal order — every run
-  // covers all 3 sections exactly once, exam-style.
-  const [sectionOrder, setSectionOrder] = useState<ExamSection[]>([]);
+  // covers all sections exactly once, exam-style.
+  const [sectionOrder, setSectionOrder] = useState<AnySection[]>([]);
   const [sectionIndex, setSectionIndex] = useState(0);
 
   const [inputs, setInputs] = useState<Record<number, string[]>>({});
@@ -272,7 +490,7 @@ export default function ExamQuiz({ exam, onExit, scrollToTop }: Props) {
 
   const section = sectionOrder[sectionIndex];
 
-  function resetSectionState(sec: ExamSection) {
+  function resetSectionState(sec: AnySection) {
     const initial: Record<number, string[]> = {};
     for (const q of sec.questions) initial[q.id] = new Array(q.answers.length).fill("");
     setInputs(initial);
@@ -286,7 +504,13 @@ export default function ExamQuiz({ exam, onExit, scrollToTop }: Props) {
     // Each section's own questions are shuffled — the section order
     // itself stays fixed (rotated to the chosen start), only what's
     // inside each one is randomized per round.
-    const order = rotated.map((sec) => ({ ...sec, questions: shuffle(sec.questions) }));
+    // TS can't cleanly distribute this spread across the ExamSection |
+    // TrainingSection union — it's shape-preserving (only `questions` is
+    // replaced by a shuffled copy of itself), so the assertion is safe.
+    const order = rotated.map((sec) => ({
+      ...sec,
+      questions: shuffle(sec.questions as AnyQuestion[]),
+    })) as AnySection[];
     setSectionOrder(order);
     setSectionIndex(0);
     resetSectionState(order[0]);
@@ -306,11 +530,14 @@ export default function ExamQuiz({ exam, onExit, scrollToTop }: Props) {
 
   function submitSection() {
     if (!section || submitted) return;
+    const kind = sectionType(section);
+    const check =
+      kind === "multiple_choice" ? isChoiceCorrect : kind === "free_production" ? isFreeProductionCorrect : isBlankCorrect;
     const newResults: Record<number, boolean[]> = {};
     let correct = 0;
     let total = 0;
     for (const q of section.questions) {
-      const blankResults = q.answers.map((variants, i) => isBlankCorrect(inputs[q.id]?.[i] ?? "", variants));
+      const blankResults = q.answers.map((variants, i) => check(inputs[q.id]?.[i] ?? "", variants));
       newResults[q.id] = blankResults;
       correct += blankResults.filter(Boolean).length;
       total += blankResults.length;
@@ -392,7 +619,7 @@ export default function ExamQuiz({ exam, onExit, scrollToTop }: Props) {
           <h2 className="jp mt-4 text-xs font-semibold uppercase tracking-[0.1em] text-accent-700">
             {exam.title}
           </h2>
-          <h2 className="text-2xl font-bold tracking-tight text-ink">Mock exam · N5</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-ink">{quizName}</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted">
             One section at a time, exam-style: fill in every blank in a
             section, then submit it all together to see your score before
@@ -408,7 +635,7 @@ export default function ExamQuiz({ exam, onExit, scrollToTop }: Props) {
             {exam.sections.map((sec, i) => (
               <Pill
                 key={sec.section_id}
-                label={`Section ${i + 1} · ${SECTION_ENGLISH_LABEL[sec.section_id] ?? sec.title}`}
+                label={`Section ${i + 1} · ${sectionLabels[sec.section_id] ?? sec.title}`}
                 selected={startSectionId === sec.section_id}
                 onClick={() => setStartSectionId(sec.section_id)}
               />
@@ -421,7 +648,7 @@ export default function ExamQuiz({ exam, onExit, scrollToTop }: Props) {
           onClick={() => startExam(startSectionId)}
           className="btn-accent mt-8 w-full justify-center !rounded-2xl !py-3 text-base"
         >
-          Start → ({totalBlanks} blanks · {totalQuestions} questions · 3 sections)
+          Start → ({totalBlanks} blanks · {totalQuestions} questions · {exam.sections.length} sections)
         </button>
       </div>
     );
@@ -470,6 +697,7 @@ export default function ExamQuiz({ exam, onExit, scrollToTop }: Props) {
   // ─── SECTION (fill, then check as a whole) ────────────────────────
   if (!section) return null;
 
+  const kind = sectionType(section);
   const sectionBlankTotal = section.questions.reduce((n, q) => n + q.answers.length, 0);
   const sectionCorrect = submitted
     ? Object.values(results).reduce((n, r) => n + r.filter(Boolean).length, 0)
@@ -496,10 +724,14 @@ export default function ExamQuiz({ exam, onExit, scrollToTop }: Props) {
         </div>
         <h2 className="text-xl font-bold text-ink">{section.title}</h2>
         <p className="mt-2 text-sm text-sumi">{section.instructions}</p>
-        <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-muted">
-          Example
-        </p>
-        <ExampleBlock example={section.example} />
+        {section.example && (
+          <>
+            <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.15em] text-muted">
+              Example
+            </p>
+            <ExampleBlock example={section.example} />
+          </>
+        )}
       </div>
 
       {submitted && (
@@ -514,16 +746,29 @@ export default function ExamQuiz({ exam, onExit, scrollToTop }: Props) {
       )}
 
       <div className="space-y-3">
-        {section.questions.map((q) => (
-          <QuestionRow
-            key={q.id}
-            question={q}
-            values={inputs[q.id] ?? []}
-            onChange={(i, v) => updateInput(q.id, i, v)}
-            submitted={submitted}
-            blankResults={results[q.id]}
-          />
-        ))}
+        {section.questions.map((q) =>
+          kind === "multiple_choice" ? (
+            <ChoiceRow
+              key={q.id}
+              question={q}
+              value={inputs[q.id]?.[0] ?? ""}
+              onChange={(v) => updateInput(q.id, 0, v)}
+              submitted={submitted}
+              correct={results[q.id] ? results[q.id][0] : null}
+              referenceToNotion={referenceToNotion}
+            />
+          ) : (
+            <TextBlankRow
+              key={q.id}
+              question={q}
+              values={inputs[q.id] ?? []}
+              onChange={(i, v) => updateInput(q.id, i, v)}
+              submitted={submitted}
+              blankResults={results[q.id]}
+              referenceToNotion={referenceToNotion}
+            />
+          )
+        )}
       </div>
 
       <div className="mt-6 flex justify-center">
@@ -544,3 +789,5 @@ export default function ExamQuiz({ exam, onExit, scrollToTop }: Props) {
     </div>
   );
 }
+
+export { TRAINING_SECTION_LABELS };

@@ -2,14 +2,24 @@
 
 import type { ChecklistSection, Group, SocleSection } from "@/content/grammar/grammar-data";
 
+type QuizType = "mcq" | "exam" | "training";
+
 type Props = {
   groups: Group[];
   socle?: SocleSection;
   checklist: ChecklistSection;
-  hasQuiz?: boolean;
+  /** Which "Test yourself" quizzes the active module offers; empty/omit
+   * hides the "Test yourself" card entirely. */
+  quizzes?: QuizType[];
   selectedId: string;
   onSelect: (id: string) => void;
   className?: string;
+};
+
+const QUIZ_TYPE_LABEL: Record<QuizType, string> = {
+  mcq: "MCQ",
+  exam: "Mock exam",
+  training: "Training",
 };
 
 /**
@@ -101,9 +111,11 @@ function NotionCard({
 function QuizCard({
   active,
   onClick,
+  subtitle,
 }: {
   active: boolean;
   onClick: () => void;
+  subtitle: string;
 }) {
   return (
     <button
@@ -147,7 +159,7 @@ function QuizCard({
             active ? "text-white/70" : "text-primary/70"
           }`}
         >
-          MCQ quiz · Mock exam N5
+          {subtitle}
         </span>
       </span>
       <span
@@ -168,18 +180,20 @@ export default function GrammarSidebar({
   groups,
   socle,
   checklist,
-  hasQuiz = false,
+  quizzes = [],
   selectedId,
   onSelect,
   className = "",
 }: Props) {
+  const quizIds = new Set(["quiz", ...quizzes.map((q) => `quiz-${q}`)]);
   return (
     <nav aria-label="Grammar notions" className={className}>
-      {hasQuiz && (
+      {quizzes.length > 0 && (
         <div className="mb-3">
           <QuizCard
-            active={selectedId === "quiz" || selectedId === "quiz-mcq" || selectedId === "quiz-exam"}
+            active={quizIds.has(selectedId)}
             onClick={() => onSelect("quiz")}
+            subtitle={quizzes.map((q) => QUIZ_TYPE_LABEL[q]).join(" · ")}
           />
         </div>
       )}

@@ -16,7 +16,7 @@ const modules: GrammarModule[] = [
     groups,
     socle,
     checklist,
-    hasQuiz: true,
+    quizzes: ["mcq", "exam"],
   },
   {
     id: "l4-l5",
@@ -24,6 +24,7 @@ const modules: GrammarModule[] = [
     subtitleLabel: "初級1 (L4–L5)",
     groups: groupsL4L5,
     checklist: checklistL4L5,
+    quizzes: ["training"],
   },
 ];
 
