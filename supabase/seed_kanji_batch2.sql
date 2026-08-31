@@ -147,7 +147,7 @@ cross join (values
   ('{"kanji":"紙","meanings":["paper"],"kunyomi":["かみ"],"onyomi":["し"],"card_type":"kanji_flashcard","examples":[{"word":"手紙","reading":"てがみ","meaning":"letter"},{"word":"表紙","reading":"ひょうし","meaning":"cover"}]}')
 ) as v(fld);
 
--- ─── Level 14 — Bow & Strength (3) ─────────────────────────────────
+-- ─── Level 14 — Bow & Strength (4) ─────────────────────────────────
 with lv as (
   select lv.id from module_levels lv
   join modules m on m.id = lv.module_id
@@ -159,7 +159,8 @@ select ds.id, fld::jsonb from do_seed ds
 cross join (values
   ('{"kanji":"引","meanings":["pull","draw"],"kunyomi":["ひ.く"],"onyomi":["いん"],"card_type":"kanji_flashcard","examples":[{"word":"引く","reading":"ひく","meaning":"to pull, to draw"},{"word":"引力","reading":"いんりょく","meaning":"gravity"},{"word":"引退する","reading":"いんたいする","meaning":"to retire"}]}'),
   ('{"kanji":"強","meanings":["strong"],"kunyomi":["つよ.い"],"onyomi":["きょう","ごう"],"card_type":"kanji_flashcard","examples":[{"word":"強い","reading":"つよい","meaning":"strong"},{"word":"勉強する","reading":"べんきょうする","meaning":"to study"},{"word":"強弱","reading":"きょうじゃく","meaning":"strength and weakness"}]}'),
-  ('{"kanji":"弱","meanings":["weak"],"kunyomi":["よわ.い"],"onyomi":["じゃく"],"card_type":"kanji_flashcard","examples":[{"word":"弱い","reading":"よわい","meaning":"weak"},{"word":"弱点","reading":"じゃくてん","meaning":"weak point"}]}')
+  ('{"kanji":"弱","meanings":["weak"],"kunyomi":["よわ.い"],"onyomi":["じゃく"],"card_type":"kanji_flashcard","examples":[{"word":"弱い","reading":"よわい","meaning":"weak"},{"word":"弱点","reading":"じゃくてん","meaning":"weak point"}]}'),
+  ('{"kanji":"弟","meanings":["younger brother"],"kunyomi":["おとうと"],"onyomi":["だい","てい"],"card_type":"kanji_flashcard","examples":[{"word":"弟","reading":"おとうと","meaning":"one''s younger brother"},{"word":"兄弟","reading":"きょうだい","meaning":"brothers"}]}')
 ) as v(fld);
 
 -- ─── Level 15 — Ground & Place (3) ─────────────────────────────────
@@ -177,7 +178,7 @@ cross join (values
   ('{"kanji":"型","meanings":["type","model"],"kunyomi":["かた"],"onyomi":["けい"],"card_type":"kanji_flashcard","examples":[{"word":"血液型","reading":"けつえきがた","meaning":"blood type"},{"word":"新型","reading":"しんがた","meaning":"new type"},{"word":"模型","reading":"もけい","meaning":"model"}]}')
 ) as v(fld);
 
--- ─── Level 16 — Family & Feelings (6) ──────────────────────────────
+-- ─── Level 16 — Family & Feelings (5) ──────────────────────────────
 with lv as (
   select lv.id from module_levels lv
   join modules m on m.id = lv.module_id
@@ -187,7 +188,6 @@ do_seed as (select id from lv where not exists (select 1 from cards c where c.le
 insert into cards (level_id, fields)
 select ds.id, fld::jsonb from do_seed ds
 cross join (values
-  ('{"kanji":"弟","meanings":["younger brother"],"kunyomi":["おとうと"],"onyomi":["だい","てい"],"card_type":"kanji_flashcard","examples":[{"word":"弟","reading":"おとうと","meaning":"one''s younger brother"},{"word":"兄弟","reading":"きょうだい","meaning":"brothers"}]}'),
   ('{"kanji":"好","meanings":["like","fond of"],"kunyomi":["す.き","この.む"],"onyomi":["こう"],"card_type":"kanji_flashcard","examples":[{"word":"好き","reading":"すき","meaning":"to like, favorite"},{"word":"好物","reading":"こうぶつ","meaning":"one''s favorite food"}]}'),
   ('{"kanji":"嫌","meanings":["dislike","hate"],"kunyomi":["きら.い","いや"],"onyomi":["けん"],"card_type":"kanji_flashcard","examples":[{"word":"嫌い","reading":"きらい","meaning":"dislike"},{"word":"嫌","reading":"いや","meaning":"unpleasant"},{"word":"機嫌がいい","reading":"きげんがいい","meaning":"in a good mood"}]}'),
   ('{"kanji":"姉","meanings":["older sister"],"kunyomi":["あね"],"onyomi":["し"],"card_type":"kanji_flashcard","examples":[{"word":"姉","reading":"あね","meaning":"one''s older sister"},{"word":"お姉さん","reading":"おねえさん","meaning":"older sister"},{"word":"姉妹","reading":"しまい","meaning":"sisters"}]}'),
