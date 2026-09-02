@@ -7,6 +7,14 @@ import type { Card } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
+// Virtual aggregate levels — own no cards of their own. At request time we
+// pool cards from every regular (non-exam, non-aggregate) kanji level,
+// optionally restricted to levels at/after `minOrderIndex`.
+const AGGREGATE_LEVELS: Record<string, { minOrderIndex?: number }> = {
+  "All kanji - Review": {},
+  "Review - Mid terms - Beginner 1": { minOrderIndex: 7 },
+};
+
 export default async function KanjiLevelPage({
   params,
 }: {
@@ -40,22 +48,31 @@ export default async function KanjiLevelPage({
   if (!level || level.module_id !== mod.id) notFound();
 
   const isExam = !!level.is_exam;
-  const isAggregate = level.name === "All Kanjis - Mid Terms";
+  const aggregateConfig = AGGREGATE_LEVELS[level.name];
+  const isAggregate = !!aggregateConfig;
 
-  // Aggregate "All Kanjis" — virtual level. Fetch every card from every
-  // regular (non-exam, non-aggregate) kanji level and treat the result
-  // as if it were the level's own card list. Same card.id as the source
-  // levels, so card_reviews entries dedupe naturally.
+  // Aggregate levels — virtual, own no cards. Fetch every card from every
+  // regular (non-exam, non-aggregate) kanji level — optionally restricted
+  // to levels at/after `minOrderIndex` — and treat the result as if it
+  // were the level's own card list. Same card.id as the source levels,
+  // so card_reviews entries dedupe naturally.
   if (isAggregate) {
-    const { data: regularLevels } = await supabase
+    const { data: regularLevelsRaw } = await supabase
       .from("module_levels")
-      .select("id, name")
+      .select("id, name, order_index")
       .eq("module_id", mod.id)
       .eq("is_exam", false)
       .neq("id", level.id)
       .order("order_index", { ascending: true });
 
-    const ids = (regularLevels ?? []).map((l: any) => l.id);
+    const regularLevels = (regularLevelsRaw ?? []).filter(
+      (l: any) =>
+        !(l.name in AGGREGATE_LEVELS) &&
+        (aggregateConfig.minOrderIndex == null ||
+          l.order_index >= aggregateConfig.minOrderIndex)
+    );
+
+    const ids = regularLevels.map((l: any) => l.id);
     let pool: Card[] = [];
     if (ids.length > 0) {
       const { data: poolCards } = await supabase
@@ -108,20 +125,23 @@ export default async function KanjiLevelPage({
     // level ids and the card pool are still one dependent chain — but
     // we already paid for `levelCardsRes` (which is empty for the exam)
     // in the first round-trip, so this is the only extra delay.
-    // Exclude the aggregate level — it has no cards of its own and
+    // Exclude aggregate levels — they have no cards of their own and
     // would otherwise show up as a 0-card row in the breakdown.
-    const { data: regularLevels } = await supabase
+    const { data: regularLevelsRaw } = await supabase
       .from("module_levels")
       .select("id, name")
       .eq("module_id", mod.id)
       .eq("is_exam", false)
-      .neq("name", "All Kanjis - Mid Terms")
       .order("order_index", { ascending: true });
 
-    const ids = (regularLevels ?? []).map((l: any) => l.id);
+    const regularLevels = (regularLevelsRaw ?? []).filter(
+      (l: any) => !(l.name in AGGREGATE_LEVELS)
+    );
+
+    const ids = regularLevels.map((l: any) => l.id);
     let pool: Card[] = [];
     const levelNames: Record<string, string> = {};
-    (regularLevels ?? []).forEach((l: any) => {
+    regularLevels.forEach((l: any) => {
       levelNames[l.id] = l.name;
     });
 

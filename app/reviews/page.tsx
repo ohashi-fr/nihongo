@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import ReviewsClient, {
   type VerbFavoriteItem,
   type KanjiFavoriteItem,
+  type KanjiWordFavoriteItem,
   type AdjectiveFavoriteItem,
   type NounFavoriteItem,
   type AdverbFavoriteItem,
@@ -27,14 +28,33 @@ export default async function ReviewsPage() {
     redirect("/login?next=/reviews");
   }
 
-  // Pull every favourited card for this user, joined to its card row,
-  // then split in JS by `fields.card_type`. RLS scopes rows to the
-  // current user automatically.
+  // Pull every favourited id for this user, then the matching card
+  // rows, and join in JS — split by `fields.card_type`. RLS scopes
+  // both queries to the current user / public read automatically.
+  //
+  // Two round-trips instead of an embedded `cards!inner(...)` select:
+  // that embed relies on PostgREST resolving a *database* foreign key
+  // between `favorites.card_id` and `cards.id`, which no longer
+  // exists (see supabase/migrate_word_favorites.sql — dropped so
+  // Kanji "Words" mode can favorite synthetic per-word ids that don't
+  // have a `cards` row). Doing the join here also means a favorited
+  // word id — which has no matching `cards` row — is silently
+  // skipped rather than 500ing the whole page.
   const { data: favRows } = await supabase
     .from("favorites")
-    .select("card_id, created_at, cards!inner(id, fields)")
+    .select("card_id, created_at")
     .eq("user_id", user.id)
     .order("created_at", { ascending: false });
+
+  const cardIds = (favRows ?? []).map((r) => r.card_id);
+  const { data: cardRows } =
+    cardIds.length > 0
+      ? await supabase.from("cards").select("id, fields").in("id", cardIds)
+      : { data: [] as { id: string; fields: any }[] };
+
+  const fieldsByCardId = new Map(
+    (cardRows ?? []).map((c) => [c.id, c.fields as any])
+  );
 
   const verbItems: VerbFavoriteItem[] = [];
   const adjectiveItems: AdjectiveFavoriteItem[] = [];
@@ -43,22 +63,59 @@ export default async function ReviewsPage() {
   const conjugationItems: ConjugationFavoriteItem[] = [];
   const kanjiItems: KanjiFavoriteItem[] = [];
 
-  for (const r of ((favRows ?? []) as any[])) {
-    const type = r.cards?.fields?.card_type;
+  for (const r of favRows ?? []) {
+    const fields = fieldsByCardId.get(r.card_id);
+    if (!fields) continue; // e.g. a Words-mode word id — no card row
+    const type = fields.card_type;
     if (type === "verb_flashcard") {
-      verbItems.push({ cardId: r.card_id, fields: r.cards.fields });
+      verbItems.push({ cardId: r.card_id, fields });
     } else if (type === "adjective_flashcard") {
-      adjectiveItems.push({ cardId: r.card_id, fields: r.cards.fields });
+      adjectiveItems.push({ cardId: r.card_id, fields });
     } else if (type === "noun_flashcard") {
-      nounItems.push({ cardId: r.card_id, fields: r.cards.fields });
+      nounItems.push({ cardId: r.card_id, fields });
     } else if (type === "adverb_flashcard") {
       // Adverbs live in the Vocabulary deck under their own filter
       // pill; they reuse `NounFields` since the shape is identical.
-      adverbItems.push({ cardId: r.card_id, fields: r.cards.fields });
+      adverbItems.push({ cardId: r.card_id, fields });
     } else if (type === "verb_conjugation") {
-      conjugationItems.push({ cardId: r.card_id, fields: r.cards.fields });
+      conjugationItems.push({ cardId: r.card_id, fields });
     } else if (type === "kanji_flashcard") {
-      kanjiItems.push({ cardId: r.card_id, fields: r.cards.fields });
+      kanjiItems.push({ cardId: r.card_id, fields });
+    }
+  }
+
+  // Any leftover favorite ids didn't match a real `cards` row above —
+  // in Kanji "Words" mode those are synthetic per-word ids (see
+  // `wordCardId` in components/KanjiQuizClient.tsx: a kanji card's
+  // real id with its last byte swapped for the word's index, since a
+  // word has no row of its own in `cards`). Recover the word by
+  // matching that id's prefix against a kanji card's real id, then
+  // indexing into *that* kanji's `examples[]` with the last byte.
+  const unmatchedIds = (favRows ?? [])
+    .map((r) => r.card_id)
+    .filter((id) => !fieldsByCardId.has(id));
+
+  const kanjiWordItems: KanjiWordFavoriteItem[] = [];
+  if (unmatchedIds.length > 0) {
+    const { data: kanjiCards } = await supabase
+      .from("cards")
+      .select("id, fields")
+      .eq("fields->>card_type", "kanji_flashcard");
+    const kanjiByPrefix = new Map(
+      (kanjiCards ?? []).map((c) => [c.id.slice(0, -2), c])
+    );
+    for (const id of unmatchedIds) {
+      const kanjiCard = kanjiByPrefix.get(id.slice(0, -2));
+      const wordIndex = parseInt(id.slice(-2), 16);
+      const example = (kanjiCard?.fields as any)?.examples?.[wordIndex];
+      if (example) {
+        kanjiWordItems.push({
+          cardId: id,
+          word: example.word,
+          reading: example.reading,
+          meaning: example.meaning,
+        });
+      }
     }
   }
 
@@ -112,6 +169,7 @@ export default async function ReviewsPage() {
           adverbItems={adverbItems}
           conjugationItems={conjugationItems}
           kanjiItems={kanjiItems}
+          kanjiWordItems={kanjiWordItems}
           userId={user.id}
         />
       </div>

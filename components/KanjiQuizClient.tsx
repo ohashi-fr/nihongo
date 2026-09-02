@@ -30,13 +30,30 @@ export type KanjiFields = {
   examples: KanjiExample[];
 };
 
-type Direction = "en_jp" | "jp_en" | "mix";
+type Direction = "en_jp" | "jp_en" | "mix" | "words";
 
-type Item = {
+type KanjiItem = {
+  kind: "kanji";
   id: string;
   fields: KanjiFields;
   dir: "en_jp" | "jp_en";
 };
+
+/**
+ * One flip-card in "Words" mode — a single example word pulled out of
+ * a kanji's `examples[]`, flattened to its own card. `id` is a
+ * synthetic uuid-shaped id (see `wordCardId`) since words don't have
+ * their own row in `cards`.
+ */
+type WordItem = {
+  kind: "word";
+  id: string;
+  word: string;
+  reading: string;
+  meaning: string;
+};
+
+type Item = KanjiItem | WordItem;
 
 type Props = {
   cards: Card[];
@@ -49,7 +66,21 @@ const MODES: PreQuizMode[] = [
   { value: "jp_en", label: "JP → EN" },
   { value: "en_jp", label: "EN → JP" },
   { value: "mix", label: "Mix" },
+  { value: "words", label: "Words" },
 ];
+
+/**
+ * Deterministic, uuid-shaped id for the Nth example word of a kanji
+ * card. Postgres's `uuid` column only validates the hex/hyphen shape
+ * (it doesn't enforce RFC 4122 version/variant bits), so swapping the
+ * trailing byte of the real kanji card id for the word's index gives
+ * a stable, collision-safe-enough id we can favorite through the same
+ * `favorites` table — see supabase/migrate_word_favorites.sql, which
+ * drops the FK to `cards(id)` so these synthetic ids are accepted.
+ */
+export function wordCardId(kanjiCardId: string, wordIndex: number): string {
+  return kanjiCardId.slice(0, -2) + wordIndex.toString(16).padStart(2, "0");
+}
 
 function shuffle<T>(arr: T[]): T[] {
   const a = arr.slice();
@@ -86,7 +117,8 @@ export default function KanjiQuizClient({
   const direction: Direction | null =
     modeParam === "en_jp" ||
     modeParam === "jp_en" ||
-    modeParam === "mix"
+    modeParam === "mix" ||
+    modeParam === "words"
       ? modeParam
       : null;
 
@@ -95,13 +127,34 @@ export default function KanjiQuizClient({
     [cards]
   );
 
+  // Words mode's deck: every example word, flattened out of every
+  // kanji card, one flip-card each. A kanji with no examples simply
+  // contributes no cards.
+  const wordItems: WordItem[] = useMemo(
+    () =>
+      parsedCards.flatMap((c) =>
+        c.fields.examples.map((ex, i) => ({
+          kind: "word" as const,
+          id: wordCardId(c.id, i),
+          word: ex.word,
+          reading: ex.reading,
+          meaning: ex.meaning,
+        }))
+      ),
+    [parsedCards]
+  );
+
   const [shuffleOn, setShuffleOn] = useState(false);
   const [seed, setSeed] = useState(0);
 
   const order: Item[] = useMemo(() => {
     if (!direction) return [];
+    if (direction === "words") {
+      return shuffleOn ? shuffle(wordItems) : wordItems;
+    }
     const base = shuffleOn ? shuffle(parsedCards) : parsedCards;
     return base.map((c) => ({
+      kind: "kanji" as const,
       id: c.id,
       fields: c.fields,
       dir:
@@ -112,7 +165,7 @@ export default function KanjiQuizClient({
           : direction,
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [direction, parsedCards, shuffleOn, seed]);
+  }, [direction, parsedCards, wordItems, shuffleOn, seed]);
 
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -144,7 +197,12 @@ export default function KanjiQuizClient({
       return;
     }
     const supabase = createClient();
-    const cardIds = parsedCards.map((c) => c.id);
+    // Include word ids too — the same star/favorites mechanism marks
+    // Words-mode cards, independently of their parent kanji's star.
+    const cardIds = [
+      ...parsedCards.map((c) => c.id),
+      ...wordItems.map((w) => w.id),
+    ];
     if (cardIds.length === 0) return;
     let cancelled = false;
     (async () => {
@@ -159,7 +217,7 @@ export default function KanjiQuizClient({
     return () => {
       cancelled = true;
     };
-  }, [userId, parsedCards]);
+  }, [userId, parsedCards, wordItems]);
 
   async function toggleFavorite(cardId: string) {
     if (!userId) return;
@@ -268,13 +326,14 @@ export default function KanjiQuizClient({
   if (order.length === 0) {
     return (
       <p className="rounded-2xl border border-dashed border-border bg-white/60 p-8 text-center text-muted">
-        No kanji in this level yet.
+        {direction === "words"
+          ? "None of these kanji have example words yet."
+          : "No kanji in this level yet."}
       </p>
     );
   }
 
   const item = order[index];
-  const f = item.fields;
 
   return (
     <div>
@@ -288,7 +347,9 @@ export default function KanjiQuizClient({
               ? "EN → JP"
               : direction === "jp_en"
                 ? "JP → EN"
-                : "Mix"}
+                : direction === "words"
+                  ? "Words"
+                  : "Mix"}
           </span>
         </div>
         <div className="flex items-center gap-4">
@@ -331,15 +392,25 @@ export default function KanjiQuizClient({
             className="absolute inset-0 flex flex-col items-center justify-center rounded-lg border border-border bg-white p-8 shadow-card"
             style={{ backfaceVisibility: "hidden" }}
           >
-            {item.dir === "jp_en" ? (
-              <div className="jp text-[140px] leading-none">{f.kanji}</div>
+            {item.kind === "word" ? (
+              <div className="jp text-center text-6xl leading-tight">
+                {item.word}
+              </div>
+            ) : item.dir === "jp_en" ? (
+              <div className="jp text-[140px] leading-none">
+                {item.fields.kanji}
+              </div>
             ) : (
               <div className="text-center text-3xl font-medium">
-                {f.meanings.join(", ") || "—"}
+                {item.fields.meanings.join(", ") || "—"}
               </div>
             )}
             <div className="mt-6 text-xs uppercase tracking-[0.25em] text-muted">
-              {item.dir === "jp_en" ? "Japanese" : "English"}
+              {item.kind === "word"
+                ? "Word"
+                : item.dir === "jp_en"
+                  ? "Japanese"
+                  : "English"}
             </div>
           </div>
 
@@ -351,7 +422,11 @@ export default function KanjiQuizClient({
               transform: "rotateY(180deg)",
             }}
           >
-            <BackContent fields={f} />
+            {item.kind === "word" ? (
+              <WordBackContent item={item} />
+            ) : (
+              <BackContent fields={item.fields} />
+            )}
           </div>
         </button>
 
@@ -399,6 +474,23 @@ export default function KanjiQuizClient({
         onClose={() => setCheatOpen(false)}
         items={parsedCards}
       />
+    </div>
+  );
+}
+
+// =============================================================
+// Back-face content — Words mode: word + furigana + definition
+// =============================================================
+function WordBackContent({ item }: { item: WordItem }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center space-y-4 text-center">
+      <div>
+        <div className="jp text-5xl leading-tight">{item.word}</div>
+        {item.reading && item.reading !== item.word && (
+          <div className="jp mt-2 text-lg text-muted">{item.reading}</div>
+        )}
+      </div>
+      <div className="text-base text-ink">{item.meaning || "—"}</div>
     </div>
   );
 }

@@ -5,9 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import CreateDeckModal from "@/components/CreateDeckModal";
 import DeleteDeckModal from "@/components/DeleteDeckModal";
+import EmptyDeckModal from "@/components/EmptyDeckModal";
 import DeckActionsMenu from "@/components/DeckActionsMenu";
 import Toast from "@/components/ui/Toast";
 import { illustrationUrl } from "@/lib/deckIllustrations";
+import { createClient } from "@/lib/supabase/client";
 import { revalidateDecksList } from "@/app/reviews/actions";
 import type { CustomDeckWithCount } from "@/lib/customDecks";
 
@@ -20,9 +22,10 @@ import type { CustomDeckWithCount } from "@/lib/customDecks";
  * stays visible inline with the collection.
  *
  * Each deck card carries a discreet "⋯" menu (via <DeckActionsMenu>)
- * that opens the destructive Delete action; confirmation happens
- * through <DeleteDeckModal>. On success the deck disappears from
- * the local list and a toast confirms.
+ * with "Empty deck" (clears its cards, keeps the deck) and "Delete
+ * deck" (removes it entirely); confirmation happens through
+ * <EmptyDeckModal> / <DeleteDeckModal>. On success the local list
+ * updates and a toast confirms.
  */
 
 type Props = {
@@ -35,6 +38,8 @@ export default function CustomDecksList({ decks, userId }: Props) {
   const [visibleDecks, setVisibleDecks] =
     useState<CustomDeckWithCount[]>(decks);
   const [deletingDeck, setDeletingDeck] =
+    useState<CustomDeckWithCount | null>(null);
+  const [emptyingDeck, setEmptyingDeck] =
     useState<CustomDeckWithCount | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -54,6 +59,7 @@ export default function CustomDecksList({ decks, userId }: Props) {
           <DeckCard
             key={d.id}
             deck={d}
+            onRequestEmpty={() => setEmptyingDeck(d)}
             onRequestDelete={() => setDeletingDeck(d)}
           />
         ))}
@@ -100,6 +106,42 @@ export default function CustomDecksList({ decks, userId }: Props) {
         }}
       />
 
+      <EmptyDeckModal
+        open={emptyingDeck !== null}
+        deckName={emptyingDeck?.name ?? null}
+        cardCount={emptyingDeck?.card_count ?? 0}
+        onClose={() => setEmptyingDeck(null)}
+        onConfirm={async () => {
+          if (!emptyingDeck) return;
+          const supabase = createClient();
+          const { error } = await supabase
+            .from("custom_cards")
+            .delete()
+            .eq("deck_id", emptyingDeck.id);
+          if (error) {
+            // eslint-disable-next-line no-console
+            console.error("[custom_cards] empty deck failed:", error);
+            return (
+              `${error.code ? `[${error.code}] ` : ""}${error.message}` +
+              (error.hint ? ` — ${error.hint}` : "")
+            );
+          }
+        }}
+        onEmptied={async () => {
+          const name = emptyingDeck?.name;
+          if (emptyingDeck) {
+            setVisibleDecks((prev) =>
+              prev.map((d) =>
+                d.id === emptyingDeck.id ? { ...d, card_count: 0 } : d
+              )
+            );
+          }
+          setEmptyingDeck(null);
+          await revalidateDecksList();
+          setToast(name ? `"${name}" emptied` : "Deck emptied");
+        }}
+      />
+
       <Toast
         message={toast}
         onDismiss={() => setToast(null)}
@@ -117,9 +159,11 @@ export default function CustomDecksList({ decks, userId }: Props) {
 // =============================================================
 function DeckCard({
   deck,
+  onRequestEmpty,
   onRequestDelete,
 }: {
   deck: CustomDeckWithCount;
+  onRequestEmpty: () => void;
   onRequestDelete: () => void;
 }) {
   const empty = deck.card_count === 0;
@@ -166,7 +210,10 @@ function DeckCard({
       <div className="absolute right-2 top-2">
         <DeckActionsMenu
           label={`Actions for ${deck.name}`}
-          onDelete={onRequestDelete}
+          items={[
+            { label: "Empty deck", onClick: onRequestEmpty },
+            { label: "Delete deck", tone: "danger", onClick: onRequestDelete },
+          ]}
         />
       </div>
     </div>

@@ -1,9 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import DeckActionsMenu from "@/components/DeckActionsMenu";
+import EmptyDeckModal from "@/components/EmptyDeckModal";
 import type { VerbFields } from "@/components/VerbFlashcardClient";
 import type { AdjectiveFields } from "@/components/AdjectiveFlashcardClient";
 import { AdjectiveClassChip } from "@/components/AdjectiveFlashcardClient";
@@ -30,6 +33,20 @@ export type AdjectiveFavoriteItem = {
 export type KanjiFavoriteItem = {
   cardId: string;
   fields: KanjiFields;
+};
+
+/**
+ * A favorited example word from Kanji "Words" mode. Unlike the other
+ * favorite item types, this has no `fields` blob — it's already the
+ * flat `{word, reading, meaning}` shape, resolved server-side from a
+ * synthetic per-word id (see `wordCardId` in KanjiQuizClient and the
+ * recovery logic in app/reviews/page.tsx).
+ */
+export type KanjiWordFavoriteItem = {
+  cardId: string;
+  word: string;
+  reading: string;
+  meaning: string;
 };
 
 export type NounFavoriteItem = {
@@ -64,6 +81,13 @@ type VocabItem =
   | { kind: "adverb"; cardId: string; fields: NounFields }
   | { kind: "conjugation"; cardId: string; fields: ConjugationFields };
 
+// Kanji deck items — either a full kanji card or a flattened example
+// word (Kanji "Words" mode). Tagged with `kind` so the playing screen
+// can dispatch, same pattern as `VocabItem`.
+type KanjiDeckItem =
+  | { kind: "kanji"; cardId: string; fields: KanjiFields }
+  | { kind: "word"; cardId: string; word: string; reading: string; meaning: string };
+
 type Deck = "vocab" | "kanji";
 
 type Phase =
@@ -78,6 +102,8 @@ type VocabFilter =
   | "adverbs"
   | "conjugation";
 
+type KanjiFilter = "all" | "kanji" | "words";
+
 type Props = {
   verbItems: VerbFavoriteItem[];
   adjectiveItems: AdjectiveFavoriteItem[];
@@ -85,6 +111,7 @@ type Props = {
   adverbItems: AdverbFavoriteItem[];
   conjugationItems: ConjugationFavoriteItem[];
   kanjiItems: KanjiFavoriteItem[];
+  kanjiWordItems: KanjiWordFavoriteItem[];
   userId: string;
 };
 
@@ -95,14 +122,20 @@ export default function ReviewsClient({
   adverbItems,
   conjugationItems,
   kanjiItems,
+  kanjiWordItems,
   userId,
 }: Props) {
+  const router = useRouter();
   const [phase, setPhase] = useState<Phase>({ kind: "ready" });
   const [vocabFilter, setVocabFilter] = useState<VocabFilter>("all");
+  const [kanjiFilter, setKanjiFilter] = useState<KanjiFilter>("all");
   const [vocabQueue, setVocabQueue] = useState<VocabItem[]>([]);
-  const [kanjiQueue, setKanjiQueue] = useState<KanjiFavoriteItem[]>([]);
+  const [kanjiQueue, setKanjiQueue] = useState<KanjiDeckItem[]>([]);
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [emptyTarget, setEmptyTarget] = useState<"vocab" | "kanji" | null>(
+    null
+  );
 
   // Re-seed when the server payload changes (page refresh).
   useEffect(() => {
@@ -118,6 +151,7 @@ export default function ReviewsClient({
     adverbItems,
     conjugationItems,
     kanjiItems,
+    kanjiWordItems,
   ]);
 
   // Keyboard — Space / Enter flip, ← / → navigate.
@@ -179,6 +213,61 @@ export default function ReviewsClient({
     vocabFilter,
   ]);
 
+  // Every vocab card id, regardless of the active filter pill — used
+  // by "Empty deck" so it always clears the whole Vocabulary bucket.
+  const allVocabIds = useMemo(
+    () => [
+      ...verbItems,
+      ...adjectiveItems,
+      ...nounItems,
+      ...adverbItems,
+      ...conjugationItems,
+    ].map((it) => it.cardId),
+    [verbItems, adjectiveItems, nounItems, adverbItems, conjugationItems]
+  );
+
+  // Filtered kanji pool — kanji cards, example words, or both.
+  const filteredKanjiPool: KanjiDeckItem[] = useMemo(() => {
+    const kanjis: KanjiDeckItem[] = kanjiItems.map((it) => ({
+      kind: "kanji",
+      cardId: it.cardId,
+      fields: it.fields,
+    }));
+    const words: KanjiDeckItem[] = kanjiWordItems.map((it) => ({
+      kind: "word",
+      cardId: it.cardId,
+      word: it.word,
+      reading: it.reading,
+      meaning: it.meaning,
+    }));
+    if (kanjiFilter === "kanji") return kanjis;
+    if (kanjiFilter === "words") return words;
+    return [...kanjis, ...words];
+  }, [kanjiItems, kanjiWordItems, kanjiFilter]);
+
+  // Every kanji-deck card id (kanji + words), regardless of the
+  // active filter pill — used by "Empty deck" so it always clears the
+  // whole Kanji bucket.
+  const allKanjiIds = useMemo(
+    () => [...kanjiItems, ...kanjiWordItems].map((it) => it.cardId),
+    [kanjiItems, kanjiWordItems]
+  );
+
+  async function emptyFavoritesDeck(cardIds: string[]) {
+    if (cardIds.length === 0) return;
+    const supabase = createClient();
+    const { error } = await supabase
+      .from("favorites")
+      .delete()
+      .eq("user_id", userId)
+      .in("card_id", cardIds);
+    if (error) {
+      // eslint-disable-next-line no-console
+      console.error("[favorites] empty deck failed:", error);
+      throw error;
+    }
+  }
+
   function startVocab() {
     if (filteredVocabPool.length === 0) return;
     setVocabQueue(filteredVocabPool.slice());
@@ -188,8 +277,8 @@ export default function ReviewsClient({
   }
 
   function startKanji() {
-    if (kanjiItems.length === 0) return;
-    setKanjiQueue(kanjiItems.slice());
+    if (filteredKanjiPool.length === 0) return;
+    setKanjiQueue(filteredKanjiPool.slice());
     setIndex(0);
     setFlipped(false);
     setPhase({ kind: "playing", deck: "kanji" });
@@ -249,7 +338,8 @@ export default function ReviewsClient({
       nounItems.length +
       adverbItems.length +
       conjugationItems.length +
-      kanjiItems.length;
+      kanjiItems.length +
+      kanjiWordItems.length;
     if (totalFavorites === 0) {
       return (
         <div className="mx-auto max-w-md rounded-lg border border-border bg-white p-8 text-center shadow-card">
@@ -272,23 +362,57 @@ export default function ReviewsClient({
       );
     }
     return (
-      <div className="grid gap-4 sm:grid-cols-2">
-        <VocabDeckCard
-          filter={vocabFilter}
-          onFilterChange={setVocabFilter}
-          verbCount={verbItems.length}
-          adjectiveCount={adjectiveItems.length}
-          nounCount={nounItems.length}
-          adverbCount={adverbItems.length}
-          conjugationCount={conjugationItems.length}
-          filteredCount={filteredVocabPool.length}
-          onStart={startVocab}
+      <>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <VocabDeckCard
+            filter={vocabFilter}
+            onFilterChange={setVocabFilter}
+            verbCount={verbItems.length}
+            adjectiveCount={adjectiveItems.length}
+            nounCount={nounItems.length}
+            adverbCount={adverbItems.length}
+            conjugationCount={conjugationItems.length}
+            filteredCount={filteredVocabPool.length}
+            onStart={startVocab}
+            onEmpty={() => setEmptyTarget("vocab")}
+          />
+          <KanjiDeckCard
+            filter={kanjiFilter}
+            onFilterChange={setKanjiFilter}
+            kanjiCount={kanjiItems.length}
+            wordCount={kanjiWordItems.length}
+            filteredCount={filteredKanjiPool.length}
+            onStart={startKanji}
+            onEmpty={() => setEmptyTarget("kanji")}
+          />
+        </div>
+
+        <EmptyDeckModal
+          open={emptyTarget !== null}
+          deckName={emptyTarget === "vocab" ? "Vocabulary" : "Kanji"}
+          cardCount={
+            emptyTarget === "vocab" ? allVocabIds.length : allKanjiIds.length
+          }
+          onClose={() => setEmptyTarget(null)}
+          onConfirm={async () => {
+            try {
+              await emptyFavoritesDeck(
+                emptyTarget === "vocab" ? allVocabIds : allKanjiIds
+              );
+            } catch (error: any) {
+              return (
+                `${error?.code ? `[${error.code}] ` : ""}${
+                  error?.message ?? "Something went wrong."
+                }` + (error?.hint ? ` — ${error.hint}` : "")
+              );
+            }
+          }}
+          onEmptied={() => {
+            setEmptyTarget(null);
+            router.refresh();
+          }}
         />
-        <KanjiDeckCard
-          count={kanjiItems.length}
-          onStart={startKanji}
-        />
-      </div>
+      </>
     );
   }
 
@@ -349,6 +473,7 @@ export default function ReviewsClient({
   return (
     <SessionShell
       deckLabel="Kanji"
+      deckSubLabel={item.kind === "word" ? "Word" : undefined}
       progress={`${index + 1} / ${kanjiQueue.length}`}
       flipped={flipped}
       onFlip={() => setFlipped((f) => !f)}
@@ -360,7 +485,11 @@ export default function ReviewsClient({
       onUnfavorite={unfavorite}
       onExit={() => setPhase({ kind: "ready" })}
     >
-      <KanjiCardFaces item={item} />
+      {item.kind === "word" ? (
+        <KanjiWordCardFaces item={item} />
+      ) : (
+        <KanjiCardFaces item={item} />
+      )}
     </SessionShell>
   );
 }
@@ -378,6 +507,7 @@ function VocabDeckCard({
   conjugationCount,
   filteredCount,
   onStart,
+  onEmpty,
 }: {
   filter: VocabFilter;
   onFilterChange: (f: VocabFilter) => void;
@@ -388,10 +518,18 @@ function VocabDeckCard({
   conjugationCount: number;
   filteredCount: number;
   onStart: () => void;
+  onEmpty: () => void;
 }) {
   const empty = filteredCount === 0;
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-card">
+    <div className="relative rounded-2xl bg-white p-6 shadow-card">
+      <div className="absolute right-2 top-2">
+        <DeckActionsMenu
+          label="Actions for Vocabulary"
+          items={[{ label: "Empty deck", onClick: onEmpty }]}
+        />
+      </div>
+
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-lg font-bold text-ink">Vocabulary</h3>
@@ -509,23 +647,40 @@ function FilterPill({
 }
 
 // =============================================================
-// Kanji deck-picker card (unchanged)
+// Kanji deck-picker card
 // =============================================================
 function KanjiDeckCard({
-  count,
+  filter,
+  onFilterChange,
+  kanjiCount,
+  wordCount,
+  filteredCount,
   onStart,
+  onEmpty,
 }: {
-  count: number;
+  filter: KanjiFilter;
+  onFilterChange: (f: KanjiFilter) => void;
+  kanjiCount: number;
+  wordCount: number;
+  filteredCount: number;
   onStart: () => void;
+  onEmpty: () => void;
 }) {
-  const empty = count === 0;
+  const empty = filteredCount === 0;
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-card">
+    <div className="relative rounded-2xl bg-white p-6 shadow-card">
+      <div className="absolute right-2 top-2">
+        <DeckActionsMenu
+          label="Actions for Kanji"
+          items={[{ label: "Empty deck", onClick: onEmpty }]}
+        />
+      </div>
+
       <div className="flex items-start justify-between gap-3">
         <div>
           <h3 className="text-lg font-bold text-ink">Kanji</h3>
           <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-muted">
-            Saved kanji cards
+            Saved kanji &amp; example words
           </p>
         </div>
         {/* Matches the lantern illustration used on the home page's
@@ -538,11 +693,35 @@ function KanjiDeckCard({
           className="h-16 w-16 shrink-0 object-contain drop-shadow-sm"
         />
       </div>
+
+      <div className="mt-4 flex flex-wrap gap-1.5">
+        <FilterPill
+          label="All"
+          count={kanjiCount + wordCount}
+          active={filter === "all"}
+          onClick={() => onFilterChange("all")}
+        />
+        <FilterPill
+          label="Kanji"
+          count={kanjiCount}
+          active={filter === "kanji"}
+          onClick={() => onFilterChange("kanji")}
+        />
+        <FilterPill
+          label="Words"
+          count={wordCount}
+          active={filter === "words"}
+          onClick={() => onFilterChange("words")}
+        />
+      </div>
+
       <p className="mt-4 text-2xl font-semibold">
-        {count} {count === 1 ? "card" : "cards"} saved
+        {filteredCount} {filteredCount === 1 ? "card" : "cards"} saved
       </p>
       {empty && (
-        <p className="mt-1 text-xs text-muted">Star a kanji to add it here.</p>
+        <p className="mt-1 text-xs text-muted">
+          Star a kanji or an example word to add it here.
+        </p>
       )}
       <button
         onClick={onStart}
@@ -926,7 +1105,11 @@ function ConjugationCardFaces({
 // =============================================================
 // Kanji card faces — front kanji, back meanings + readings
 // =============================================================
-function KanjiCardFaces({ item }: { item: KanjiFavoriteItem }) {
+function KanjiCardFaces({
+  item,
+}: {
+  item: Extract<KanjiDeckItem, { kind: "kanji" }>;
+}) {
   const f = item.fields;
   return (
     <>
@@ -990,6 +1173,53 @@ function KanjiCardFaces({ item }: { item: KanjiFavoriteItem }) {
             </ul>
           </div>
         )}
+      </div>
+    </>
+  );
+}
+
+// =============================================================
+// Kanji word card faces (Kanji "Words" mode) — front word alone,
+// back word + furigana + definition. Same recto/verso split as
+// KanjiQuizClient's own Words mode.
+// =============================================================
+function KanjiWordCardFaces({
+  item,
+}: {
+  item: Extract<KanjiDeckItem, { kind: "word" }>;
+}) {
+  return (
+    <>
+      <div
+        className="absolute inset-0 flex flex-col items-center justify-center rounded-lg border border-border bg-white p-8 shadow-card"
+        style={{ backfaceVisibility: "hidden" }}
+      >
+        <div className="jp text-center text-6xl leading-tight">
+          {item.word}
+        </div>
+        <div className="mt-6 text-xs uppercase tracking-[0.25em] text-muted">
+          Word
+        </div>
+      </div>
+
+      <div
+        className="absolute inset-0 flex flex-col items-center justify-center overflow-y-auto rounded-lg border border-border bg-paper p-6 shadow-card"
+        style={{
+          backfaceVisibility: "hidden",
+          transform: "rotateY(180deg)",
+        }}
+      >
+        <div className="space-y-4 text-center">
+          <div>
+            <div className="jp text-5xl leading-tight">{item.word}</div>
+            {item.reading && item.reading !== item.word && (
+              <div className="jp mt-2 text-lg text-muted">
+                {item.reading}
+              </div>
+            )}
+          </div>
+          <div className="text-base text-ink">{item.meaning || "—"}</div>
+        </div>
       </div>
     </>
   );

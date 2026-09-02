@@ -50,7 +50,9 @@ export default async function KanjiHome() {
         <ul className="mt-6 divide-y divide-border overflow-hidden rounded-lg border border-border bg-white">
           {levels.map((lv: any) => {
             const exam = !!lv.is_exam;
-            const aggregate = lv.name === "All Kanjis - Mid Terms";
+            const aggregate =
+              lv.name === "All kanji - Review" ||
+              lv.name === "Review - Mid terms - Beginner 1";
             return (
               <li key={lv.id}>
                 <Link

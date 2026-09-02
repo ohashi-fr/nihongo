@@ -4,28 +4,32 @@ import { useEffect, useRef, useState } from "react";
 
 /**
  * Small "⋯" popover menu attached to a deck. Renders a discreet
- * button; clicking it reveals a menu with the destructive
- * "Delete deck" action. Dismisses on outside click, on Escape, or
- * on picking a menu item.
+ * button; clicking it reveals a menu of caller-supplied actions
+ * (e.g. "Empty deck", "Delete deck"). Dismisses on outside click,
+ * on Escape, or on picking a menu item.
  *
  * Uses only structural affordances the caller passes in as
  * callbacks — this component holds *no* delete/confirm state on
- * its own. Confirmation is the caller's responsibility (via the
- * DeleteDeckModal).
+ * its own. Confirmation is the caller's responsibility (via a
+ * modal like DeleteDeckModal / EmptyDeckModal).
  */
 
+export type DeckMenuItem = {
+  label: string;
+  onClick: () => void;
+  /** "danger" renders the item in red (permanent/destructive actions). */
+  tone?: "default" | "danger";
+  icon?: React.ReactNode;
+};
+
 type Props = {
-  onDelete: () => void;
+  items: DeckMenuItem[];
   /** Optional accessible label — defaults to "Deck actions". */
   label?: string;
-  /**
-   * Tone the trigger button. Use "onDark" when the menu sits on a
-   * dark-heavy card (rare for us — default suits the current UI).
-   */
 };
 
 export default function DeckActionsMenu({
-  onDelete,
+  items,
   label = "Deck actions",
 }: Props) {
   const [open, setOpen] = useState(false);
@@ -80,33 +84,27 @@ export default function DeckActionsMenu({
           role="menu"
           className="absolute right-0 z-30 mt-1.5 w-44 overflow-hidden rounded-2xl border border-border bg-white p-1 shadow-cardHover"
         >
-          <button
-            type="button"
-            role="menuitem"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              setOpen(false);
-              onDelete();
-            }}
-            className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-red-700 transition hover:bg-red-50"
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              aria-hidden
+          {items.map((item) => (
+            <button
+              key={item.label}
+              type="button"
+              role="menuitem"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                setOpen(false);
+                item.onClick();
+              }}
+              className={`flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium transition ${
+                item.tone === "danger"
+                  ? "text-red-700 hover:bg-red-50"
+                  : "text-ink hover:bg-soft"
+              }`}
             >
-              <path d="M3 6h18" />
-              <path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />
-              <path d="M5 6l1 14a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1l1-14" />
-            </svg>
-            <span>Delete deck</span>
-          </button>
+              {item.icon}
+              <span>{item.label}</span>
+            </button>
+          ))}
         </div>
       )}
     </div>

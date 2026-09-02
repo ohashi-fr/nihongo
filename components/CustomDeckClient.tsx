@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import EditDeckModal from "@/components/EditDeckModal";
 import AddCardForm from "@/components/AddCardForm";
 import DeleteDeckModal from "@/components/DeleteDeckModal";
+import EmptyDeckModal from "@/components/EmptyDeckModal";
 import DeckActionsMenu from "@/components/DeckActionsMenu";
 import Toast from "@/components/ui/Toast";
 import { illustrationUrl } from "@/lib/deckIllustrations";
@@ -60,6 +61,7 @@ export default function CustomDeckClient({
   const [showAdd, setShowAdd] = useState(initialCards.length === 0);
   const [editing, setEditing] = useState(false);
   const [deletingDeck, setDeletingDeck] = useState(false);
+  const [emptyingDeck, setEmptyingDeck] = useState(false);
   // The card currently being edited via the reused AddCardForm.
   // When non-null, the form appears at the top in edit mode.
   const [editingCard, setEditingCard] = useState<CustomCard | null>(null);
@@ -154,7 +156,14 @@ export default function CustomDeckClient({
         </button>
         <DeckActionsMenu
           label="Deck actions"
-          onDelete={() => setDeletingDeck(true)}
+          items={[
+            { label: "Empty deck", onClick: () => setEmptyingDeck(true) },
+            {
+              label: "Delete deck",
+              tone: "danger",
+              onClick: () => setDeletingDeck(true),
+            },
+          ]}
         />
       </div>
 
@@ -173,6 +182,34 @@ export default function CustomDeckClient({
           setDeletingDeck(false);
           await revalidateDecksList();
           router.push("/reviews");
+        }}
+      />
+
+      <EmptyDeckModal
+        open={emptyingDeck}
+        deckName={deck.name}
+        cardCount={cards.length}
+        onClose={() => setEmptyingDeck(false)}
+        onConfirm={async () => {
+          const supabase = createClient();
+          const { error } = await supabase
+            .from("custom_cards")
+            .delete()
+            .eq("deck_id", deck.id);
+          if (error) {
+            // eslint-disable-next-line no-console
+            console.error("[custom_cards] empty deck failed:", error);
+            return (
+              `${error.code ? `[${error.code}] ` : ""}${error.message}` +
+              (error.hint ? ` — ${error.hint}` : "")
+            );
+          }
+        }}
+        onEmptied={async () => {
+          setCards([]);
+          setEmptyingDeck(false);
+          await revalidateDeck(deck.id);
+          setToast("Deck emptied");
         }}
       />
 
