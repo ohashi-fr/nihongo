@@ -28,8 +28,14 @@ export default async function KanjiLevelPage({
   const [modRes, levelRes, levelCardsRes] = await Promise.all([
     supabase
       .from("modules")
-      .select("id, name, slug")
+      .select(
+        "id, name, slug, module_levels(id, name, order_index, is_exam)"
+      )
       .eq("slug", "kanji")
+      .order("order_index", {
+        foreignTable: "module_levels",
+        ascending: true,
+      })
       .maybeSingle(),
     supabase
       .from("module_levels")
@@ -46,6 +52,21 @@ export default async function KanjiLevelPage({
   const level = levelRes.data;
   if (!mod) notFound();
   if (!level || level.module_id !== mod.id) notFound();
+
+  // Ordered sibling levels — lets the level page offer prev/next
+  // navigation without going back through /modules/kanji.
+  const orderedLevels = ((mod as any).module_levels ?? []) as {
+    id: string;
+    name: string;
+    order_index: number;
+    is_exam: boolean;
+  }[];
+  const currentPos = orderedLevels.findIndex((l) => l.id === level.id);
+  const prevLevel = currentPos > 0 ? orderedLevels[currentPos - 1] : null;
+  const nextLevel =
+    currentPos >= 0 && currentPos < orderedLevels.length - 1
+      ? orderedLevels[currentPos + 1]
+      : null;
 
   const isExam = !!level.is_exam;
   const aggregateConfig = AGGREGATE_LEVELS[level.name];
@@ -99,6 +120,7 @@ export default async function KanjiLevelPage({
               All
             </span>
           </div>
+          <LevelNav prevLevel={prevLevel} nextLevel={nextLevel} />
         </div>
 
         {pool.length === 0 ? (
@@ -170,6 +192,7 @@ export default async function KanjiLevelPage({
               Exam
             </span>
           </div>
+          <LevelNav prevLevel={prevLevel} nextLevel={nextLevel} />
         </div>
 
         <KanjiExamClient
@@ -197,6 +220,7 @@ export default async function KanjiLevelPage({
         <h1 className="mt-3 text-3xl font-semibold tracking-tight">
           {level.name}
         </h1>
+        <LevelNav prevLevel={prevLevel} nextLevel={nextLevel} />
       </div>
 
       {list.length === 0 ? (
@@ -212,5 +236,42 @@ export default async function KanjiLevelPage({
         />
       )}
     </section>
+  );
+}
+
+// Prev/next links between sibling kanji levels (order_index order, same
+// as the /modules/kanji list) — lets the user step through levels
+// without returning to that list.
+function LevelNav({
+  prevLevel,
+  nextLevel,
+}: {
+  prevLevel: { id: string; name: string } | null;
+  nextLevel: { id: string; name: string } | null;
+}) {
+  if (!prevLevel && !nextLevel) return null;
+  return (
+    <div className="mt-4 flex items-center justify-between gap-3">
+      {prevLevel ? (
+        <Link
+          href={`/modules/kanji/${prevLevel.id}`}
+          className="btn-outline text-sm"
+        >
+          ← {prevLevel.name}
+        </Link>
+      ) : (
+        <span />
+      )}
+      {nextLevel ? (
+        <Link
+          href={`/modules/kanji/${nextLevel.id}`}
+          className="btn-outline text-sm"
+        >
+          {nextLevel.name} →
+        </Link>
+      ) : (
+        <span />
+      )}
+    </div>
   );
 }
