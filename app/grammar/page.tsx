@@ -20,8 +20,8 @@ const modules: GrammarModule[] = [
   },
   {
     id: "l4-l5",
-    tabLabel: "Lessons 4–5",
-    subtitleLabel: "初級1 (L4–L5)",
+    tabLabel: "Lessons 4–5–6",
+    subtitleLabel: "初級1 (L4–L5–6)",
     groups: groupsL4L5,
     checklist: checklistL4L5,
     quizzes: ["training"],
