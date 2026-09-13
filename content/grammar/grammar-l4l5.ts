@@ -1,29 +1,14 @@
 /**
  * Structured transcription of content/grammar/recap-japonais-L4-L5.html.
  *
- * Companion to the L1–L3 file (grammar-data.ts). Same shape and same
- * rules: all *framing* text (objectives, rules, attention points,
- * group/section titles, example glosses) is in English for the app UI.
- * Japanese content — example sentences, forms, and table entries — is
- * transcribed verbatim from the source and must never be altered,
- * paraphrased, or "improved". If in doubt about a Japanese string, check
- * recap-japonais-L4-L5.html.
+ * Companion to the L1–L3 file (grammar-data.ts).
+ * Covers course lessons 文法38–61 (global notions 27–48).
  *
- * Numbering note: these are course lessons 文法38–61. To avoid colliding
- * with the L1–L3 file (which uses number 1–26), the `number` field here
- * continues the app's running order at 27. The real course lesson number
- * lives in `courseNumber` and in each `sidebarLabel`. Prefer `slug` for
- * any external linking — it is stable regardless of ordering.
- *
- * Inline markup used in string fields (parsed by
- * components/grammar/RichText.tsx):
- *
+ * Inline markup used in string fields:
  *   **text**              → bold (<b>)
- *   __text__               → underline (<u>)
- *   {{nature:text}}        → word-nature pill (verbe/compteur/nom/adj/naadj)
- *   {{gloss:text}}         → small muted inline gloss
- *
- * A `rule` block's `lines` array is one entry per boxed formula.
+ *   __text__              → underline (<u>)
+ *   {{nature:text}}       → word-nature pill (verbe/compteur/nom/adj/naadj)
+ *   {{gloss:text}}        → small muted inline gloss
  */
 
 import type { Group, Notion, ChecklistSection } from "./grammar-data";
@@ -45,28 +30,36 @@ export const groupsL4L5: Group[] = [
         sidebarLabel: "Respectful keigo — o~ni naru",
         titleJp: "お ＋ どうし ＋ になる",
         titleKanji: "お動詞になる",
-        objective:
-          "Raise the subject by speaking of **their** actions with respect (honorific language).",
-        exampleGloss: "“The teacher has gone home” (said deferentially).",
+        objective: "Elevate the social standing of the listener or third party by honoring their actions.",
+        exampleGloss: "“The teacher has returned home” (said deferentially).",
         blocks: [
           {
             type: "rule",
-            label: "Rule",
-            lines: ["お + {{verbe:-masu stem}} + に なります → おかえりに なります"],
+            label: "Regular Honorific Pattern",
+            lines: ["お + {{verbe:-masu stem}} + **に なります** → おかえりに なります"],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "Drop ます from the stem: かえり**ます** → お + かえり + に なる.",
-            "Marks respect toward **the subject** (the teacher, the customer) — never for talking about yourself.",
-            "Some verbs have a special honorific form outside this pattern (e.g. いる → いらっしゃる, みる → ごらんになる).",
+            "Strip ます from the stem: かえり**ます** → お + かえり + に なります.",
+            "**Respect towards the subject only**: Never use this formula to describe your own actions.",
+            "Common verbs with distinct irregular honorific forms bypass this pattern: いる/いく/くる → **いらっしゃる**, みる → **ごらんになる**, いう → **おっしゃる**, たべる/のむ → **めしあがる**.",
           ],
         },
         examples: [
-          { jp: "せんせいは もう おかえりに なりました。" },
-          { jp: "おたばこを おすいに なりますか。" },
-          { jp: "せんせいが おまちに なって います。" },
+          {
+            jp: "せんせいは もう おかえりに なりました。",
+            gloss: "The teacher has already gone home. (Respectful)",
+          },
+          {
+            jp: "おたばこを おすいに なりますか。",
+            gloss: "Do you smoke? (Respectfully asking a customer or superior)",
+          },
+          {
+            jp: "せんせいが おまちに なって います。",
+            gloss: "The teacher is waiting. (Respectful)",
+          },
         ],
       },
     ],
@@ -82,28 +75,36 @@ export const groupsL4L5: Group[] = [
         slug: "nakanaka",
         sidebarLabel: "Won't happen despite effort",
         titleJp: "なかなか 〜ません",
-        objective:
-          "Say that an expected thing is **slow to happen** or **won't happen despite effort**.",
-        exampleGloss: "“The bus just won't come (while I'm waiting).”",
+        objective: "Express that an expected outcome is slow in coming or resists effort.",
+        exampleGloss: "“The bus just won't arrive” / “I can't seem to memorize this kanji.”",
         blocks: [
           {
             type: "rule",
             label: "Rule",
-            lines: ["なかなか + {{verbe:negative verb}} → なかなか きません"],
+            lines: ["**なかなか** + {{verbe:negative verb}} → なかなか きません (hardly comes)"],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "Here なかなか is **almost always used with a negative**: “it won't come / it won't happen”.",
-            "It implies waiting or effort: not just “no”, but “can't manage to…”.",
-            "Often with Type 1 (intransitive) verbs: なかなか あきません (it won't open).",
+            "In N4 grammar, **なかなか** is almost exclusively paired with a **negative predicate**: “won't easily happen”.",
+            "It conveys an unspoken expectation, waiting, or effort: not a plain negation, but “unable to manage despite trying”.",
+            "Frequently combined with potential negatives: なかなか おぼえられません (cannot memorize it easily).",
           ],
         },
         examples: [
-          { jp: "バスが なかなか きません。" },
-          { jp: "かんじが なかなか おぼえられません。" },
-          { jp: "ともだちに なかなか あえません。" },
+          {
+            jp: "バスが なかなか きません。",
+            gloss: "The bus just won't arrive (despite waiting for it).",
+          },
+          {
+            jp: "かんじが なかなか おぼえられません。",
+            gloss: "I just can't memorize the kanji (despite trying hard).",
+          },
+          {
+            jp: "ともだちに なかなか あえません。",
+            gloss: "I can rarely meet my friends (difficult to arrange a time).",
+          },
         ],
       },
     ],
@@ -120,33 +121,42 @@ export const groupsL4L5: Group[] = [
         sidebarLabel: "Frequency — times per period",
         titleJp: "じすうし に じすうし",
         titleKanji: "時数詞に時数詞",
-        objective: "Say how many times over a period (frequency).",
-        exampleGloss: "“Once a month.” / “Five days a week.”",
+        objective: "Specify frequency over a defined time interval.",
+        exampleGloss: "“Once a month” / “Three times a day.”",
         blocks: [
           {
             type: "rule",
             label: "Rule",
-            lines: ["{{compteur:period}} に {{compteur:number of times}} → 1しゅうかん に 5かい"],
+            lines: ["{{compteur:Time Period}} **に** {{compteur:Number of Times}} → 1しゅうかん **に** 5かい (5 times a week)"],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "Order: **the period first**, then the count → “X に Y” = “Y times per X”.",
-            "The に is the key particle linking the two counters.",
+            "Strict structural order: **Period first**, followed by particle **に**, then the **count**: [Time] に [Count].",
+            "No particle is placed after the counter count: 1にち**に** 3かい (never 3かいを).",
           ],
         },
         examples: [
-          { jp: "1にちに 3かい しょくじします。", gloss: "3 meals a day" },
-          { jp: "1かげつに 1かい、ともだちと いっしょに しょくじします。" },
-          { jp: "1しゅうかんに 5か、がっこうで べんきょうします。" },
+          {
+            jp: "1にちに 3かい しょくじします。",
+            gloss: "I eat meals 3 times a day.",
+          },
+          {
+            jp: "1かげつに 1かい、ともだちと いっしょに しょくじします。",
+            gloss: "Once a month, I have a meal together with friends.",
+          },
+          {
+            jp: "1しゅうかんに 5かい、がっこうで べんきょうします。",
+            gloss: "I study at school 5 days a week.",
+          },
         ],
       },
     ],
   },
   {
     id: "g-no",
-    jpTitle: "の で なめいしか",
+    jpTitle: "どうしの めいしか",
     title: "Nominalizing a verb",
     notions: [
       {
@@ -156,32 +166,38 @@ export const groupsL4L5: Group[] = [
         sidebarLabel: "Turning a clause into a noun",
         titleJp: "どうし の を ／ どうし の が",
         titleKanji: "動詞のを / 動詞のが",
-        objective:
-          "Turn a whole clause into an “object block” with の, so it can sit inside another sentence.",
-        exampleGloss:
-          "“I'm waiting for the taxi to arrive.” / “I like watching children play.”",
+        objective: "Package a full verbal clause into a noun block using の so it can receive grammatical particles.",
+        exampleGloss: "“I'm waiting for the taxi to arrive (のを)” / “I like watching sports (のが).”",
         blocks: [
           {
             type: "sub",
-            label: "Sub-point A — 〜のを (the block is the object)",
+            label: "Sub-point A — 〜のを (Clause is the Direct Object)",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "[{{verbe:clause, short form}}] + の + **を** + verb (まっています, しっています, わすれました…)",
+                  "[clause in short form] + **のを** + verb (まっています, わすれました, しっています…)",
                 ],
+              },
+              {
+                type: "paragraph",
+                text: "Used when the entire action is what you wait for, forget, or know about.",
               },
             ],
           },
           {
             type: "sub",
-            label: "Sub-point B — 〜のが (the block is the subject)",
+            label: "Sub-point B — 〜のが (Clause is the Subject/Predicate Target)",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "[{{verbe:clause, short form}}] + の + **が** + verb (みえます, すきです, きこえます…)",
+                  "[clause in short form] + **のが** + predicate (すきです, じょうずです, はやいです, みえます…)",
                 ],
+              },
+              {
+                type: "paragraph",
+                text: "Used before evaluative adjectives (like, hate, good at) or involuntary perception verbs (みえる, きこえる).",
               },
             ],
           },
@@ -189,17 +205,31 @@ export const groupsL4L5: Group[] = [
         attention: {
           label: "Watch out",
           items: [
-            "の turns a whole clause into a **noun** you can manipulate.",
-            "の**を** before verbs that take an object (wait, forget, know) ; の**が** before verbs of perception / preference (see, hear, like).",
-            "The inner verb stays in **short form**: くる の / あそんでいる の.",
+            "The verb immediately preceding **の** must be in **short form**: くる**の**を まつ (not きますのを).",
+            "**のを** = direct object of an action (forget, wait) · **のが** = target of preferences, skill, or sensory perception.",
           ],
         },
         examples: [
-          { jp: "タクシーが くるのを まって います。", gloss: "I'm waiting for the taxi to come" },
-          { jp: "ともだちに でんわするのを わすれました。", gloss: "I forgot to call" },
-          { jp: "らいしゅう、しけんが あるのを しって いますか。" },
-          { jp: "まどから こどもが あそんでいるのが みえます。", gloss: "I can see the children playing" },
-          { jp: "スポーツを みるのが すきです。" },
+          {
+            jp: "タクシーが くるのを まって います。",
+            gloss: "I am waiting for the taxi to come.",
+          },
+          {
+            jp: "ともだちに でんわするのを わすれました。",
+            gloss: "I forgot to call my friend.",
+          },
+          {
+            jp: "らいしゅう、しけんが あるのを しって いますか。",
+            gloss: "Do you know that there is an exam next week?",
+          },
+          {
+            jp: "まどから こどもが あそんでいるのが みえます。",
+            gloss: "From the window, I can see the children playing.",
+          },
+          {
+            jp: "スポーツを みるのが すきです。",
+            gloss: "I like watching sports.",
+          },
         ],
       },
     ],
@@ -215,13 +245,12 @@ export const groupsL4L5: Group[] = [
         slug: "question-word-ka-mo-noka",
         sidebarLabel: "Someone / no one / not sure",
         titleJp: "ぎもんし ＋ か ／ も ／ のか",
-        objective:
-          "Use a question word (だれ, どこ, なに, いつ) not to ask, but to mean “someone / no one / (I don't know) who”.",
-        exampleGloss: "“Did you go somewhere?” / “I saw no one.”",
+        objective: "Repurpose interrogatives (だれ, どこ, なに, いつ) into indefinite pronouns or embedded interrogative clauses.",
+        exampleGloss: "“Did you go somewhere?” / “I saw no one” / “I know when the test is.”",
         blocks: [
           {
             type: "sub",
-            label: "42 · question word + か → “some… / a certain…” (positive indefinite)",
+            label: "42 · Interrogative + か → Indefinite Positive (“some-…”)",
             blocks: [
               {
                 type: "rule",
@@ -233,24 +262,24 @@ export const groupsL4L5: Group[] = [
           },
           {
             type: "sub",
-            label: "43 · question word + も + 〜ない → “no…” (total negative)",
+            label: "43 · Interrogative + (particle) + も + Negative → Total Negation (“no-…”)",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "だれ**も** いません (no one) · どこ**へも** いきません (nowhere) · なに**も** たべません (nothing)",
+                  "だれ**も** いません (nobody) · どこ**へも** いきません (nowhere) · なに**も** たべません (nothing)",
                 ],
               },
             ],
           },
           {
             type: "sub",
-            label: "46 · question word + 〜のか → a question embedded in a sentence",
+            label: "46 · Clause with Question Word + のか → Embedded Interrogative",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "[clause with a question word, {{verbe:short form}}] + **のか** + verb (しっています, おしえてください, わかりません…)",
+                  "[question clause in short form] + **のか** + verb (しっています, おしえてください, わかりません)",
                 ],
               },
             ],
@@ -259,21 +288,44 @@ export const groupsL4L5: Group[] = [
         attention: {
           label: "Watch out",
           items: [
-            "**か** = there is something/someone (positive). **も + negative** = there is nothing/no one (negative).",
-            "**か / も** act on a single **word**, but **のか** embeds a whole **clause** — it's not just a longer か.",
-            "With も, you often insert the place/direction particle: どこ**へも**、だれ**にも**.",
-            "46: 〜のか embeds a question (“know / ask / explain __when/who/where__…”). Noun/na-adj take **な** before のか: ひま**な**のか、なんじ**な**のか.",
+            "**か** = positive indefinite (“did you go somewhere?”). **も + negative** = absolute negation (“went nowhere”).",
+            "With **も**, directional/locational particles stay nestled between the interrogative and も: どこ**へも**、だれ**にも**.",
+            "For pattern 46: nouns and na-adjectives take **な** before **のか**: いつ ひま**なのか** おしえて ください.",
           ],
         },
         examples: [
-          { jp: "しゅうまつ、どこか いきましたか。→ ええ、いきました。", gloss: "42 · somewhere" },
-          { jp: "けさ、なにか たべましたか。→ ええ、パンを たべました。", gloss: "42" },
-          { jp: "きょうしつに だれか いますか。→ いいえ、だれも いません。", gloss: "43 · no one" },
-          { jp: "ねぼうしたので、けさは なにも たべて きませんでした。", gloss: "43 · nothing" },
-          { jp: "きのうは だれにも あいませんでした。", gloss: "43 · no one (with に)" },
-          { jp: "きんさんは いつ テストが あるのか しって いますか。", gloss: "46 · know when" },
-          { jp: "いつ ひまなのか おしえて ください。", gloss: "46 · な before のか" },
-          { jp: "ひこうきは なんじなのか、ききましたか。", gloss: "46" },
+          {
+            jp: "しゅうまつ、どこか いきましたか。→ ええ、いきました。",
+            gloss: "Did you go somewhere over the weekend? → Yes, I did.",
+          },
+          {
+            jp: "けさ、なにか たべましたか。→ ええ、パンを たべました。",
+            gloss: "Did you eat something this morning? → Yes, I ate bread.",
+          },
+          {
+            jp: "きょうしつに だれか いますか。→ いいえ、だれも いません。",
+            gloss: "Is someone in the classroom? → No, there is no one.",
+          },
+          {
+            jp: "ねぼうしたので、けさは なにも たべて きませんでした。",
+            gloss: "Because I overslept, I didn't eat anything this morning before coming.",
+          },
+          {
+            jp: "きのうは だれにも あいませんでした。",
+            gloss: "Yesterday, I met with no one.",
+          },
+          {
+            jp: "きんさんは いつ テストが あるのか しって いますか。",
+            gloss: "Does Kin-san know when the test is?",
+          },
+          {
+            jp: "いつ ひまなのか おしえて ください。",
+            gloss: "Please tell me when you will be free.",
+          },
+          {
+            jp: "ひこうきは なんじなのか、ききましたか。",
+            gloss: "Did you ask what time the airplane departs?",
+          },
         ],
       },
     ],
@@ -289,49 +341,62 @@ export const groupsL4L5: Group[] = [
         slug: "mou-mada-2",
         sidebarLabel: "Not yet / no longer",
         titleJp: "もう ／ まだ ②",
-        objective:
-          "Answer “is it already done?” or “is it still the case?” — and especially the flip when you answer in the negative.",
-        exampleGloss:
-          "“Have you decided yet? — No, not yet.” / “Any left? — No, none left.”",
+        objective: "Correctly navigate the inverted negative responses to “already?” and “still?”.",
+        exampleGloss: "“Have you decided already? — Not yet” / “Are there any left? — None left.”",
         blocks: [
           {
             type: "sub",
-            label: "① Question with もう (“already?”)",
+            label: "Pattern ①: Question with もう (“Already?”)",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "Q: もう 〜ましたか → A+: ええ、もう 〜ました · A−: いいえ、**まだ** 〜ていません",
+                  "Q: もう 〜ましたか (Did you already...?)",
+                  "A+: はい、**もう** 〜ました (Yes, already)",
+                  "A−: いいえ、**まだ** 〜ていません (No, not yet)",
                 ],
               },
             ],
           },
           {
             type: "sub",
-            label: "② Question with まだ (“still?”)",
+            label: "Pattern ②: Question with まだ (“Still ongoing / remaining?”)",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "Q: まだ 〜ていますか → A+: ええ、まだ 〜ています · A−: いいえ、**もう** 〜ていません／〜ません",
+                  "Q: まだ 〜ていますか (Are you still...?)",
+                  "A+: はい、**まだ** 〜ています (Yes, still)",
+                  "A−: いいえ、**もう** 〜ていません／〜ません (No, no longer / none left)",
                 ],
               },
             ],
           },
         ],
         attention: {
-          label: "Watch out — the flip",
+          label: "Watch out — The Answer Flip",
           items: [
-            "Question with **もう** → negative answer with **まだ〜ていません** (“not done yet”).",
-            "Question with **まだ** → negative answer with **もう〜ていません** (“no longer the case / none left”).",
-            "This is where the “none left” meaning appears: もう のって いません、もう いません、もう ありません.",
+            "Asking with **もう** flips to **まだ** in negative answers: “Haven't finished yet” = まだ 〜ていません.",
+            "Asking with **まだ** flips to **もう** in negative answers: “No longer the case” = もう 〜ていません / もう ありません.",
           ],
         },
         examples: [
-          { jp: "もう プレゼントを きめましたか。→ いいえ、まだ きめて いないんです。", gloss: "not decided yet" },
-          { jp: "きのう もらった おかしは、まだ のって いますか。→ いいえ、もう のって いません。", gloss: "none left" },
-          { jp: "きょうしつに まだ がくせいが いますか。→ いいえ、もう いません。かえりましたよ。" },
-          { jp: "ごごは はれると いって いましたが、まだ あめが ふって いますよ。", gloss: "まだ = still ongoing" },
+          {
+            jp: "もう プレゼントを きめましたか。→ いいえ、まだ きめて いないんです。",
+            gloss: "Have you decided on the gift already? → No, I haven't decided yet.",
+          },
+          {
+            jp: "きのう もらった おかしは、まだ のこって いますか。→ いいえ、もう のこって いません。",
+            gloss: "Are the sweets we received yesterday still on the table? → No, there are none left on it.",
+          },
+          {
+            jp: "きょうしつに まだ がくせいが いますか。→ いいえ、もう いません。かえりましたよ。",
+            gloss: "Are students still in the classroom? → No, there are no longer any. They went home.",
+          },
+          {
+            jp: "ごごは はれると いって いましたが、まだ あめが ふって いますよ。",
+            gloss: "They said it would clear up in the afternoon, but it is still raining, you know.",
+          },
         ],
       },
     ],
@@ -348,36 +413,45 @@ export const groupsL4L5: Group[] = [
         sidebarLabel: "Whether or not",
         titleJp: "ぶんまつひょうげん「〜かどうか」",
         titleKanji: "文末表現③",
-        objective: "Embed a yes/no question (“whether or not…”) inside a sentence.",
-        exampleGloss: "“I don't know whether the answer is right.”",
+        objective: "Embed a yes/no indirect question into a larger sentence.",
+        exampleGloss: "“I don't know whether or not the answer is correct.”",
         blocks: [
           {
             type: "rule",
             label: "Rule",
-            lines: [
-              "[{{verbe:short form}}] + **かどうか** + verb (わかりません, ききました, しりません…)",
-            ],
+            lines: ["[clause in short form without だ] + **かどうか** + verb (わかりません, ききました, しりません)"],
           },
           {
             type: "table",
-            headers: ["Before かどうか", "Form"],
+            headers: ["Category", "Connection Form before かどうか"],
             rows: [
-              ["{{verbe:Verb}} / {{adj:i-adj}}", "short form as is → いる / ただしい"],
-              ["{{naadj:na-adj}} / {{nom:noun}}", "without だ → ひま / がくせい (or じゃない / だった…)"],
+              ["{{verbe:Verb}}", "Short form directly (いる かどうか)"],
+              ["{{adj:i-adj}}", "Keep 〜い (ただしい かどうか)"],
+              ["{{naadj:na-adj}}", "**Drop だ** (ひま かどうか)"],
+              ["{{nom:Noun}}", "**Drop だ** (がくせい かどうか)"],
             ],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "〜かどうか = “whether __or not__”: a single uncertain thing (≠ 〜か〜か, which compares two named options).",
-            "{{naadj:na-adj}} and {{nom:noun}} drop だ before かどうか.",
+            "**〜かどうか** is for a single binary proposition (“whether or not”). In contrast, **〜か〜か** provides two named choices (みかんは あまいか すっぱいか).",
+            "Nouns and na-adjectives **drop だ** before かどうか: ひまかどうか (never ひまだかどうか).",
           ],
         },
         examples: [
-          { jp: "やまださんが まだ きょうしつに いるかどうか、みて きましょう。" },
-          { jp: "こたえが あって いるかどうか ききました。" },
-          { jp: "らいしゅうの きんようび、テストが あるかどうか わかりません。" },
+          {
+            jp: "やまださんが まだ きょうしつに いるかどうか、みて きましょう。",
+            gloss: "Let's go see whether or not Yamada-san is still in the classroom.",
+          },
+          {
+            jp: "こたえが あって いるかどうか ききました。",
+            gloss: "I asked whether or not the answer was correct.",
+          },
+          {
+            jp: "らいしゅうの きんようび、テストが あるかどうか わかりません。",
+            gloss: "I don't know whether or not there is a test next Friday.",
+          },
         ],
       },
     ],
@@ -393,30 +467,39 @@ export const groupsL4L5: Group[] = [
         slug: "with-de",
         sidebarLabel: "Alone vs. with others",
         titleJp: "ひとりで / かぞくで / じぶんで ＋ どうし",
-        objective:
-          "Specify how many people, or alone, you do the action with.",
-        exampleGloss: "“I live alone.” / “I did it all myself.”",
+        objective: "Specify the social unit or number of participants carrying out an action.",
+        exampleGloss: "“I live alone” / “We traveled as a family.”",
         blocks: [
           {
             type: "rule",
             label: "Rule",
-            lines: [
-              "{{compteur:number of people}} / かぞく / みんな / じぶん + **で** + {{verbe:verb}}",
-            ],
+            lines: ["{{compteur:Group count}} / かぞく / みんな / じぶん + **で** + {{verbe:verb}}"],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "で = “with … (people)” or “by oneself”: ひとり**で** (alone), ふたり**で** (as a pair), じぶん**で** (oneself).",
-            "Don't confuse it with the で of place or means.",
+            "Here **で** marks the social framing/condition: ひとり**で** (by oneself), ふたり**で** (as a pair), みんな**で** (all together), じぶん**で** (by oneself / unaided).",
+            "Distinct from the で of place or vehicle/means.",
           ],
         },
         examples: [
-          { jp: "1ねんに 1かい、かぞくで りょこうします。" },
-          { jp: "いま、マンションに ひとりで すんで います。" },
-          { jp: "なつやすみに みんなで りょこうへ いきませんか。" },
-          { jp: "この りょうりは ぜんぶ じぶんで つくりました。" },
+          {
+            jp: "1ねんに 1かい、かぞくで りょこうします。",
+            gloss: "Once a year, we travel together as a family.",
+          },
+          {
+            jp: "いま、マンションに ひとりで すんで います。",
+            gloss: "Right now, I am living alone in an apartment.",
+          },
+          {
+            jp: "なつやすみに みんなで りょこうへ いきませんか。",
+            gloss: "Shall we all go on a trip together during the summer vacation?",
+          },
+          {
+            jp: "この りょうりは ぜんぶ じぶんで つくりました。",
+            gloss: "I made all of this food completely by myself.",
+          },
         ],
       },
     ],
@@ -433,28 +516,35 @@ export const groupsL4L5: Group[] = [
         sidebarLabel: "Linking two sentences",
         titleJp: "せつぞくし「そして」",
         titleKanji: "接続詞",
-        objective:
-          "Link two sentences: add information (“and also”) or a following action (“and then”).",
-        exampleGloss: "“It's near the station, and on top of that the rent is low.”",
+        objective: "Join two full sentences to add further information (“and also”) or subsequent actions (“and then”).",
+        exampleGloss: "“The apartment is close to the station, and on top of that the rent is low.”",
         blocks: [
-          {
-            type: "rule",
-            label: "Rule",
-            lines: ["Sentence 1**。** **そして**、 Sentence 2**。**"],
-          },
+          { type: "rule", label: "Rule", lines: ["Sentence 1**。** **そして**、 Sentence 2**。**"] },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "Two uses: **①** addition (“and also”: two qualities, two people) · **②** sequence (“and then”: two actions).",
-            "そして links two full sentences (≠ て, which links within one sentence).",
+            "Two distinct functions: **① Additional property** (“and in addition…”) · **② Chronological sequence** (“and after that…”).",
+            "**そして** links two complete sentences separated by a full stop, whereas the verb **て-form** links clauses within a single sentence.",
           ],
         },
         examples: [
-          { jp: "きょうだいは あにと あね、そして いもうとが います。", gloss: "① addition" },
-          { jp: "へやは えきから ちかくて べんりで、そして やちんが やすい ところが いいです。", gloss: "①" },
-          { jp: "きのうは ともだちと しぶやで あいました。そして えいがを みました。", gloss: "② sequence" },
-          { jp: "まず、カードを いれて ください。そして、きんがくに タッチして、おかねを いれて ください。", gloss: "②" },
+          {
+            jp: "きょうだいは あにと あね、そして いもうとが います。",
+            gloss: "As for siblings, I have an older brother, an older sister, and also a younger sister. (Addition)",
+          },
+          {
+            jp: "へやは えきから ちかくて べんりで、そして やちんが やすい ところが いいです。",
+            gloss: "A room close to the station, convenient, and furthermore with cheap rent is ideal. (Addition)",
+          },
+          {
+            jp: "きのうは ともだちと しぶやで あいました。そして えいがを みました。",
+            gloss: "Yesterday I met a friend in Shibuya. And then we watched a movie. (Sequence)",
+          },
+          {
+            jp: "まず、カードを いれて ください。そして、きんがくに タッチして、おかねを いれて ください。",
+            gloss: "First, insert your card. And then, touch the amount and insert the cash. (Sequence)",
+          },
         ],
       },
     ],
@@ -471,28 +561,31 @@ export const groupsL4L5: Group[] = [
         sidebarLabel: "All of a small, counted group",
         titleJp: "じすうし ＋ とも",
         titleKanji: "時数詞＋とも",
-        objective:
-          "Say “both / all three”, the whole of a small counted group.",
-        exampleGloss: "“They're both students.”",
+        objective: "Emphasize that the totality of a small counted group is included without exception (“both”, “all three”).",
+        exampleGloss: "“Both of them are university students.”",
         blocks: [
           {
             type: "rule",
             label: "Rule",
-            lines: [
-              "{{compteur:counter for people / objects}} + **とも** → ふたり**とも**、さんさつ**とも**",
-            ],
+            lines: ["{{compteur:counter}} + **とも** → ふたり**とも** (both people)、さんさつ**とも** (all 3 books)"],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "とも = “all N without exception” (for a small, specific number).",
-            "Attaches to the counter matching the items: people (ふたりとも), books (さんさつとも), objects…",
+            "**とも** means “every single one of the N items mentioned” (reserved for small, precise numbers: 2, 3, 4).",
+            "Attaches directly to the counter word matching the entity: people (ふたりとも), volumes (さんさつとも), objects (ふたつとも).",
           ],
         },
         examples: [
-          { jp: "あにが ふたり います。ふたりとも だいがくせいです。" },
-          { jp: "つくえの うえに ある ほんは、さんさつとも えいごの ほんです。" },
+          {
+            jp: "あにが ふたり います。ふたりとも だいがくせいです。",
+            gloss: "I have two older brothers. Both of them are university students.",
+          },
+          {
+            jp: "つくえの うえに ある ほんは、さんさつとも えいごの ほんです。",
+            gloss: "The books on the desk are all three of them English books.",
+          },
         ],
       },
     ],
@@ -508,30 +601,37 @@ export const groupsL4L5: Group[] = [
         slug: "hoshii",
         sidebarLabel: "Wanting an object",
         titleJp: "ほしい",
-        objective:
-          "Express desire for an **object** (≠ 〜たい, which expresses desire to do an action).",
-        exampleGloss: "“I want a new bag.”",
+        objective: "Express the desire to possess a concrete object or acquire a relationship.",
+        exampleGloss: "“I want a new bag” (≠ “I want to buy a bag”).",
         blocks: [
-          {
-            type: "rule",
-            label: "Rule",
-            lines: ["わたしは {{nom:object}} **が** ほしいです"],
-          },
+          { type: "rule", label: "Rule", lines: ["わたしは {{nom:object}} **が ほしいです**"] },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "The desired object takes **が**, not を: かばん**が** ほしいです.",
-            "ほしい conjugates like an {{adj:i-adj}} (ほしくない, ほしかった).",
-            "Object → **ほしい** · action → **〜たい**: あたらしい かばん**が ほしい** vs すし**が たべたい** (never ほしい for an action).",
-            "To talk about **someone else's** wish, add そう / と いっています: ほしい**そうです** (I hear they want it).",
+            "The desired entity takes particle **が**, not を: くるま**が** ほしいです.",
+            "**ほしい** conjugates purely like an **i-adjective**: ほしくない, ほしかった.",
+            "Desiring an **object** → **ほしい** · Desiring to do an **action** → **〜たい**: かばん**が ほしい** vs かばんを **かいたい**.",
+            "To express someone else's desire, add hearsay or indirect markers: たなかさんは カメラを **ほしがっています** / **ほしいそうです**.",
           ],
         },
         examples: [
-          { jp: "あたらしい かばんが ほしいです。" },
-          { jp: "にほんじんの ともだちが ほしいです。" },
-          { jp: "ともだちと あう じかんが ほしいです。" },
-          { jp: "たなかさんは カメラが ほしいそうです。", gloss: "someone else's wish" },
+          {
+            jp: "あたらしい かばんが ほしいです。",
+            gloss: "I want a new bag.",
+          },
+          {
+            jp: "にほんじんの ともだちが ほしいです。",
+            gloss: "I want Japanese friends.",
+          },
+          {
+            jp: "ともだちと あう じかんが ほしいです。",
+            gloss: "I want time to meet my friends.",
+          },
+          {
+            jp: "たなかさんは カメラが ほしいそうです。",
+            gloss: "I hear that Tanaka-san wants a camera. (Desire of a 3rd party)",
+          },
         ],
       },
     ],
@@ -542,117 +642,119 @@ export const groupsL4L5: Group[] = [
     title: "Give, receive & favours",
     notions: [
       {
-        number: 39,
+        number: 38,
         courseNumber: 51,
         slug: "giving-receiving-objects",
         sidebarLabel: "Give & receive — ageru / morau / kureru",
         titleJp: "あげる ／ もらう ／ くれる",
-        objective:
-          "Give and receive things — the base giving-and-receiving verbs (notion 52 adds the て-form for favours).",
-        exampleGloss: "“I gave my friend chocolate” / “my teacher gave me a book.”",
+        objective: "Master the 3 spatial vectors of giving and receiving tangible objects.",
+        exampleGloss: "“I gave my friend a gift” / “My teacher gave me a book.”",
         blocks: [
           {
             type: "sub",
-            label: "Sub-point A — あげる: I give (outward)",
+            label: "Vector A — あげる: Giving Outward (Me / In-group → Others)",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "[giver] は [receiver] に [object] を **あげます** → give outward (me / in-group → others)",
-                  "polite up: + **さしあげます** (to a superior) · down: + **やります** (juniors, plants, pets)",
+                  "[giver] は [receiver] **に** [object] を **あげます**",
+                  "Polite up: **さしあげます** (to a superior) · Down: **やります** (plants, pets, juniors)",
                 ],
               },
             ],
           },
           {
             type: "sub",
-            label: "Sub-point B — もらう: I receive",
+            label: "Vector B — もらう: Receiving (Receiver ← Giver)",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "[receiver] は [giver] に [object] を **もらいます** → receive (に or から for the source)",
-                  "humble: + **いただきます** (from a superior)",
-                ],
-              },
-            ],
-          },
-          {
-            type: "sub",
-            label: "Sub-point C — くれる: someone gives to me",
-            blocks: [
-              {
-                type: "rule",
-                lines: [
-                  "[giver] が （わたしに） [object] を **くれます** → given toward me / my in-group",
-                  "honorific: + **くださいます** (from a superior)",
+                  "[receiver] は [giver] **に / から** [object] を **もらいます**",
+                  "Humble equivalent: **いただきます** (received from a superior)",
                 ],
               },
             ],
           },
         ],
         attention: {
-          label: "Watch out",
+          label: "Watch out — The Crucial Difference",
           items: [
-            "**あげる** vs **くれる**: both mean “give”, but くれる only when the receiver is **me / my in-group**: ちちが とけいを **くれました**。",
-            "Particles: あげる → recipient に · もらう → source に or から · くれる → giver **が**.",
-            "Status forms: **さしあげる / いただく / くださる** (up) · **やる** (down, incl. plants & pets).",
+            "**あげる vs くれる**: Both translate to “give”, but **くれる** is strictly used when the gift moves **inward toward ME or my in-group family**: ははが (わたしに) とけいを くれました.",
+            "Giver takes **が** with くれる: せんせい**が** じしょを くださいました.",
           ],
         },
         examples: [
-          { jp: "わたしは ともだちに チョコレートを あげました。", gloss: "ageru — I gave" },
-          { jp: "せんせいに おみやげを さしあげました。", gloss: "sashiageru (up)" },
-          { jp: "たんじょうびに ともだちに プレゼントを もらいました。", gloss: "morau — I received" },
-          { jp: "せんせいに ほんを いただきました。", gloss: "itadaku (up)" },
-          { jp: "ちちが わたしに とけいを くれました。", gloss: "kureru — given to me" },
-          { jp: "せんせいが わたしに じしょを くださいました。", gloss: "kudasaru (honorific)" },
+          {
+            jp: "わたしは ともだちに チョコレートを あげました。",
+            gloss: "I gave chocolate to my friend.",
+          },
+          {
+            jp: "せんせいに おみやげを さしあげました。",
+            gloss: "I presented a souvenir to my teacher. (Humble upward)",
+          },
+          {
+            jp: "たんじょうびに ともだちに プレゼントを もらいました。",
+            gloss: "I received a present from my friend on my birthday.",
+          },
+          {
+            jp: "せんせいに ほんを いただきました。",
+            gloss: "I received a book from my teacher. (Humble upward)",
+          },
+          {
+            jp: "ちちが わたしに とけいを くれました。",
+            gloss: "My father gave me a watch. (Inward to me)",
+          },
+          {
+            jp: "せんせいが わたしに じしょを くださいました。",
+            gloss: "The teacher kindly gave me a dictionary. (Honorific inward to me)",
+          },
         ],
       },
       {
-        number: 40,
+        number: 39,
         courseNumber: 52,
         slug: "favors-te-verbs",
         sidebarLabel: "Favors — te-ageru / te-morau / te-kureru",
         titleJp: "〜てあげる ／ 〜てもらう ／ 〜てくれる",
-        objective:
-          "Talk about doing something for someone, or having something done for you — the て-form of the giving-and-receiving verbs.",
-        exampleGloss: "“I helped my friend” / “the teacher fixed it for me.”",
+        objective: "Express the granting, receiving, or benefiting from actions performed as favors.",
+        exampleGloss: "“I cooked for my friend” / “The teacher kindly checked my essay.”",
         blocks: [
           {
             type: "sub",
-            label: "Sub-point A — 〜てあげる: you do it for someone else",
+            label: "Vector A — 〜てあげる: Doing a Favour Outward",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "[giver] は [receiver] に [object] を {{verbe:V-te}} + **あげます** → a favour outward",
-                  "polite up: + **さしあげます** (to a superior) · down: + **やります** (juniors, plants, pets)",
+                  "[giver] は [receiver] に {{verbe:V -te}} + **あげます**",
+                  "Upward: **〜てさしあげます** · Downward: **〜てやります**",
                 ],
               },
             ],
           },
           {
             type: "sub",
-            label: "Sub-point B — 〜てもらう: you receive the favour",
+            label: "Vector B — 〜てもらう: Receiving the Benefit of an Action",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "[receiver] は [giver] に {{verbe:V-te}} + **もらいます** → receive a favour",
-                  "humble: + **いただきます** (from a superior)",
+                  "[beneficiary] は [giver] に {{verbe:V -te}} + **もらいます**",
+                  "Upward: **〜ていただきます** (humbly received from a superior)",
                 ],
               },
             ],
           },
           {
             type: "sub",
-            label: "Sub-point C — 〜てくれる: someone does it for you",
+            label: "Vector C — 〜てくれる: Someone Doing a Favour for Me",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "[giver] が （わたしに） {{verbe:V-te}} + **くれます** → a favour toward me / my in-group",
-                  "honorific: + **くださいます** (from a superior)",
+                  "[giver] が （わたしに） {{verbe:V -te}} + **くれます**",
+                  "Upward: **〜てくださいます** (superior doing a favour for me)",
                 ],
               },
             ],
@@ -661,56 +763,79 @@ export const groupsL4L5: Group[] = [
         attention: {
           label: "Watch out",
           items: [
-            "Direction is everything: **あげる** = I do it for someone else · **くれる** = someone does it for me.",
-            "Status forms: **さしあげる / いただく / くださる** for people above you; **やる** for juniors, plants, animals.",
-            "With くれる the giver takes **が**, and わたしに is usually dropped: せんせい**が** おしえて くれました。",
-            "〜てあげる can sound patronising toward a superior — prefer 〜てさしあげる or rephrase.",
+            "Social rule: Offering **〜てあげましょうか** directly to a superior can sound patronizing (“shall I do you a favor?”). Prefer polite neutral forms or 〜てさしあげます.",
+            "With **〜てくれる**, the person who did the kind deed is marked with **が**, and わたしに is usually omitted.",
           ],
         },
         examples: [
-          { jp: "わたしは ともだちに りょうりを つくって あげました。", gloss: "ageru — did it for a friend" },
-          { jp: "こどもの とき、よく おとうとに べんきょうを おしえて あげました。", gloss: "ageru" },
-          { jp: "せんせいに さくぶんを なおして いただきました。", gloss: "itadaku — received the favour" },
-          { jp: "ともだちに やすくて おいしい レストランを おしえて もらいました。", gloss: "morau" },
-          { jp: "ははが この ワンピースを つくって くれました。", gloss: "kureru — done for me" },
-          { jp: "せんせいが たいしかんの でんわばんごうを しらべて くださいました。", gloss: "kudasaru (honorific)" },
+          {
+            jp: "わたしは ともだちに りょうりを つくって あげました。",
+            gloss: "I cooked a meal for my friend.",
+          },
+          {
+            jp: "こどもの とき、よく おとうとに べんきょうを おしえて あげました。",
+            gloss: "When I was a child, I often helped my younger brother with his studies.",
+          },
+          {
+            jp: "せんせいに さくぶんを なおして いただきました。",
+            gloss: "I had my essay kindly corrected by my teacher.",
+          },
+          {
+            jp: "ともだちに やすくて おいしい レストランを おしえて もらいました。",
+            gloss: "I had my friend recommend a cheap and delicious restaurant to me.",
+          },
+          {
+            jp: "ははが この ワンピースを つくって くれました。",
+            gloss: "My mother made this dress for me.",
+          },
+          {
+            jp: "せんせいが たいしかんの でんわばんごうを しらべて くださいました。",
+            gloss: "The teacher kindly looked up the embassy's phone number for me.",
+          },
         ],
       },
       {
-        number: 41,
+        number: 40,
         courseNumber: 54,
         slug: "requests-te-moraemasenka",
         sidebarLabel: "Polite requests — te-moraemasen ka",
         titleJp: "〜て もらえませんか",
-        objective: "Ask someone to do something for you, from casual to very polite.",
-        exampleGloss: "“Could you help me for a moment?”",
+        objective: "Politely request someone to do something, matching the formality to the relationship.",
+        exampleGloss: "“Could you please lend me a hand?”",
         blocks: [
           {
             type: "rule",
-            label: "Rule",
+            label: "Scale of Request Formulas",
             lines: [
-              "{{verbe:V-te}} + **もらえませんか / いただけませんか** → could you (do me the favour of) …?",
-              "{{verbe:V-te}} + **くれませんか / くださいませんか** → won't you …?",
+              "Casual: {{verbe:V -te}} + **くれない？** / **もらえない？**",
+              "Polite: {{verbe:V -te}} + **くれませんか** / **もらえませんか**",
+              "Very polite (business): {{verbe:V -te}} + **いただけませんか** / **くださいませんか**",
             ],
-          },
-          {
-            type: "paragraph",
-            text:
-              "Rising politeness: 〜て**くれませんか** → 〜て**もらえませんか** → 〜て**いただけませんか** (most polite). Casual: 〜て**くれない** / 〜て**もらえない**.",
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "もらえる / いただける are **potential** forms (“can I receive”) → softer and more polite than plain くれる.",
-            "Build the て-form first, then add the ending.",
+            "**もらえる / いただける** are potential forms of もらう/いただく (“could I receive the favor of…”), which inherently sounds more modest and polite than requesting directly with くれる.",
           ],
         },
         examples: [
-          { jp: "すみませんが、ちょっと てつだって もらえませんか。→ ええ、いいですよ。", gloss: "polite" },
-          { jp: "せんせい、さくぶんを かいたので、みて いただけませんか。→ ええ、いいですよ。", gloss: "most polite" },
-          { jp: "そこの ほん、とって もらえない。→ これ？", gloss: "casual" },
-          { jp: "ちょっと、ぎゅうにゅう かってきて くれない。→ いいよ。", gloss: "casual" },
+          {
+            jp: "すみませんが、ちょっと てつだって もらえませんか。→ ええ、いいですよ。",
+            gloss: "Excuse me, could you give me a hand for a moment? → Yes, sure.",
+          },
+          {
+            jp: "せんせい、さくぶんを かいたので、みて いただけませんか。→ ええ、いいですよ。",
+            gloss: "Professor, I wrote an essay, would you be so kind as to look it over? → Yes, gladly.",
+          },
+          {
+            jp: "そこの ほん、とって もらえない。→ これ？",
+            gloss: "Could you pass me that book over there? (Casual) → This one?",
+          },
+          {
+            jp: "ちょっと、ぎゅうにゅう かってきて くれない。→ いいよ。",
+            gloss: "Hey, could you buy some milk and bring it back? (Casual) → Sure thing.",
+          },
         ],
       },
     ],
@@ -721,38 +846,50 @@ export const groupsL4L5: Group[] = [
     title: "Explaining how to do something",
     notions: [
       {
-        number: 42,
+        number: 41,
         courseNumber: 53,
         slug: "verb-kata",
         sidebarLabel: "How to do something — kata",
         titleJp: "どうし ＋ 方（かた）",
         titleKanji: "動詞ます＋方",
-        objective: "Turn a verb into “the way of doing it” — how to do something.",
-        exampleGloss: "“Do you know how to use this?”",
+        objective: "Turn a verb into a noun signifying the method or way of executing that action.",
+        exampleGloss: "“How to use this machine” / “How to study kanji.”",
         blocks: [
           {
             type: "rule",
             label: "Rule",
             lines: [
-              "{{verbe:V -masu stem}} + **かた（方）** → つかいます → つかい**かた** {{gloss:how to use}}",
-              "{{nom:する-noun}} → 〜**の しかた** → べんきょう**の しかた** {{gloss:how to study}}",
-              "{{nom:place}} へ **の** いきかた（行き方） {{gloss:the way to a place}}",
+              "{{verbe:V -masu stem}} + **かた（方）** → つかいます → つかい**かた** (how to use)",
+              "{{nom:Noun}} + の + **しかた** → べんきょう**の しかた** (how to study)",
+              "Destination + への + **いきかた** → えきへの いきかた (the way to the station)",
             ],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "Drop ます, add かた: よみ**ます** → よみ**かた**.",
-            "する-nouns take **の**: べんきょう**の しかた** (not べんきょうかた).",
-            "方 is read **かた** here, not ほう.",
+            "Drop ます and suffix かた: よみ**ます** → よみ**かた**.",
+            "For する compound verbs, use **の しかた**: べんきょう**の しかた** (never べんきょうかた).",
+            "Kanji 方 is read **かた** in this pattern (not ほう).",
           ],
         },
         examples: [
-          { jp: "コピーきの つかいかたを しって いますか。", gloss: "how to use" },
-          { jp: "ともだちに かんじの べんきょうの しかたを おしえて ください。" },
-          { jp: "えきへの いきかたが わかりません。", gloss: "the way to the station" },
-          { jp: "この ゲーム、おもしろそうだね。やりかた、おしえて。", gloss: "casual" },
+          {
+            jp: "コピーきの つかいかたを しって いますか。",
+            gloss: "Do you know how to use this photocopier?",
+          },
+          {
+            jp: "ともだちに かんじの べんきょうの しかたを おしえて ください。",
+            gloss: "Please tell your friend how to study kanji.",
+          },
+          {
+            jp: "えきへの いきかたが わかりません。",
+            gloss: "I don't know the way to the station.",
+          },
+          {
+            jp: "この ゲーム、おもしろそうだね。やりかた、おしえて。",
+            gloss: "This game looks fun, doesn't it? Show me how to play. (Casual)",
+          },
         ],
       },
     ],
@@ -763,46 +900,45 @@ export const groupsL4L5: Group[] = [
     title: "Volition, intention & plans",
     notions: [
       {
-        number: 43,
+        number: 42,
         courseNumber: 55,
         slug: "volitional-form",
         sidebarLabel: "Volitional form — let's / I intend to",
         titleJp: "いこうけい",
         titleKanji: "意向形",
-        objective:
-          "Build the volitional form and use it to invite (“let's”) or to state an intention (“I'm thinking of…”).",
-        exampleGloss: "“What shall we eat?” / “I'm thinking of going home.”",
+        objective: "Construct the volitional form to make casual invitations (“let's”) or state intentions (“I'm planning to…”).",
+        exampleGloss: "“What shall we eat?” / “I'm thinking of returning to my home country.”",
         blocks: [
           {
             type: "table",
-            label: "Rule — building the volitional (意向形)",
-            headers: ["Group", "Rule", "Example"],
+            label: "Building the Volitional Form (意向形)",
+            headers: ["Verb Group", "Transformation Rule", "Example"],
             rows: [
-              ["**I** (う-verbs)", "final -u → -o + **う**", "かく → か**こう** · かえる → かえ**ろう**"],
-              ["**II** (る-verbs)", "drop る + **よう**", "たべる → たべ**よう** · みる → み**よう**"],
-              ["**III** (irregular)", "—", "くる → **こよう** · する → **しよう**"],
+              ["**Group 1** (u-verbs)", "final -u → -o sound + **う**", "かく → か**こう** · かえる → かえ**ろう**"],
+              ["**Group 2** (ru-verbs)", "drop る + **よう**", "たべる → たべ**よう** · みる → み**よう**"],
+              ["**Group 3** (Irregular)", "Memorize", "くる → **こよう** · する → **しよう**"],
             ],
           },
           {
             type: "sub",
-            label: "Sub-point A — casual invitation (short 〜ましょう)",
+            label: "Sub-point A — Casual Invitations (Short Form of 〜ましょう)",
             blocks: [
               {
                 type: "rule",
                 lines: [
-                  "{{verbe:volitional}} + **か** → なにを たべ**ようか** {{gloss:what shall we eat?}}",
-                  "casual 〜**ない？** also invites → いっしょに いか**ない？** {{gloss:shall we go?}}",
+                  "{{verbe:Volitional form}} + **か** → なにを たべ**ようか** (What shall we eat?)",
+                  "Negative question with 〜**ない？** also invites: いっしょに いか**ない？** (Won't you come with me?)",
                 ],
               },
             ],
           },
           {
             type: "sub",
-            label: "Sub-point B — stating your intention",
+            label: "Sub-point B — Stating an Intention",
             blocks: [
               {
                 type: "rule",
-                lines: ["{{verbe:volitional}} + **と おもっています** → …しようと おもっています {{gloss:I'm thinking of…}}"],
+                lines: ["{{verbe:Volitional form}} + **と おもっています / と おもいます** → I am planning/thinking to…"],
               },
             ],
           },
@@ -810,47 +946,71 @@ export const groupsL4L5: Group[] = [
         attention: {
           label: "Watch out",
           items: [
-            "**Intention** = volitional + とおもう (かえ**ろう**と おもいます) · **supposition** = short form + とおもう (かえ**る**と おもいます, notion 3). Don't mix them.",
-            "つもり (notion 57) is a firmer, settled plan; 〜ようとおもう is a softer intention.",
+            "**Intention** = Volitional form + とおもう (かえ**ろう**と おもいます = I plan to return).",
+            "**Supposition** = Dictionary short form + とおもう (かえ**る**と おもいます = I think he will return). Don't mix them up!",
           ],
         },
         examples: [
-          { jp: "ごはん、たべに いかない？ → うん、いいよ。", gloss: "casual invite" },
-          { jp: "なにを たべようか。 → そうだね、ピザは どう？", gloss: "volitional question" },
-          { jp: "なつやすみに くにへ かえろうと おもいます。", gloss: "intention" },
-          { jp: "ははの たんじょうびに スカーフを あげようと おもっています。", gloss: "intention" },
-          { jp: "あしたは あめが ふると おもいます。", gloss: "supposition (short form)" },
+          {
+            jp: "ごはん、たべに いかない？ → うん、いいよ。",
+            gloss: "Shall we go get something to eat? (Casual invitation) → Yeah, sounds good.",
+          },
+          {
+            jp: "なにを たべようか。 → そうだね、ピザは どう？",
+            gloss: "What shall we eat? (Volitional) → Let's see, how about pizza?",
+          },
+          {
+            jp: "なつやすみに くにへ かえろうと おもいます。",
+            gloss: "I am thinking of returning to my home country during summer vacation.",
+          },
+          {
+            jp: "ははの たんじょうびに スカーフを あげようと おもっています。",
+            gloss: "I'm intending to give my mother a scarf for her birthday.",
+          },
+          {
+            jp: "あしたは あめが ふると おもいます。",
+            gloss: "I think it will rain tomorrow. (Prediction with dictionary form)",
+          },
         ],
       },
       {
-        number: 44,
+        number: 43,
         courseNumber: 57,
         slug: "intention-tsumori",
         sidebarLabel: "Intentions & plans — tsumori",
         titleJp: "〜つもり",
-        objective: "State a firm intention or plan.",
+        objective: "State a firm, premeditated intention or settled plan.",
         exampleGloss: "“I plan to go skiing in Hokkaido.”",
         blocks: [
           {
             type: "rule",
             label: "Rule",
             lines: [
-              "{{verbe:V dictionary form}} + **つもりです** → intend to",
-              "{{verbe:V ない-form}} + **つもりです** → intend not to",
+              "{{verbe:V dictionary form}} + **つもりです** → intend/plan to do",
+              "{{verbe:V ない-form}} + **つもりです** → intend NOT to do",
             ],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "Dictionary form for the positive, **ない**-form for the negative: かえ**らない** つもりです。",
-            "つもり = a **settled, premeditated** plan — firmer than 〜ようとおもう (notion 55).",
+            "Affirmative: dictionary form + つもり. Negative: **ない-form** + つもり (かえ**らない** つもりです).",
+            "**つもり** represents a firm, decided personal intention, whereas **〜ようとおもう** is a softer, tentative thought.",
           ],
         },
         examples: [
-          { jp: "ことしの ふゆは ほっかいどうへ スキーに いく つもりです。" },
-          { jp: "らいねん そつぎょうしますが、くにへは かえらない つもりです。", gloss: "negative intention" },
-          { jp: "リーさんは、あしたから きょうとへ いく つもりだそうです。", gloss: "reported plan" },
+          {
+            jp: "ことしの ふゆは ほっかいどうへ スキーに いく つもりです。",
+            gloss: "This winter, I plan to go skiing in Hokkaido.",
+          },
+          {
+            jp: "らいねん そつぎょうしますが、くにへは かえらない つもりです。",
+            gloss: "I graduate next year, but I plan not to return to my home country.",
+          },
+          {
+            jp: "リーさんは、あしたから きょうとへ いく つもりだそうです。",
+            gloss: "I heard that Lee-san plans to go to Kyoto starting tomorrow.",
+          },
         ],
       },
     ],
@@ -861,50 +1021,65 @@ export const groupsL4L5: Group[] = [
     title: "Conditionals",
     notions: [
       {
-        number: 45,
+        number: 44,
         courseNumber: 56,
         slug: "conditional-tara",
         sidebarLabel: "Conditional — tara",
         titleJp: "〜たら",
-        objective: "Say “if” or “once” — a conditional built on the plain-past form.",
-        exampleGloss: "“Once I graduate, …” / “If you don't understand, ask.”",
+        objective: "Express “if” or “once/when” using the past short form + ら.",
+        exampleGloss: "“Once I graduate…” / “If you don't understand, please ask.”",
         blocks: [
           {
             type: "rule",
-            label: "Rule",
+            label: "Conjugation Rule",
             lines: [
-              "[V / adj / noun in **plain past** (た・かった・だった)] + **ら**",
+              "[Verb / Adj / Noun in **plain past form** (た / かった / だった)] + **ら**",
               "たべる → たべ**たら** · たかい → たかかっ**たら** · ひま → ひまだっ**たら** · あめ → あめだっ**たら**",
             ],
           },
           {
             type: "sub",
-            label: "Sub-point A — AたらB: once A, then B",
+            label: "Sub-point A — Sequence Conditional: “Once A happens, then B”",
             blocks: [
-              { type: "rule", lines: ["A**たら**、B → B happens once A is done (sequence)"] },
+              { type: "rule", lines: ["A**たら**、B → As soon as A is realized, B takes place"] },
             ],
           },
           {
             type: "sub",
-            label: "Sub-point B — (もし) 〜たら: a hypothetical “if”",
+            label: "Sub-point B — Hypothetical Conditional: “If A happens, then B”",
             blocks: [
-              { type: "rule", lines: ["**もし** A**たら**、B → if A were to happen, B"] },
+              { type: "rule", lines: ["**もし** A**たら**、B → If A were to happen (hypothetical), B"] },
             ],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "Always the **plain past** + ら (た / かった / だった).",
-            "**もし** at the front flags a hypothetical / unlikely condition.",
+            "Always construct upon the **plain past** base + ら.",
+            "Adding **もし** at the start clearly signals a hypothetical or counterfactual scenario.",
           ],
         },
         examples: [
-          { jp: "だいがくを そつぎょうしたら、にほんの かいしゃに はいりたいと おもいます。", gloss: "once I graduate" },
-          { jp: "ほんを よんだら、かして くれませんか。", gloss: "once you've read it" },
-          { jp: "この ドラマが おわったら、しゅくだいを するよ。", gloss: "once it ends" },
-          { jp: "わからなかったら、きいて ください。", gloss: "if…" },
-          { jp: "もし タイムマシーンが あったら、どの じだいに いって みたいですか。", gloss: "hypothetical" },
+          {
+            jp: "だいがくを そつぎょうしたら、にほんの かいしゃに はいりたいと おもいます。",
+            gloss: "Once I graduate from university, I would like to join a Japanese company.",
+          },
+          {
+            jp: "ほんを よんだら、かして くれませんか。",
+            gloss: "Once you have read the book, could you please lend it to me?",
+          },
+          {
+            jp: "この ドラマが おわったら、しゅくだいを するよ。",
+            gloss: "When this TV drama finishes, I'll do my homework.",
+          },
+          {
+            jp: "わからなかったら、きいて ください。",
+            gloss: "If you don't understand, please ask.",
+          },
+          {
+            jp: "もし タイムマシーンが あったら、どの じだいに いって みたいですか。",
+            gloss: "If you had a time machine, which era would you like to visit?",
+          },
         ],
       },
     ],
@@ -915,96 +1090,128 @@ export const groupsL4L5: Group[] = [
     title: "Structuring actions",
     notions: [
       {
-        number: 46,
+        number: 45,
         courseNumber: 58,
         slug: "listing-tari",
         sidebarLabel: "Listing actions — tari tari",
         titleJp: "〜たり 〜たり 〜",
-        objective: "List a few representative actions — “do things like X and Y”.",
-        exampleGloss: "“On my days off I watch TV, listen to music, and so on.”",
+        objective: "List representative actions among others (“doing things like X and Y”).",
+        exampleGloss: "“On weekends I watch TV, listen to music, and so on.”",
         blocks: [
           {
             type: "rule",
             label: "Rule",
-            lines: ["{{verbe:V た-form}} + **り**、 {{verbe:V た-form}} + **り** します"],
+            lines: ["{{verbe:V た-form}} + **り**、 {{verbe:V た-form}} + **り します**"],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "Built on the **た-form** (かく → かい**たり**); the sentence closes with **する** in the right tense.",
-            "A **non-exhaustive** list — “things like X and Y” (≠ て, which lists actions in strict order).",
-            "Can also show alternating / repeated states: ついたり きえたり (on and off).",
+            "Built on the **た-form**: みる → み**たり**, きく → きい**たり**. The entire sentence is closed with **する** in the desired tense.",
+            "Indicates an **incomplete list** of examples (unlike the て-form which lists all actions in strict chronological order).",
+            "Can also express alternating repetitive actions: ついたり きえたり します (flickering on and off).",
           ],
         },
         examples: [
-          { jp: "やすみの ひは テレビを みたり、おんがくを きいたり して います。", gloss: "things like…" },
-          { jp: "じゅぎょうちゅうは たべたり のんだり しないで ください。" },
-          { jp: "でんきが ついたり きえたり して いるから、でんきゅうを とりかえましょう。", gloss: "on and off" },
-          { jp: "チャンさんは さくぶんを かいたり けしたり して、なんども なおして います。" },
+          {
+            jp: "やすみの ひは テレビを みたり、おんがくを きいたり して います。",
+            gloss: "On days off, I do things like watching TV and listening to music.",
+          },
+          {
+            jp: "じゅぎょうちゅうは たべたり のんだり しないで ください。",
+            gloss: "Please do not do things like eating or drinking during class.",
+          },
+          {
+            jp: "でんきが ついたり きえたり して いるから、でんきゅうを とりかえましょう。",
+            gloss: "The light keeps flickering on and off, so let's replace the light bulb.",
+          },
+          {
+            jp: "チャンさんは さくぶんを かいたり けしたり して、なんども なおして います。",
+            gloss: "Chang-san is writing and erasing his essay, revising it repeatedly.",
+          },
         ],
       },
       {
-        number: 47,
+        number: 46,
         courseNumber: 60,
         slug: "sequence-te-kara",
         sidebarLabel: "After doing — te kara",
         titleJp: "〜てから",
-        objective: "Do the second action only after the first one is finished (“after ~ing”).",
-        exampleGloss: "“After I finish shopping, I'll go home.”",
+        objective: "Emphasize that the second action begins only after the first action has fully completed.",
+        exampleGloss: "“Only after finishing my homework will I play games.”",
         blocks: [
           {
             type: "rule",
             label: "Rule",
-            lines: ["{{verbe:V-te}} + **から**、[next action] → after doing X, …"],
+            lines: ["{{verbe:V -te form}} + **から**、 [action 2] → After doing X, …"],
           },
           {
             type: "paragraph",
-            text:
-              "A different から from the reason **から** (notion 4): here it follows the **て-form** and marks a time sequence; the reason から follows a plain / polite clause and means “because”.",
+            text: "This temporal から follows the **て-form** (sequence). It must not be confused with the causal から (reason) which follows the plain/polite sentence.",
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "〜てから = strictly **after** the first action finishes — order matters more than a plain て.",
-            "Don't confuse with reason から: りょこうする**から** (because) vs りょこうし**てから** (after travelling).",
+            "**〜てから** guarantees that Action 1 is completely finished before Action 2 starts: chronological sequence is emphasized.",
+            "Compare: りょこうする**から** (because I will travel) vs りょこうし**てから** (after travelling).",
           ],
         },
         examples: [
-          { jp: "きょうは かいものしてから、いえへ かえります。", gloss: "after shopping" },
-          { jp: "じゅぎょうが おわってから、しょくじ しませんか。" },
-          { jp: "いつも にっきを かいてから、ねます。" },
-          { jp: "おゆが わいてから、やさいを いれて ください。", gloss: "after it boils" },
+          {
+            jp: "きょうは かいものしてから、いえへ かえります。",
+            gloss: "Today, after doing the shopping, I will return home.",
+          },
+          {
+            jp: "じゅぎょうが おわってから、しょくじ しませんか。",
+            gloss: "After class finishes, wouldn't you like to have a meal?",
+          },
+          {
+            jp: "いつも にっきを かいてから、ねます。",
+            gloss: "I always go to sleep after writing in my diary.",
+          },
+          {
+            jp: "おゆが わいてから、やさいを いれて ください。",
+            gloss: "After the water has boiled, please put in the vegetables.",
+          },
         ],
       },
       {
-        number: 48,
+        number: 47,
         courseNumber: 61,
         slug: "start-hajimeru",
         sidebarLabel: "Starting an action — hajimeru",
         titleJp: "〜はじめる",
         titleKanji: "〜始める",
-        objective: "Say that an action starts — verb stem + 始める.",
-        exampleGloss: "“It started to rain.”",
+        objective: "Form compound verbs to express the initiation or onset of an action.",
+        exampleGloss: "“It started to rain” / “I started learning Japanese last year.”",
         blocks: [
           {
             type: "rule",
             label: "Rule",
-            lines: ["{{verbe:V -masu stem}} + **はじめます（始める）** → start doing"],
+            lines: ["{{verbe:V -masu stem}} + **はじめます（始める）** → to start doing…"],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "Built on the **ますstem**: ふり**ます** → ふり**はじめます** · よみ**ます** → よみ**はじめます**.",
-            "Pairs with 〜おわる (finish doing).",
+            "Attaches to the **ます-stem**: ふり**ます** → ふり**はじめます** · ならいます → ならい**はじめます**.",
+            "Directly pairs with the opposite compound ending: **〜おわる** (to finish doing).",
           ],
         },
         examples: [
-          { jp: "あめが ふりはじめました。", gloss: "it started to rain" },
-          { jp: "きょねんから にほんごを べんきょうしはじめました。" },
-          { jp: "3さいから ピアノを ならいはじめました。" },
+          {
+            jp: "あめが ふりはじめました。",
+            gloss: "It started to rain.",
+          },
+          {
+            jp: "きょねんから にほんごを べんきょうしはじめました。",
+            gloss: "I started studying Japanese last year.",
+          },
+          {
+            jp: "3さいから ピアノを ならいはじめました。",
+            gloss: "I started learning piano from the age of 3.",
+          },
         ],
       },
     ],
@@ -1015,32 +1222,40 @@ export const groupsL4L5: Group[] = [
     title: "Something gets decided",
     notions: [
       {
-        number: 49,
+        number: 48,
         courseNumber: 59,
         slug: "decided-koto-ni-naru",
         sidebarLabel: "It's been decided — koto ni naru",
         titleJp: "〜ことになる",
-        objective:
-          "Say that something has been decided — by circumstances rather than by your own choice.",
-        exampleGloss: "“It's been decided I'll go to Kobe next month.”",
+        objective: "State that a decision or policy was determined by external rules, organizations, or circumstances.",
+        exampleGloss: "“It has been decided that I will transfer to the Kobe branch next month.”",
         blocks: [
           {
             type: "rule",
             label: "Rule",
-            lines: ["{{verbe:V dictionary form}} + **ことに なりました** → it has been decided that …"],
+            lines: ["{{verbe:V dictionary form / ない-form}} + **ことに なりました / に なっている**"],
           },
         ],
         attention: {
           label: "Watch out",
           items: [
-            "ことに**なる** = decided by circumstances / others ↔ ことに**する** = you decide it yourself (notion 26).",
-            "Often used for your own choices too, to sound softer / more modest.",
+            "**ことになる** = decided by circumstances, rules, or third parties ↔ **ことにする** = personal decision made by the speaker (notion 26).",
+            "Japanese speakers often describe their own decisions using ことになりました to sound modest and avoid sounding overly direct.",
           ],
         },
         examples: [
-          { jp: "らいげつ こうべへ しゅっちょうする ことに なりました。", gloss: "it's been decided" },
-          { jp: "タンさんが きこくするので、そうべつかいを する ことに なりました。" },
-          { jp: "ともだちの けっこんしきで、うたを うたう ことに なりました。" },
+          {
+            jp: "らいげつ こうべへ しゅっちょうする ことに なりました。",
+            gloss: "It has been decided that I will go on a business trip to Kobe next month.",
+          },
+          {
+            jp: "タンさんが きこくするので、そうべつかいを する ことに なりました。",
+            gloss: "Since Tan-san is returning home, it was arranged that we will hold a farewell party.",
+          },
+          {
+            jp: "ともだちの けっこんしきで、うたを うたう ことに なりました。",
+            gloss: "It was arranged that I would sing a song at my friend's wedding.",
+          },
         ],
       },
     ],
@@ -1057,29 +1272,22 @@ export const checklistL4L5: ChecklistSection = {
   sidebarLabel: "✅ Quick checklist (L4/L5)",
   items: [
     "**お〜になる**: respect toward the subject (teacher, customer), never for yourself.",
-    "**なかなか** goes with a **negative**: “can't manage to / slow to”.",
-    "Frequency: **period に count** (1しゅうかんに 5か).",
-    "Nominalizing: の**を** (object: wait, forget) / の**が** (perception: see, like).",
-    "Question word + **か** (someone) ↔ + **も + negative** (no one) ↔ + **のか** (embedded question).",
-    "**もう/まだ ②**: question with もう → answer まだ〜ていません · question with まだ → answer **もう〜ていません** (“none left”).",
-    "**〜かどうか** = “whether or not” · {{naadj:na-adj}}/{{nom:noun}} drop だ before it.",
-    "**で** = with N people / by oneself (ひとりで, じぶんで) — not the で of place.",
-    "**そして** links two sentences (addition or sequence).",
-    "**とも** = all N (ふたりとも), attached to the counter.",
-    "**ほしい**: object in **が**, conjugates like an {{adj:i-adj}} · desire to act = 〜たい.",
-    "Giving: **あげる** (moves away from me) / **もらう** (I receive) / **くれる** (comes toward me). “My brother gives to me” = **くれる**, never あげる.",
-    "Politeness of giving: さしあげる・いただく・くださる (toward a superior) · やる (toward an inferior).",
-    "**やりもらい**: **あげる** (me → others) · **もらう** (I receive) · **くれる** (others → me). Add て for the favour version.",
-    "Keigo of やりもらい: **さしあげる / いただく / くださる** (up) · **やる** (down, plants & pets).",
-    "Requests rise: 〜て**くれませんか** → 〜て**もらえませんか** → 〜て**いただけませんか**.",
-    "**かた（方）**: どうします+かた (how to) · する-noun + **の しかた** · ばしょへの **いきかた**.",
-    "**意向形** + か = let's · + **とおもう** = intention ↔ short form + とおもう = supposition (notion 3).",
-    "**つもり** = settled plan (dict / **ない**-form) ↔ 〜ようとおもう = softer intention.",
-    "**〜たら** = plain past (た / かった / だった) + ら · **もし** flags a hypothetical.",
-    "**〜たり〜たり する** = a few example actions (non-exhaustive), on the た-form.",
-    "**〜てから** (after ~ing, sequence) ↔ reason **〜から** (because).",
-    "**ことになる** (decided for you) ↔ **ことにする** (you decide, notion 26).",
-    "**〜はじめる** (start doing) = ますstem + 始める.",
+    "**なかなか** pairs with a **negative predicate**: “can't seem to / slow to”.",
+    "**Frequency**: [Period] **に** [Count] (1しゅうかんに 5かい).",
+    "**Nominalizing**: の**を** (direct object: wait, forget) / の**が** (perception & adjectives: like, see).",
+    "**Indefinite interrogatives**: + **か** (somewhere) ↔ + **も + neg** (nowhere) ↔ + **のか** (embedded WH-question).",
+    "**Answer flip**: Q with もう → A−: **まだ〜ていません** · Q with まだ → A−: **もう〜ていません** (none left).",
+    "**〜かどうか**: binary “whether or not” · {{naadj:na-adj}} and {{nom:noun}} drop だ before it.",
+    "**Condition で**: ひとり**で**, じぶん**で** indicates the unit performing the action.",
+    "**Giving/Receiving vectors**: あげる (outward) · もらう (received from) · くれる (directed inward to me).",
+    "**Request hierarchy**: 〜てくれない (casual) → 〜てくれませんか (polite) → 〜てもらえませんか (very polite) → 〜ていただけませんか (business).",
+    "**かた（方）**: ます-stem + かた (how to) · する-verb + **の しかた**.",
+    "**Intention vs Supposition**: Volitional + とおもう = intention ↔ Dict form + とおもう = supposition.",
+    "**Plan strength**: **つもり** (firm settled plan) vs **〜ようとおもう** (softer intention).",
+    "**〜たら**: Plain past + ら · **もし** introduces a hypothetical.",
+    "**〜たり〜たり します**: non-exhaustive list of actions based on the た-form.",
+    "**〜てから**: strictly sequence (“after doing X”) ↔ causal reason **〜から**.",
+    "**Decision**: **ことになる** (external decision/rule) ↔ **ことにする** (personal decision).",
   ],
 };
 
@@ -1089,25 +1297,18 @@ export const checklistL4L5: ChecklistSection = {
 
 export const allNotionsL4L5: Notion[] = groupsL4L5.flatMap((g) => g.notions);
 
-/** Look up by the app's global running number (27–49). */
 export function getNotionByNumberL4L5(n: number): Notion | undefined {
   return allNotionsL4L5.find((notion) => notion.number === n);
 }
 
-/** Look up by the real course lesson number (38–61). */
 export function getNotionByCourseNumber(n: number): Notion | undefined {
   return allNotionsL4L5.find((notion) => notion.courseNumber === n);
 }
 
-// Some course lessons are folded into a single grouped notion here, so a
-// finer-grained key still resolves to the notion that covers it. Mirrors
-// the alias approach in the L1–L3 file.
 const NOTION_SLUG_ALIASES_L4L5: Record<string, string> = {
-  // lessons 42 / 43 / 46 are combined into one notion
   "question-word-ka": "question-word-ka-mo-noka",
   "question-word-mo": "question-word-ka-mo-noka",
   "question-word-noka": "question-word-ka-mo-noka",
-  // the three giving/receiving directions live in one notion
   ageru: "giving-receiving-objects",
   morau: "giving-receiving-objects",
   kureru: "giving-receiving-objects",
