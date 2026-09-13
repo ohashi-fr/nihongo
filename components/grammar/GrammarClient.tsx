@@ -11,12 +11,14 @@ import type {
 import { grammarQuizQuestions } from "@/content/grammar/grammar-quiz";
 import { examQuiz, totalExamBlankCount } from "@/content/grammar/exam-quiz";
 import { trainingQuizLive, totalTrainingQuestionCount } from "@/content/grammar/training-quiz";
+import { challengeQuiz, totalChallengeQuestionCount } from "@/content/grammar/challenge-quiz";
 import SectionHeader from "@/components/ui/SectionHeader";
 import GrammarModuleTabs from "./GrammarModuleTabs";
 import GrammarSidebar from "./GrammarSidebar";
 import QuizChooser from "./QuizChooser";
 import GrammarQuiz from "./GrammarQuiz";
 import ExamQuiz, { TRAINING_SECTION_LABELS } from "./ExamQuiz";
+import ChallengeQuiz from "./ChallengeQuiz";
 import { NotionDetail, SocleDetail, ChecklistDetail } from "./GrammarDetail";
 
 /** One level of the Grammar page (e.g. 初級1 · L1–L3). */
@@ -36,17 +38,18 @@ export interface GrammarModule {
   quizzes?: QuizType[];
 }
 
-type QuizType = "mcq" | "exam" | "training";
+type QuizType = "mcq" | "exam" | "training" | "challenge";
 
 type Props = {
   modules: GrammarModule[];
 };
 
-const QUIZ_IDS = new Set(["quiz", "quiz-mcq", "quiz-exam", "quiz-training"]);
+const QUIZ_IDS = new Set(["quiz", "quiz-mcq", "quiz-exam", "quiz-training", "quiz-challenge"]);
 const QUIZ_ID_TYPE: Record<string, QuizType> = {
   "quiz-mcq": "mcq",
   "quiz-exam": "exam",
   "quiz-training": "training",
+  "quiz-challenge": "challenge",
 };
 
 function flatten(groups: Group[]): Notion[] {
@@ -206,11 +209,14 @@ export default function GrammarClient({ modules }: Props) {
           onSelectMcq={offered.includes("mcq") ? () => handleSelect("quiz-mcq") : undefined}
           onSelectExam={offered.includes("exam") ? () => handleSelect("quiz-exam") : undefined}
           onSelectTraining={offered.includes("training") ? () => handleSelect("quiz-training") : undefined}
+          onSelectChallenge={offered.includes("challenge") ? () => handleSelect("quiz-challenge") : undefined}
           mcqQuestionCount={grammarQuizQuestions.length}
           examBlankCount={totalExamBlankCount}
           examSectionCount={examQuiz.sections.length}
           trainingQuestionCount={totalTrainingQuestionCount}
           trainingSectionCount={trainingQuizLive.sections.length}
+          challengeQuestionCount={totalChallengeQuestionCount}
+          challengeSectionCount={challengeQuiz.sections.length}
         />
       );
     }
@@ -239,6 +245,15 @@ export default function GrammarClient({ modules }: Props) {
           quizName="Training quiz"
           sectionLabels={TRAINING_SECTION_LABELS}
           referenceToNotion={{}}
+          onExit={() => handleSelect(defaultSelectedId(activeModule))}
+          scrollToTop={scrollDetailToTop}
+        />
+      );
+    }
+    if (selectedId === "quiz-challenge") {
+      return (
+        <ChallengeQuiz
+          quiz={challengeQuiz}
           onExit={() => handleSelect(defaultSelectedId(activeModule))}
           scrollToTop={scrollDetailToTop}
         />

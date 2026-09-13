@@ -790,4 +790,15 @@ export default function ExamQuiz({
   );
 }
 
-export { TRAINING_SECTION_LABELS };
+export {
+  TRAINING_SECTION_LABELS,
+  BLANK_MARKER,
+  shuffle,
+  normalize,
+  getKanaVariants,
+  isBlankCorrect,
+  isChoiceCorrect,
+  splitPrompt,
+  blankWidthCh,
+  QuestionCard,
+};

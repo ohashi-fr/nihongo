@@ -24,7 +24,7 @@ const modules: GrammarModule[] = [
     subtitleLabel: "初級1 (L4–L5–6)",
     groups: groupsL4L5,
     checklist: checklistL4L5,
-    quizzes: ["training"],
+    quizzes: ["training", "challenge"],
   },
 ];
 

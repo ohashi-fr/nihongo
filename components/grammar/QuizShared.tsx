@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { getNotionBySlug } from "@/content/grammar/grammar-data";
+import { getNotionBySlug, type Notion } from "@/content/grammar/grammar-data";
 
 /**
  * Small pieces shared between the two grammar quiz engines (MCQ
@@ -16,9 +16,17 @@ import { getNotionBySlug } from "@/content/grammar/grammar-data";
 
 /** Link to the matching reference notion, opened in a new tab so an
  * in-progress quiz round is never lost. Returns null if the slug
- * doesn't resolve to a lesson. */
-export function ReviewNotionLink({ notionSlug }: { notionSlug: string }) {
-  const notion = getNotionBySlug(notionSlug);
+ * doesn't resolve to a lesson. `resolver` lets other modules' quizzes
+ * (e.g. L4–L5, which has its own notion table) look up their own slugs
+ * instead of the default L1–L3 one. */
+export function ReviewNotionLink({
+  notionSlug,
+  resolver = getNotionBySlug,
+}: {
+  notionSlug: string;
+  resolver?: (slug: string) => Notion | undefined;
+}) {
+  const notion = resolver(notionSlug);
   if (!notion) return null;
   return (
     <Link

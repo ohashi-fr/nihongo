@@ -4,34 +4,55 @@ type Props = {
   onSelectMcq?: () => void;
   onSelectExam?: () => void;
   onSelectTraining?: () => void;
+  onSelectChallenge?: () => void;
   mcqQuestionCount?: number;
   examBlankCount?: number;
   examSectionCount?: number;
   trainingQuestionCount?: number;
   trainingSectionCount?: number;
+  challengeQuestionCount?: number;
+  challengeSectionCount?: number;
 };
 
 /**
  * Shown when the sidebar's "Test yourself" entry is clicked. Which
  * tiles appear depends entirely on which `onSelect*` handlers the
  * active module passes in — the MCQ grammar quiz and N5 mock exam for
- * L1–L3, the L4–L5 training quiz for L4–L5. Picking one hands off to
- * that quiz's own pre-quiz screen.
+ * L1–L3, the L4–L5 training and challenge quizzes for L4–L5. Picking
+ * one hands off to that quiz's own pre-quiz screen.
  */
 export default function QuizChooser({
   onSelectMcq,
   onSelectExam,
   onSelectTraining,
+  onSelectChallenge,
   mcqQuestionCount,
   examBlankCount,
   examSectionCount,
   trainingQuestionCount,
   trainingSectionCount,
+  challengeQuestionCount,
+  challengeSectionCount,
 }: Props) {
-  const visibleCount = [onSelectMcq, onSelectExam, onSelectTraining].filter(Boolean).length;
+  const visibleCount = [onSelectMcq, onSelectExam, onSelectTraining, onSelectChallenge].filter(
+    Boolean
+  ).length;
   const containerWidth =
-    visibleCount >= 3 ? "max-w-3xl" : visibleCount === 2 ? "max-w-2xl" : "max-w-md";
-  const gridCols = visibleCount >= 3 ? "sm:grid-cols-3" : visibleCount === 2 ? "sm:grid-cols-2" : "";
+    visibleCount >= 4
+      ? "max-w-5xl"
+      : visibleCount === 3
+        ? "max-w-3xl"
+        : visibleCount === 2
+          ? "max-w-2xl"
+          : "max-w-md";
+  const gridCols =
+    visibleCount >= 4
+      ? "sm:grid-cols-2 lg:grid-cols-4"
+      : visibleCount === 3
+        ? "sm:grid-cols-3"
+        : visibleCount === 2
+          ? "sm:grid-cols-2"
+          : "";
   const subtitle =
     visibleCount >= 3
       ? "A few ways to practice the grammar notions — pick one to start."
@@ -171,6 +192,46 @@ export default function QuizChooser({
             <div className="mt-5 flex w-full items-center justify-between border-t border-border pt-4 text-xs">
               <span className="font-medium text-muted">
                 {trainingQuestionCount} questions · {trainingSectionCount} sections
+              </span>
+              <span className="font-semibold text-primary transition group-hover:translate-x-0.5">
+                Start →
+              </span>
+            </div>
+          </button>
+        )}
+
+        {onSelectChallenge && (
+          <button
+            type="button"
+            onClick={onSelectChallenge}
+            className="card-tile group flex flex-col items-start text-left"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-100">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="h-6 w-6 text-accent-700"
+                aria-hidden
+              >
+                <path
+                  d="M13 2L4.5 13.5H11L10 22L19.5 10H13L13 2Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <h3 className="jp mt-4 text-xs font-semibold uppercase tracking-[0.1em] text-accent-700">
+              チャレンジ・クイズ
+            </h3>
+            <h3 className="text-lg font-bold text-ink">Challenge quiz</h3>
+            <p className="mt-1.5 text-sm text-muted">
+              Dense, trap-heavy grammar review — no easy points.
+            </p>
+            <div className="mt-5 flex w-full items-center justify-between border-t border-border pt-4 text-xs">
+              <span className="font-medium text-muted">
+                {challengeQuestionCount} questions · {challengeSectionCount} sections
               </span>
               <span className="font-semibold text-primary transition group-hover:translate-x-0.5">
                 Start →
