@@ -51,7 +51,6 @@ const SECTION_LABELS: Record<string, string> = {
   問題2: "Verb forms",
   問題3: "Adjectives & nouns",
   問題4: "Choose the correct form",
-  問題5: "Giving & receiving",
   問題6: "Reading comprehension",
   問題7: "Answer the questions",
   会話練習: "Speaking practice",

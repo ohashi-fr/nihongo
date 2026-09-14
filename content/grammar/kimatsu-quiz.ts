@@ -9,7 +9,7 @@
  *   multiple_choice 問題4     — pick an option. answers[0] = correct option (verbatim).
  *   true_false      問題6     — options ["○","×"], answers[0] = correct mark.
  *   ordering        問題6-5   — answers[i] = correct letter for the i-th blank (see note for ア–カ).
- *   production      問題5     — write from a picture; modelAnswer given (reveal, not strict match).
+ *   production      (unused)  — write from a picture; modelAnswer given (reveal, not strict match).
  *   open            問題7 / 会話練習 / 会話14 — FREE answer, no single correct response
  *                    (autoGraded:false). Self-assessed; some carry a modelAnswer for reference.
  *
@@ -17,8 +17,9 @@
  * the graded grammar; open items carry an English `gloss` instead.
  *
  * Answers were generated from grammar (the source sheet is blank) — verify against the
- * class key, esp. 問題2·1 (泳げるように), 問題2·15/16 (様態 ふり vs 伝聞 ふる), and
- * 問題5·1/2 where the gift object was not legible on the photo (placeholder （プレゼント）).
+ * class key, esp. 問題2·1 (泳げるように) and 問題2·15/16 (様態 ふり vs 伝聞 ふる).
+ * 問題5 (giving/receiving from pictures) was dropped — the worksheet's photos aren't
+ * transcribed, so the section was untestable text-only.
  */
 
 export type KimatsuQuestionType =
@@ -64,7 +65,7 @@ export interface KimatsuQuiz {
 export const kimatsuReviewQuiz: KimatsuQuiz =
 {
   "title": "期末復習問題 — Full end-of-term review quiz (L1–L6)",
-  "description": "Complete faithful transcription of the printed 期末復習問題 (12 pages). Auto-graded: 問題1/2/3 (fill_blank), 問題4 (multiple_choice), 問題6 (true_false + ordering). Reference answers: 問題5 (production from pictures — model answers given). Open (no single correct answer, self-assessed / free production): 問題7, 会話練習, 会話14 — flagged via autoGraded:false and their instructions. Answers were generated (source sheet blank) — verify against the class key.",
+  "description": "Complete faithful transcription of the printed 期末復習問題 (12 pages), minus 問題5 (giving/receiving from pictures — dropped, the worksheet's photos aren't transcribed). Auto-graded: 問題1/2/3 (fill_blank), 問題4 (multiple_choice), 問題6 (true_false + ordering). Open (no single correct answer, self-assessed / free production): 問題7, 会話練習, 会話14 — flagged via autoGraded:false and their instructions. Answers were generated (source sheet blank) — verify against the class key.",
   "sections": [
     {
       "section_id": "問題1",
@@ -242,7 +243,7 @@ export const kimatsuReviewQuiz: KimatsuQuiz =
           "prompt_hiragana": "おたばこを（　）になりますか。",
           "base_word": "吸います",
           "base_word_hiragana": "すいます",
-          "answers": [["おすいに"]]
+          "answers": [["おすい"]]
         },
         {
           "id": 3,
@@ -611,61 +612,6 @@ export const kimatsuReviewQuiz: KimatsuQuiz =
           "prompt_hiragana": "なかむら：マリさん、この かんじが よめないんですけど・・・ マリ：わたしも よめないから、たなかさんに（　）。",
           "options": ["読んでください", "読んでもらってください", "読んであげます", "読んであげてください"],
           "answers": [["読んでもらってください"]]
-        }
-      ]
-    },
-    {
-      "section_id": "問題5",
-      "title": "あげる・もらう・くれる — Giving & receiving (from pictures)",
-      "autoGraded": false,
-      "instructions": "絵を見て文を書く問題（産出）。決まった正解に近い模範解答を提示（自動採点ではなく「模範解答を表示」推奨）。",
-      "questions": [
-        {
-          "id": 1,
-          "type": "production",
-          "courseRef": "L5, やりもらい",
-          "prompt": "（私は）＿＿",
-          "scene": "山田さんが私に物をあげている（私が受け取っている）。",
-          "modelAnswer": "私は山田さんに（プレゼント）をもらいました。",
-          "modelAnswer_hiragana": "わたしは やまださんに（プレゼント）を もらいました。",
-          "note": "Objet non lisible sur la photo — remplacer （プレゼント） par l'objet réel du dessin."
-        },
-        {
-          "id": 2,
-          "type": "production",
-          "courseRef": "L5, やりもらい",
-          "prompt": "① （私は）＿＿　② （山田さんが）＿＿",
-          "scene": "山田さんが私に物をあげている（私が「ありがとうございます」と言う）。",
-          "modelAnswer": "① 私は山田さんに（プレゼント）をもらいました。　② 山田さんが（私に）（プレゼント）をくれました。",
-          "modelAnswer_hiragana": "① わたしは やまださんに（プレゼント）を もらいました。　② やまださんが（わたしに）（プレゼント）を くれました。",
-          "note": "Même événement décrit dans les deux sens (もらう / くれる)."
-        },
-        {
-          "id": 3,
-          "type": "production",
-          "courseRef": "L5-5, 52②",
-          "prompt": "（私は）＿＿　〔タオルを貸します〕",
-          "scene": "山本さんが私にタオルを貸してくれている。",
-          "modelAnswer": "私は山本さんにタオルを貸してもらいました。",
-          "modelAnswer_hiragana": "わたしは やまもとさんに タオルを かして もらいました。"
-        },
-        {
-          "id": 4,
-          "type": "production",
-          "courseRef": "L5-5, 52②",
-          "prompt": "（私は）＿＿　〔自転車を直します〕",
-          "scene": "村上さんが私の自転車を直してくれている。",
-          "modelAnswer": "私は村上さんに自転車を直してもらいました。",
-          "modelAnswer_hiragana": "わたしは むらかみさんに じてんしゃを なおして もらいました。"
-        },
-        {
-          "id": 5,
-          "type": "production",
-          "courseRef": "L5-5/6, 52②③",
-          "prompt": "① （私は）＿＿　② （父が）＿＿　〔かばんを買います〕",
-          "scene": "父が私にかばんを買ってくれている。",
-          "modelAnswer": "① 私は父にかばんを買ってもらいました。　② 父が（私に）かばんを買ってくれました。",
-          "modelAnswer_hiragana": "① わたしは ちちに かばんを かって もらいました。　② ちちが（わたしに）かばんを かって くれました。"
         }
       ]
     },

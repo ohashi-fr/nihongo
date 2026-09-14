@@ -132,18 +132,36 @@ function splitPrompt(prompt: string): string[] {
   return prompt.split(BLANK_MARKER);
 }
 
+// `ch` sizes a field by the width of the "0" glyph, which is roughly half
+// the width of a full-width kana/kanji glyph — sizing kana text 1ch per
+// character (as plain .length did) under-allocates by about half and the
+// field clips almost immediately. Weight full-width characters as 2 and
+// everything else (romaji typed before IME conversion) as 1.
+function visualWidth(str: string): number {
+  let width = 0;
+  for (const ch of str) {
+    const code = ch.codePointAt(0) ?? 0;
+    const isFullWidth =
+      (code >= 0x3000 && code <= 0x303f) || // CJK punctuation
+      (code >= 0x3040 && code <= 0x30ff) || // hiragana & katakana
+      (code >= 0x3400 && code <= 0x9fff) || // CJK ideographs
+      (code >= 0xff00 && code <= 0xffef); // fullwidth forms
+    width += isFullWidth ? 2 : 1;
+  }
+  return width;
+}
+
 // Sizes each blank's input to roughly fit its expected answer instead of
 // using one fixed width for both a single ぶ particle and a 10-character
 // adjective chain. Also grows live with whatever the user has typed so
 // far — typed romaji (e.g. "tabemasu") runs longer than the kana it
 // converts to ("たべます"), and the field shouldn't clip it while typing.
-// The floor is generous on purpose: full-width kana glyphs render wider
-// than the `ch` unit assumes, so a tight floor reads as cramped before
-// the field has a chance to grow.
+// The floor is generous on purpose so the field doesn't read as cramped
+// before it has a chance to grow.
 function blankWidthCh(variants: string[], currentValue: string): number {
-  const maxLen = Math.max(...getKanaVariants(variants).map((v) => v.length), 1);
-  const typedLen = currentValue.length;
-  return Math.min(26, Math.max(7, maxLen + 3, typedLen + 3));
+  const maxLen = Math.max(...getKanaVariants(variants).map((v) => visualWidth(v)), 1);
+  const typedLen = visualWidth(currentValue);
+  return Math.min(40, Math.max(8, maxLen + 4, typedLen + 4));
 }
 
 /**
