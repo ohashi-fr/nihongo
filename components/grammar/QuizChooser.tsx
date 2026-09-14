@@ -5,6 +5,7 @@ type Props = {
   onSelectExam?: () => void;
   onSelectTraining?: () => void;
   onSelectChallenge?: () => void;
+  onSelectKimatsu?: () => void;
   mcqQuestionCount?: number;
   examBlankCount?: number;
   examSectionCount?: number;
@@ -12,6 +13,8 @@ type Props = {
   trainingSectionCount?: number;
   challengeQuestionCount?: number;
   challengeSectionCount?: number;
+  kimatsuQuestionCount?: number;
+  kimatsuSectionCount?: number;
 };
 
 /**
@@ -33,10 +36,17 @@ export default function QuizChooser({
   trainingSectionCount,
   challengeQuestionCount,
   challengeSectionCount,
+  onSelectKimatsu,
+  kimatsuQuestionCount,
+  kimatsuSectionCount,
 }: Props) {
-  const visibleCount = [onSelectMcq, onSelectExam, onSelectTraining, onSelectChallenge].filter(
-    Boolean
-  ).length;
+  const visibleCount = [
+    onSelectMcq,
+    onSelectExam,
+    onSelectTraining,
+    onSelectChallenge,
+    onSelectKimatsu,
+  ].filter(Boolean).length;
   const containerWidth =
     visibleCount >= 4
       ? "max-w-5xl"
@@ -232,6 +242,52 @@ export default function QuizChooser({
             <div className="mt-5 flex w-full items-center justify-between border-t border-border pt-4 text-xs">
               <span className="font-medium text-muted">
                 {challengeQuestionCount} questions · {challengeSectionCount} sections
+              </span>
+              <span className="font-semibold text-primary transition group-hover:translate-x-0.5">
+                Start →
+              </span>
+            </div>
+          </button>
+        )}
+
+        {onSelectKimatsu && (
+          <button
+            type="button"
+            onClick={onSelectKimatsu}
+            className="card-tile group flex flex-col items-start text-left"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-100">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="h-6 w-6 text-accent-700"
+                aria-hidden
+              >
+                <path
+                  d="M9 4.5h9.5a1 1 0 011 1V19a1 1 0 01-1 1H6a1.5 1.5 0 01-1.5-1.5V6A1.5 1.5 0 016 4.5H9zm0 0V2.5m5 2V2.5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M8 9.5h8M8 13h8M8 16.5h5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+            <h3 className="jp mt-4 text-xs font-semibold uppercase tracking-[0.1em] text-accent-700">
+              期末復習問題
+            </h3>
+            <h3 className="text-lg font-bold text-ink">End-of-term review</h3>
+            <p className="mt-1.5 text-sm text-muted">
+              Full L1–L6 review: particles, verbs, reading, and free-answer speaking practice.
+            </p>
+            <div className="mt-5 flex w-full items-center justify-between border-t border-border pt-4 text-xs">
+              <span className="font-medium text-muted">
+                {kimatsuQuestionCount} questions · {kimatsuSectionCount} sections
               </span>
               <span className="font-semibold text-primary transition group-hover:translate-x-0.5">
                 Start →

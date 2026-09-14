@@ -12,6 +12,7 @@ import { grammarQuizQuestions } from "@/content/grammar/grammar-quiz";
 import { examQuiz, totalExamBlankCount } from "@/content/grammar/exam-quiz";
 import { trainingQuizLive, totalTrainingQuestionCount } from "@/content/grammar/training-quiz";
 import { challengeQuiz, totalChallengeQuestionCount } from "@/content/grammar/challenge-quiz";
+import { kimatsuReviewQuiz, totalKimatsuQuestionCount } from "@/content/grammar/kimatsu-quiz";
 import SectionHeader from "@/components/ui/SectionHeader";
 import GrammarModuleTabs from "./GrammarModuleTabs";
 import GrammarSidebar from "./GrammarSidebar";
@@ -19,6 +20,7 @@ import QuizChooser from "./QuizChooser";
 import GrammarQuiz from "./GrammarQuiz";
 import ExamQuiz, { TRAINING_SECTION_LABELS } from "./ExamQuiz";
 import ChallengeQuiz from "./ChallengeQuiz";
+import KimatsuQuiz from "./KimatsuQuiz";
 import { NotionDetail, SocleDetail, ChecklistDetail } from "./GrammarDetail";
 
 /** One level of the Grammar page (e.g. 初級1 · L1–L3). */
@@ -38,18 +40,26 @@ export interface GrammarModule {
   quizzes?: QuizType[];
 }
 
-type QuizType = "mcq" | "exam" | "training" | "challenge";
+type QuizType = "mcq" | "exam" | "training" | "challenge" | "kimatsu";
 
 type Props = {
   modules: GrammarModule[];
 };
 
-const QUIZ_IDS = new Set(["quiz", "quiz-mcq", "quiz-exam", "quiz-training", "quiz-challenge"]);
+const QUIZ_IDS = new Set([
+  "quiz",
+  "quiz-mcq",
+  "quiz-exam",
+  "quiz-training",
+  "quiz-challenge",
+  "quiz-kimatsu",
+]);
 const QUIZ_ID_TYPE: Record<string, QuizType> = {
   "quiz-mcq": "mcq",
   "quiz-exam": "exam",
   "quiz-training": "training",
   "quiz-challenge": "challenge",
+  "quiz-kimatsu": "kimatsu",
 };
 
 function flatten(groups: Group[]): Notion[] {
@@ -210,6 +220,7 @@ export default function GrammarClient({ modules }: Props) {
           onSelectExam={offered.includes("exam") ? () => handleSelect("quiz-exam") : undefined}
           onSelectTraining={offered.includes("training") ? () => handleSelect("quiz-training") : undefined}
           onSelectChallenge={offered.includes("challenge") ? () => handleSelect("quiz-challenge") : undefined}
+          onSelectKimatsu={offered.includes("kimatsu") ? () => handleSelect("quiz-kimatsu") : undefined}
           mcqQuestionCount={grammarQuizQuestions.length}
           examBlankCount={totalExamBlankCount}
           examSectionCount={examQuiz.sections.length}
@@ -217,6 +228,8 @@ export default function GrammarClient({ modules }: Props) {
           trainingSectionCount={trainingQuizLive.sections.length}
           challengeQuestionCount={totalChallengeQuestionCount}
           challengeSectionCount={challengeQuiz.sections.length}
+          kimatsuQuestionCount={totalKimatsuQuestionCount}
+          kimatsuSectionCount={kimatsuReviewQuiz.sections.length}
         />
       );
     }
@@ -254,6 +267,15 @@ export default function GrammarClient({ modules }: Props) {
       return (
         <ChallengeQuiz
           quiz={challengeQuiz}
+          onExit={() => handleSelect(defaultSelectedId(activeModule))}
+          scrollToTop={scrollDetailToTop}
+        />
+      );
+    }
+    if (selectedId === "quiz-kimatsu") {
+      return (
+        <KimatsuQuiz
+          quiz={kimatsuReviewQuiz}
           onExit={() => handleSelect(defaultSelectedId(activeModule))}
           scrollToTop={scrollDetailToTop}
         />
