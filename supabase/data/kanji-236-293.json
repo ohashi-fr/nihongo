@@ -1,0 +1,351 @@
+{
+  "meta": {
+    "source": "Shinjuku Japanese Language Institute kanji workbook (Kanjis.pdf, 7 pages)",
+    "kanjiNumbers": "236–293 — 58 kanji, continuing the existing 181–235 set",
+    "redRule": "red:true when ANY part of the word is printed in red (the key / tested vocabulary). Fully-black words are secondary (red:false).",
+    "readings": "kun = 訓読み (hiragana), on = 音読み (katakana), from the workbook's reading columns. '—' = none shown.",
+    "grouping": "Grouped by the workbook's radical sections. These are a proposal — rename / re-split to match your site's lesson scheme.",
+    "note": "※-marked entries in the workbook (書留, お兄さん) are flagged separately in the source; transcribed here with their observed colour."
+  },
+  "groups": [
+    {
+      "label": "Blades, tickets & fire",
+      "radical": "刀・火",
+      "kanji": [
+        { "number": 236, "kanji": "切", "kun": ["きる"], "on": ["セツ"], "words": [
+          { "word": "切る", "reading": "きる", "meaning": "to cut", "red": true },
+          { "word": "切符", "reading": "きっぷ", "meaning": "ticket", "red": true },
+          { "word": "切手", "reading": "きって", "meaning": "postage stamp", "red": false },
+          { "word": "親切", "reading": "しんせつ", "meaning": "kind", "red": true },
+          { "word": "大切", "reading": "たいせつ", "meaning": "important", "red": true }
+        ]},
+        { "number": 237, "kanji": "券", "kun": [], "on": ["ケン"], "words": [
+          { "word": "券", "reading": "けん", "meaning": "~ card, ~ ticket", "red": true },
+          { "word": "入場券", "reading": "にゅうじょうけん", "meaning": "entrance ticket", "red": false }
+        ]},
+        { "number": 238, "kanji": "割", "kun": ["わる", "われる", "わり"], "on": ["カツ"], "words": [
+          { "word": "割れる", "reading": "われる", "meaning": "to break, to split (intr.)", "red": true },
+          { "word": "割る", "reading": "わる", "meaning": "to break, to split (tr.)", "red": true },
+          { "word": "二割引き", "reading": "にわりびき", "meaning": "20% off", "red": true },
+          { "word": "分割する", "reading": "ぶんかつする", "meaning": "to divide", "red": true }
+        ]},
+        { "number": 239, "kanji": "刻", "kun": ["きざむ"], "on": ["コク"], "words": [
+          { "word": "刻む", "reading": "きざむ", "meaning": "to cut into fine pieces", "red": true },
+          { "word": "遅刻する", "reading": "ちこくする", "meaning": "to be late for", "red": true },
+          { "word": "時刻", "reading": "じこく", "meaning": "time", "red": false }
+        ]},
+        { "number": 240, "kanji": "焼", "kun": ["やく", "やける"], "on": ["ショウ"], "words": [
+          { "word": "焼ける", "reading": "やける", "meaning": "to be burned", "red": true },
+          { "word": "焼く", "reading": "やく", "meaning": "to burn", "red": true },
+          { "word": "焼き肉", "reading": "やきにく", "meaning": "grilled meat", "red": false },
+          { "word": "燃焼する", "reading": "ねんしょうする", "meaning": "to burn, to combust", "red": false }
+        ]},
+        { "number": 241, "kanji": "熱", "kun": ["あつい"], "on": ["ネツ"], "words": [
+          { "word": "熱いお湯", "reading": "あついおゆ", "meaning": "hot water", "red": true },
+          { "word": "熱", "reading": "ねつ", "meaning": "fever, heat", "red": true },
+          { "word": "熱心", "reading": "ねっしん", "meaning": "eager, enthusiastic", "red": true }
+        ]},
+        { "number": 242, "kanji": "点", "kun": [], "on": ["テン"], "words": [
+          { "word": "点", "reading": "てん", "meaning": "point", "red": true },
+          { "word": "終点", "reading": "しゅうてん", "meaning": "the terminal", "red": false },
+          { "word": "欠点", "reading": "けってん", "meaning": "fault", "red": false }
+        ]}
+      ]
+    },
+    {
+      "label": "Water",
+      "radical": "水・氵",
+      "kanji": [
+        { "number": 243, "kanji": "氷", "kun": ["こおり", "ひ"], "on": ["ヒョウ"], "words": [
+          { "word": "氷", "reading": "こおり", "meaning": "ice", "red": true },
+          { "word": "かき氷", "reading": "かきごおり", "meaning": "shaved ice with syrup on top", "red": false },
+          { "word": "氷河", "reading": "ひょうが", "meaning": "glacier", "red": false }
+        ]},
+        { "number": 244, "kanji": "海", "kun": ["うみ"], "on": ["カイ"], "words": [
+          { "word": "海", "reading": "うみ", "meaning": "the sea, the ocean", "red": true },
+          { "word": "海外", "reading": "かいがい", "meaning": "overseas", "red": true },
+          { "word": "海水", "reading": "かいすい", "meaning": "sea water", "red": false }
+        ]},
+        { "number": 245, "kanji": "泳", "kun": ["およぐ"], "on": ["エイ"], "words": [
+          { "word": "泳ぐ", "reading": "およぐ", "meaning": "to swim", "red": true },
+          { "word": "水泳", "reading": "すいえい", "meaning": "swimming", "red": true }
+        ]},
+        { "number": 246, "kanji": "洗", "kun": ["あらう"], "on": ["セン"], "words": [
+          { "word": "洗う", "reading": "あらう", "meaning": "to wash", "red": true },
+          { "word": "お手洗い", "reading": "おてあらい", "meaning": "toilet, bathroom", "red": false },
+          { "word": "洗濯する", "reading": "せんたくする", "meaning": "to wash (laundry)", "red": true },
+          { "word": "洗剤", "reading": "せんざい", "meaning": "detergent", "red": false }
+        ]},
+        { "number": 247, "kanji": "浴", "kun": ["あびる"], "on": ["ヨク"], "words": [
+          { "word": "シャワーを浴びる", "reading": "シャワーをあびる", "meaning": "to take a shower", "red": true },
+          { "word": "海水浴", "reading": "かいすいよく", "meaning": "swimming in the sea", "red": false },
+          { "word": "浴室", "reading": "よくしつ", "meaning": "bathroom", "red": false }
+        ]},
+        { "number": 248, "kanji": "流", "kun": ["ながれる", "ながす"], "on": ["リュウ"], "words": [
+          { "word": "流れる", "reading": "ながれる", "meaning": "to stream", "red": true },
+          { "word": "流す", "reading": "ながす", "meaning": "to pour, flush, wash, float", "red": true },
+          { "word": "流れ星", "reading": "ながれぼし", "meaning": "shooting star", "red": false },
+          { "word": "流行する", "reading": "りゅうこうする", "meaning": "to be in fashion", "red": true }
+        ]},
+        { "number": 249, "kanji": "湯", "kun": ["ゆ"], "on": ["トウ"], "words": [
+          { "word": "お湯", "reading": "おゆ", "meaning": "hot water", "red": true },
+          { "word": "熱湯", "reading": "ねっとう", "meaning": "boiled water", "red": false },
+          { "word": "銭湯", "reading": "せんとう", "meaning": "public bath", "red": false }
+        ]},
+        { "number": 250, "kanji": "消", "kun": ["きえる", "けす"], "on": ["ショウ"], "words": [
+          { "word": "消える", "reading": "きえる", "meaning": "to go out, to disappear", "red": true },
+          { "word": "消す", "reading": "けす", "meaning": "to extinguish, to turn off", "red": true },
+          { "word": "消しゴム", "reading": "けしゴム", "meaning": "eraser", "red": true },
+          { "word": "消火する", "reading": "しょうかする", "meaning": "to extinguish a fire", "red": true },
+          { "word": "消防車", "reading": "しょうぼうしゃ", "meaning": "fire engine", "red": false }
+        ]},
+        { "number": 251, "kanji": "泣", "kun": ["なく"], "on": ["キュウ"], "words": [
+          { "word": "泣く", "reading": "なく", "meaning": "to cry, to weep", "red": true },
+          { "word": "泣き声", "reading": "なきごえ", "meaning": "tearful voice", "red": false },
+          { "word": "号泣する", "reading": "ごうきゅうする", "meaning": "to cry loudly", "red": false }
+        ]},
+        { "number": 252, "kanji": "治", "kun": ["なおる", "なおす", "おさめる"], "on": ["チ", "ジ"], "words": [
+          { "word": "治る", "reading": "なおる", "meaning": "to recover, to cure", "red": true },
+          { "word": "治す", "reading": "なおす", "meaning": "to cure", "red": true },
+          { "word": "治める", "reading": "おさめる", "meaning": "to govern", "red": false },
+          { "word": "治療", "reading": "ちりょう", "meaning": "(medical) treatment", "red": true },
+          { "word": "政治", "reading": "せいじ", "meaning": "politics", "red": true }
+        ]}
+      ]
+    },
+    {
+      "label": "Effort, work & town",
+      "radical": "力・田",
+      "kanji": [
+        { "number": 253, "kanji": "勉", "kun": [], "on": ["ベン"], "words": [
+          { "word": "勉強する", "reading": "べんきょうする", "meaning": "to study", "red": true }
+        ]},
+        { "number": 254, "kanji": "勤", "kun": ["つとめる"], "on": ["キン"], "words": [
+          { "word": "勤める", "reading": "つとめる", "meaning": "to work", "red": true },
+          { "word": "通勤する", "reading": "つうきんする", "meaning": "to commute", "red": true },
+          { "word": "転勤する", "reading": "てんきんする", "meaning": "to be transferred to another office", "red": false }
+        ]},
+        { "number": 255, "kanji": "申", "kun": ["もうす"], "on": ["シン"], "words": [
+          { "word": "〜と申します", "reading": "〜ともうします", "meaning": "My name is ~.", "red": true },
+          { "word": "申し込む", "reading": "もうしこむ", "meaning": "to apply for, to subscribe for", "red": true },
+          { "word": "申請する", "reading": "しんせいする", "meaning": "to apply, to petition", "red": true }
+        ]},
+        { "number": 256, "kanji": "男", "kun": ["おとこ"], "on": ["ダン", "ナン"], "words": [
+          { "word": "男", "reading": "おとこ", "meaning": "man", "red": true },
+          { "word": "男性", "reading": "だんせい", "meaning": "man", "red": true },
+          { "word": "男女", "reading": "だんじょ", "meaning": "man and woman", "red": true },
+          { "word": "長男", "reading": "ちょうなん", "meaning": "one's eldest son", "red": false }
+        ]},
+        { "number": 257, "kanji": "町", "kun": ["まち"], "on": ["チョウ"], "words": [
+          { "word": "町", "reading": "まち", "meaning": "town", "red": true },
+          { "word": "〜町", "reading": "〜ちょう", "meaning": "~ town", "red": true },
+          { "word": "町長", "reading": "ちょうちょう", "meaning": "mayor", "red": false }
+        ]},
+        { "number": 258, "kanji": "留", "kun": ["とめる", "とまる"], "on": ["リュウ", "ル"], "words": [
+          { "word": "書留", "reading": "かきとめ", "meaning": "registered letter", "red": false },
+          { "word": "留学する", "reading": "りゅうがくする", "meaning": "to study abroad", "red": true },
+          { "word": "留守", "reading": "るす", "meaning": "absence", "red": true }
+        ]}
+      ]
+    },
+    {
+      "label": "Metal, bamboo & records",
+      "radical": "斤・金・竹",
+      "kanji": [
+        { "number": 259, "kanji": "新", "kun": ["あたらしい", "あらた"], "on": ["シン"], "words": [
+          { "word": "新しい", "reading": "あたらしい", "meaning": "new", "red": true },
+          { "word": "新た", "reading": "あらた", "meaning": "new, fresh", "red": false },
+          { "word": "新聞", "reading": "しんぶん", "meaning": "newspaper", "red": true },
+          { "word": "新年", "reading": "しんねん", "meaning": "new year", "red": true }
+        ]},
+        { "number": 260, "kanji": "所", "kun": ["ところ"], "on": ["ショ"], "words": [
+          { "word": "所", "reading": "ところ", "meaning": "place", "red": true },
+          { "word": "台所", "reading": "だいどころ", "meaning": "kitchen", "red": true },
+          { "word": "場所", "reading": "ばしょ", "meaning": "place", "red": true },
+          { "word": "住所", "reading": "じゅうしょ", "meaning": "address", "red": true },
+          { "word": "区役所", "reading": "くやくしょ", "meaning": "ward office", "red": false }
+        ]},
+        { "number": 261, "kanji": "鉄", "kun": [], "on": ["テツ"], "words": [
+          { "word": "地下鉄", "reading": "ちかてつ", "meaning": "subway", "red": true },
+          { "word": "鉄道", "reading": "てつどう", "meaning": "railway", "red": false }
+        ]},
+        { "number": 262, "kanji": "録", "kun": [], "on": ["ロク"], "words": [
+          { "word": "登録する", "reading": "とうろくする", "meaning": "to register", "red": true },
+          { "word": "録音する", "reading": "ろくおんする", "meaning": "to record", "red": false }
+        ]},
+        { "number": 263, "kanji": "答", "kun": ["こたえる"], "on": ["トウ"], "words": [
+          { "word": "答え", "reading": "こたえ", "meaning": "answer", "red": true },
+          { "word": "答える", "reading": "こたえる", "meaning": "to answer", "red": true },
+          { "word": "解答", "reading": "かいとう", "meaning": "answer", "red": true }
+        ]},
+        { "number": 264, "kanji": "簡", "kun": [], "on": ["カン"], "words": [
+          { "word": "簡単", "reading": "かんたん", "meaning": "simple, easy", "red": true }
+        ]},
+        { "number": 265, "kanji": "節", "kun": ["ふし"], "on": ["セツ"], "words": [
+          { "word": "節", "reading": "ふし", "meaning": "knot, joint, turn, melody", "red": false },
+          { "word": "季節", "reading": "きせつ", "meaning": "season", "red": true },
+          { "word": "節約する", "reading": "せつやくする", "meaning": "to save", "red": true },
+          { "word": "関節", "reading": "かんせつ", "meaning": "joint", "red": false }
+        ]},
+        { "number": 266, "kanji": "笑", "kun": ["わらう", "えむ"], "on": ["ショウ"], "words": [
+          { "word": "笑う", "reading": "わらう", "meaning": "to laugh, to smile", "red": true },
+          { "word": "笑顔", "reading": "えがお", "meaning": "smiling face", "red": true },
+          { "word": "爆笑する", "reading": "ばくしょうする", "meaning": "to burst out laughing", "red": false }
+        ]},
+        { "number": 267, "kanji": "第", "kun": [], "on": ["ダイ"], "words": [
+          { "word": "第一回", "reading": "だいいっかい", "meaning": "first", "red": true },
+          { "word": "落第する", "reading": "らくだいする", "meaning": "to fail in an examination", "red": false }
+        ]}
+      ]
+    },
+    {
+      "label": "People & the body",
+      "radical": "人・亻",
+      "kanji": [
+        { "number": 268, "kanji": "天", "kun": ["あま"], "on": ["テン"], "words": [
+          { "word": "天の川", "reading": "あまのがわ", "meaning": "the Milky Way", "red": true },
+          { "word": "天気", "reading": "てんき", "meaning": "weather", "red": true },
+          { "word": "晴天", "reading": "せいてん", "meaning": "fine weather", "red": false },
+          { "word": "天井", "reading": "てんじょう", "meaning": "ceiling", "red": false }
+        ]},
+        { "number": 269, "kanji": "元", "kun": ["もと"], "on": ["ゲン", "ガン"], "words": [
+          { "word": "元〜", "reading": "もと〜", "meaning": "former", "red": true },
+          { "word": "元気", "reading": "げんき", "meaning": "healthy, fine", "red": true },
+          { "word": "元日", "reading": "がんじつ", "meaning": "New Year's Day", "red": true }
+        ]},
+        { "number": 270, "kanji": "夫", "kun": ["おっと"], "on": ["フ", "フウ"], "words": [
+          { "word": "夫", "reading": "おっと", "meaning": "husband", "red": true },
+          { "word": "夫婦", "reading": "ふうふ", "meaning": "couple", "red": true },
+          { "word": "大丈夫", "reading": "だいじょうぶ", "meaning": "safe, sure", "red": true },
+          { "word": "〜夫人", "reading": "〜ふじん", "meaning": "Madam ~, Mrs. ~", "red": false }
+        ]},
+        { "number": 271, "kanji": "兄", "kun": ["あに"], "on": ["キョウ", "ケイ"], "words": [
+          { "word": "兄", "reading": "あに", "meaning": "older brother", "red": true },
+          { "word": "兄弟", "reading": "きょうだい", "meaning": "brother", "red": true },
+          { "word": "父兄", "reading": "ふけい", "meaning": "one's parents", "red": false },
+          { "word": "お兄さん", "reading": "おにいさん", "meaning": "older brother", "red": true }
+        ]},
+        { "number": 272, "kanji": "光", "kun": ["ひかり", "ひかる"], "on": ["コウ"], "words": [
+          { "word": "光", "reading": "ひかり", "meaning": "light", "red": true },
+          { "word": "光る", "reading": "ひかる", "meaning": "to shine", "red": true },
+          { "word": "日光", "reading": "にっこう", "meaning": "sunshine", "red": true },
+          { "word": "観光する", "reading": "かんこうする", "meaning": "to go sightseeing", "red": true }
+        ]},
+        { "number": 273, "kanji": "比", "kun": ["くらべる"], "on": ["ヒ"], "words": [
+          { "word": "比べる", "reading": "くらべる", "meaning": "to compare", "red": true },
+          { "word": "対比する", "reading": "たいひする", "meaning": "to contrast, to compare", "red": true },
+          { "word": "比較する", "reading": "ひかくする", "meaning": "to compare with", "red": false }
+        ]},
+        { "number": 274, "kanji": "北", "kun": ["きた"], "on": ["ホク"], "words": [
+          { "word": "北", "reading": "きた", "meaning": "the north", "red": true },
+          { "word": "北口", "reading": "きたぐち", "meaning": "the north exit", "red": true },
+          { "word": "北風", "reading": "きたかぜ", "meaning": "north wind", "red": false },
+          { "word": "東北", "reading": "とうほく", "meaning": "the Tohoku region", "red": true },
+          { "word": "北海道", "reading": "ほっかいどう", "meaning": "Hokkaido", "red": true }
+        ]},
+        { "number": 275, "kanji": "背", "kun": ["せ"], "on": ["ハイ"], "words": [
+          { "word": "背中", "reading": "せなか", "meaning": "the back (of body)", "red": true },
+          { "word": "背景", "reading": "はいけい", "meaning": "background", "red": true }
+        ]},
+        { "number": 276, "kanji": "体", "kun": ["からだ"], "on": ["タイ"], "words": [
+          { "word": "体", "reading": "からだ", "meaning": "body", "red": true },
+          { "word": "体力", "reading": "たいりょく", "meaning": "physical strength", "red": true },
+          { "word": "体温計", "reading": "たいおんけい", "meaning": "clinical thermometer", "red": true },
+          { "word": "全体", "reading": "ぜんたい", "meaning": "the whole", "red": false }
+        ]},
+        { "number": 277, "kanji": "仕", "kun": ["つかえる"], "on": ["シ"], "words": [
+          { "word": "仕える", "reading": "つかえる", "meaning": "to serve", "red": false },
+          { "word": "仕事する", "reading": "しごとする", "meaning": "job, work", "red": true }
+        ]},
+        { "number": 278, "kanji": "働", "kun": ["はたらく"], "on": ["ドウ"], "words": [
+          { "word": "働く", "reading": "はたらく", "meaning": "to work", "red": true },
+          { "word": "労働", "reading": "ろうどう", "meaning": "labor", "red": true }
+        ]},
+        { "number": 279, "kanji": "使", "kun": ["つかう"], "on": ["シ"], "words": [
+          { "word": "使う", "reading": "つかう", "meaning": "to use", "red": true },
+          { "word": "使用する", "reading": "しようする", "meaning": "to use, to employ", "red": true }
+        ]},
+        { "number": 280, "kanji": "便", "kun": ["たより"], "on": ["ベン", "ビン"], "words": [
+          { "word": "便り", "reading": "たより", "meaning": "letter, news", "red": true },
+          { "word": "便利", "reading": "べんり", "meaning": "convenient", "red": true },
+          { "word": "不便", "reading": "ふべん", "meaning": "inconvenient", "red": true },
+          { "word": "郵便", "reading": "ゆうびん", "meaning": "mail", "red": true }
+        ]},
+        { "number": 281, "kanji": "似", "kun": ["にる"], "on": ["ジ"], "words": [
+          { "word": "似る", "reading": "にる", "meaning": "to look like, to resemble", "red": true },
+          { "word": "似合う", "reading": "にあう", "meaning": "to match well", "red": true },
+          { "word": "類似品", "reading": "るいじひん", "meaning": "similar product", "red": false }
+        ]},
+        { "number": 282, "kanji": "借", "kun": ["かりる"], "on": ["シャク"], "words": [
+          { "word": "借りる", "reading": "かりる", "meaning": "to borrow", "red": true },
+          { "word": "借金", "reading": "しゃっきん", "meaning": "debt", "red": true },
+          { "word": "借家", "reading": "しゃくや", "meaning": "rented house", "red": false }
+        ]},
+        { "number": 283, "kanji": "健", "kun": ["すこやか"], "on": ["ケン"], "words": [
+          { "word": "健やか", "reading": "すこやか", "meaning": "healthy", "red": true },
+          { "word": "健康", "reading": "けんこう", "meaning": "health", "red": true }
+        ]},
+        { "number": 284, "kanji": "低", "kun": ["ひくい"], "on": ["テイ"], "words": [
+          { "word": "低い", "reading": "ひくい", "meaning": "low", "red": true },
+          { "word": "低下する", "reading": "ていかする", "meaning": "to fall, to go down", "red": true },
+          { "word": "最低", "reading": "さいてい", "meaning": "lowest", "red": false }
+        ]}
+      ]
+    },
+    {
+      "label": "Songs, aches & buildings",
+      "radical": "欠・疒・尸",
+      "kanji": [
+        { "number": 285, "kanji": "歌", "kun": ["うた", "うたう"], "on": ["カ"], "words": [
+          { "word": "歌", "reading": "うた", "meaning": "song", "red": true },
+          { "word": "歌う", "reading": "うたう", "meaning": "to sing", "red": true },
+          { "word": "鼻歌", "reading": "はなうた", "meaning": "humming", "red": false },
+          { "word": "歌手", "reading": "かしゅ", "meaning": "singer", "red": true },
+          { "word": "歌詞", "reading": "かし", "meaning": "lyrics", "red": false }
+        ]},
+        { "number": 286, "kanji": "欲", "kun": ["ほしい"], "on": ["ヨク"], "words": [
+          { "word": "欲しい", "reading": "ほしい", "meaning": "want, hope for, desire for", "red": true },
+          { "word": "食欲", "reading": "しょくよく", "meaning": "appetite", "red": true },
+          { "word": "欲望", "reading": "よくぼう", "meaning": "desire", "red": false }
+        ]},
+        { "number": 287, "kanji": "次", "kun": ["つぎ", "つぐ"], "on": ["ジ"], "words": [
+          { "word": "次", "reading": "つぎ", "meaning": "next", "red": true },
+          { "word": "次ぐ", "reading": "つぐ", "meaning": "to be next to, to be second to", "red": false },
+          { "word": "次男", "reading": "じなん", "meaning": "the second son", "red": true },
+          { "word": "次女", "reading": "じじょ", "meaning": "the second daughter", "red": true },
+          { "word": "次回", "reading": "じかい", "meaning": "next time", "red": true }
+        ]},
+        { "number": 288, "kanji": "痛", "kun": ["いたい"], "on": ["ツウ"], "words": [
+          { "word": "痛い", "reading": "いたい", "meaning": "painful", "red": true },
+          { "word": "頭痛", "reading": "ずつう", "meaning": "headache", "red": true },
+          { "word": "腹痛", "reading": "ふくつう", "meaning": "stomachache", "red": false }
+        ]},
+        { "number": 289, "kanji": "疲", "kun": ["つかれる"], "on": ["ヒ"], "words": [
+          { "word": "疲れる", "reading": "つかれる", "meaning": "to be tired", "red": true },
+          { "word": "疲労する", "reading": "ひろうする", "meaning": "to become exhausted", "red": true }
+        ]},
+        { "number": 290, "kanji": "屋", "kun": ["や"], "on": ["オク"], "words": [
+          { "word": "本屋", "reading": "ほんや", "meaning": "book shop", "red": true },
+          { "word": "部屋", "reading": "へや", "meaning": "room", "red": true },
+          { "word": "屋根", "reading": "やね", "meaning": "roof", "red": false },
+          { "word": "屋上", "reading": "おくじょう", "meaning": "the rooftop", "red": true },
+          { "word": "屋外", "reading": "おくがい", "meaning": "outdoor", "red": false }
+        ]},
+        { "number": 291, "kanji": "居", "kun": ["いる"], "on": ["キョ"], "words": [
+          { "word": "居る", "reading": "いる", "meaning": "to be, to exist", "red": true },
+          { "word": "居間", "reading": "いま", "meaning": "living room", "red": true },
+          { "word": "住居", "reading": "じゅうきょ", "meaning": "house", "red": true },
+          { "word": "新居", "reading": "しんきょ", "meaning": "new house", "red": false }
+        ]},
+        { "number": 292, "kanji": "局", "kun": [], "on": ["キョク"], "words": [
+          { "word": "郵便局", "reading": "ゆうびんきょく", "meaning": "post office", "red": true },
+          { "word": "薬局", "reading": "やっきょく", "meaning": "drugstore", "red": false }
+        ]},
+        { "number": 293, "kanji": "届", "kun": ["とどく", "とどけ"], "on": [], "words": [
+          { "word": "届く", "reading": "とどく", "meaning": "to reach", "red": true },
+          { "word": "一時帰国届", "reading": "いちじきこくとどけ", "meaning": "temporary return notice", "red": false }
+        ]}
+      ]
+    }
+  ]
+}

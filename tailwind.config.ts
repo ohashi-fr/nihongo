@@ -40,6 +40,8 @@ const config: Config = {
         sumi: "#1E293B",      // strong secondary text
         muted: "#64748B",     // secondary text
         border: "#E2E8F0",    // very soft border
+        // Kanji module — priority ("red") vocabulary words.
+        keyword: "#C8372D",
         // Narrow status palette — orange already serves warnings,
         // we only need a green for "correct" feedback.
         success: {

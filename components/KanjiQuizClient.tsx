@@ -20,6 +20,9 @@ export type KanjiExample = {
   word: string;
   reading: string;
   meaning: string;
+  /** Priority (tested) vocabulary — shown in red and served first in
+   * Words mode. Absent = secondary word. */
+  red?: boolean;
 };
 
 export type KanjiFields = {
@@ -51,6 +54,7 @@ type WordItem = {
   word: string;
   reading: string;
   meaning: string;
+  red: boolean;
 };
 
 type Item = KanjiItem | WordItem;
@@ -139,6 +143,7 @@ export default function KanjiQuizClient({
           word: ex.word,
           reading: ex.reading,
           meaning: ex.meaning,
+          red: ex.red === true,
         }))
       ),
     [parsedCards]
@@ -150,7 +155,11 @@ export default function KanjiQuizClient({
   const order: Item[] = useMemo(() => {
     if (!direction) return [];
     if (direction === "words") {
-      return shuffleOn ? shuffle(wordItems) : wordItems;
+      // Priority (red) words first; each group shuffled independently.
+      // Storage order of `examples[]` is untouched (word ids index it).
+      const red = wordItems.filter((w) => w.red);
+      const rest = wordItems.filter((w) => !w.red);
+      return shuffleOn ? [...shuffle(red), ...shuffle(rest)] : [...red, ...rest];
     }
     const base = shuffleOn ? shuffle(parsedCards) : parsedCards;
     return base.map((c) => ({
@@ -393,7 +402,11 @@ export default function KanjiQuizClient({
             style={{ backfaceVisibility: "hidden" }}
           >
             {item.kind === "word" ? (
-              <div className="jp text-center text-6xl leading-tight">
+              <div
+                className={`jp text-center text-6xl leading-tight ${
+                  item.red ? "text-keyword" : ""
+                }`}
+              >
                 {item.word}
               </div>
             ) : item.dir === "jp_en" ? (
@@ -485,7 +498,11 @@ function WordBackContent({ item }: { item: WordItem }) {
   return (
     <div className="flex h-full flex-col items-center justify-center space-y-4 text-center">
       <div>
-        <div className="jp text-5xl leading-tight">{item.word}</div>
+        <div
+          className={`jp text-5xl leading-tight ${item.red ? "text-keyword" : ""}`}
+        >
+          {item.word}
+        </div>
         {item.reading && item.reading !== item.word && (
           <div className="jp mt-2 text-lg text-muted">{item.reading}</div>
         )}
@@ -528,7 +545,9 @@ function BackContent({ fields }: { fields: KanjiFields }) {
           <ul className="mt-1 space-y-1 text-sm">
             {fields.examples.map((ex, i) => (
               <li key={i}>
-                <span className="jp">{ex.word}</span>
+                <span className={`jp ${ex.red ? "text-keyword" : ""}`}>
+                  {ex.word}
+                </span>
                 <span className="jp ml-2 text-muted">({ex.reading})</span>
                 <span className="ml-2 text-muted">— {ex.meaning}</span>
               </li>

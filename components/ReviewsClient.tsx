@@ -1165,7 +1165,9 @@ function KanjiCardFaces({
             <ul className="mt-1 space-y-1 text-sm">
               {(f.examples ?? []).map((ex, i) => (
                 <li key={i}>
-                  <span className="jp">{ex.word}</span>
+                  <span className={`jp ${ex.red ? "text-keyword" : ""}`}>
+                    {ex.word}
+                  </span>
                   <span className="jp ml-2 text-muted">({ex.reading})</span>
                   <span className="ml-2 text-muted">— {ex.meaning}</span>
                 </li>
