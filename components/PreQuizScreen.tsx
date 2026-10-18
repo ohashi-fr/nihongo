@@ -16,6 +16,8 @@ type Props = {
   levelName: string;
   cardCount: number;
   modes?: PreQuizMode[];
+  /** Overrides where Start navigates (defaults to the level route). */
+  startHref?: (mode: string) => string;
 };
 
 /**
@@ -28,6 +30,7 @@ export default function PreQuizScreen({
   levelName,
   cardCount,
   modes = DEFAULT_MODES,
+  startHref,
 }: Props) {
   const [mode, setMode] = useState<string>(modes[0]?.value ?? "");
 
@@ -72,7 +75,7 @@ export default function PreQuizScreen({
       </div>
 
       <Link
-        href={`/modules/${slug}/${levelId}?mode=${mode}`}
+        href={startHref ? startHref(mode) : `/modules/${slug}/${levelId}?mode=${mode}`}
         className="btn-accent mt-8 w-full justify-center !rounded-2xl !py-3 text-base"
       >
         Start →

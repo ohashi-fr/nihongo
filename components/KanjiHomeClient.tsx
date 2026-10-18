@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import GrammarModuleTabs from "@/components/grammar/GrammarModuleTabs";
-import Modal from "@/components/ui/Modal";
-import { KanjiBackContent, parseKanjiFields } from "@/components/KanjiQuizClient";
-import type { Card } from "@/lib/types";
+import KanjiGrid, { type KanjiGridGroup } from "@/components/KanjiGrid";
 
 export type KanjiLevelRow = {
   id: string;
@@ -17,11 +15,7 @@ export type KanjiLevelRow = {
   cardCount: number;
 };
 
-export type KanjiGridGroup = {
-  id: string;
-  name: string;
-  cards: Pick<Card, "id" | "fields">[];
-};
+export type { KanjiGridGroup };
 
 type Props = {
   levels: KanjiLevelRow[];
@@ -133,101 +127,5 @@ function StudyList({ levels }: { levels: KanjiLevelRow[] }) {
         );
       })}
     </ul>
-  );
-}
-
-// ─── All kanji tab: glyph grid + detail modal ────────────────────────
-
-function KanjiGrid({ groups }: { groups: KanjiGridGroup[] }) {
-  const [selected, setSelected] = useState<{
-    group: string;
-    card: Pick<Card, "id" | "fields">;
-  } | null>(null);
-
-  const total = groups.reduce((n, g) => n + g.cards.length, 0);
-
-  if (total === 0) {
-    return (
-      <p className="rounded-lg border border-dashed border-border bg-white/50 p-8 text-center text-muted">
-        No kanji yet.
-      </p>
-    );
-  }
-
-  const selectedFields = selected ? parseKanjiFields(selected.card) : null;
-
-  return (
-    <div>
-      <p className="mb-6 text-sm text-muted">
-        {total} kanji · {groups.length} groups
-      </p>
-
-      <div className="space-y-10">
-        {groups.map((g) => (
-          <section key={g.id} aria-labelledby={`kanji-group-${g.id}`}>
-            <div className="mb-3 flex items-center gap-3">
-              <h2
-                id={`kanji-group-${g.id}`}
-                className="text-[11px] font-bold uppercase tracking-[0.09em] text-muted"
-              >
-                {g.name}
-              </h2>
-              <span className="text-[11px] tabular-nums text-muted/70">
-                {g.cards.length}
-              </span>
-              <span aria-hidden="true" className="h-px flex-1 bg-border" />
-            </div>
-
-            <ul className="grid grid-cols-[repeat(auto-fill,minmax(4.5rem,1fr))] gap-1.5">
-              {g.cards.map((card) => {
-                const f = parseKanjiFields(card);
-                return (
-                  <li key={card.id}>
-                    <button
-                      type="button"
-                      onClick={() => setSelected({ group: g.name, card })}
-                      aria-label={
-                        f.meanings.length > 0
-                          ? `${f.kanji}, ${f.meanings.join(", ")}`
-                          : f.kanji
-                      }
-                      className="jp flex aspect-square w-full items-center justify-center rounded-xl border border-border bg-white text-[2rem] leading-none text-ink shadow-soft transition duration-150 hover:border-accent-300 hover:bg-accent-50 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2 motion-reduce:transition-none"
-                    >
-                      {f.kanji}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        ))}
-      </div>
-
-      {selected && selectedFields && (
-        <Modal
-          open
-          onClose={() => setSelected(null)}
-          size="max-w-md"
-          ariaLabel={`Kanji ${selectedFields.kanji}`}
-        >
-          <div className="mb-4 flex items-start justify-between gap-4">
-            <div className="text-[11px] font-bold uppercase tracking-[0.09em] text-muted">
-              {selected.group}
-            </div>
-            <button
-              type="button"
-              onClick={() => setSelected(null)}
-              aria-label="Close"
-              className="-mr-2 -mt-2 rounded-md px-2 py-1 text-lg leading-none text-muted transition hover:bg-soft hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500"
-            >
-              ×
-            </button>
-          </div>
-          <div className="max-h-[70vh] overflow-y-auto pr-1">
-            <KanjiBackContent fields={selectedFields} />
-          </div>
-        </Modal>
-      )}
-    </div>
   );
 }

@@ -60,10 +60,16 @@ type WordItem = {
 type Item = KanjiItem | WordItem;
 
 type Props = {
-  cards: Card[];
+  cards: Pick<Card, "id" | "fields">[];
   levelId: string;
   slug: string;
   levelName: string;
+  /** Start with Shuffle on (default off). */
+  initialShuffle?: boolean;
+  /** Where the pre-quiz Start button goes (default: the level route). */
+  startHref?: (mode: string) => string;
+  /** Hide the "Back to levels" link when the host page provides its own. */
+  hideBackLink?: boolean;
 };
 
 const MODES: PreQuizMode[] = [
@@ -115,6 +121,9 @@ export default function KanjiQuizClient({
   levelId,
   slug,
   levelName,
+  initialShuffle = false,
+  startHref,
+  hideBackLink = false,
 }: Props) {
   const searchParams = useSearchParams();
   const modeParam = searchParams.get("mode");
@@ -149,7 +158,7 @@ export default function KanjiQuizClient({
     [parsedCards]
   );
 
-  const [shuffleOn, setShuffleOn] = useState(false);
+  const [shuffleOn, setShuffleOn] = useState(initialShuffle);
   const [seed, setSeed] = useState(0);
 
   const order: Item[] = useMemo(() => {
@@ -328,6 +337,7 @@ export default function KanjiQuizClient({
         levelName={levelName}
         cardCount={cards.length}
         modes={MODES}
+        startHref={startHref}
       />
     );
   }
@@ -473,14 +483,16 @@ export default function KanjiQuizClient({
         </button>
       </div>
 
-      <div className="mt-4 text-center">
-        <Link
-          href={`/modules/${slug}`}
-          className="text-sm text-muted hover:text-ink"
-        >
-          ← Back to levels
-        </Link>
-      </div>
+      {!hideBackLink && (
+        <div className="mt-4 text-center">
+          <Link
+            href={`/modules/${slug}`}
+            className="text-sm text-muted hover:text-ink"
+          >
+            ← Back to levels
+          </Link>
+        </div>
+      )}
 
       <KanjiCheatSheetPanel
         open={cheatOpen}
