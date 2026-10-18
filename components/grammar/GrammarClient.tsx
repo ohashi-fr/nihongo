@@ -23,17 +23,21 @@ import ChallengeQuiz from "./ChallengeQuiz";
 import KimatsuQuiz from "./KimatsuQuiz";
 import { NotionDetail, SocleDetail, ChecklistDetail } from "./GrammarDetail";
 
-/** One level of the Grammar page (e.g. 初級1 · L1–L3). */
+/** One level of the Grammar page (e.g. Beginner 2 · Lessons 1–3). */
 export interface GrammarModule {
   id: string;
   /** Shown on the tab itself. */
   tabLabel: string;
-  /** Shown in the dynamic page subtitle, e.g. "初級1 (L1–L3)". */
+  /** Shown in the dynamic page subtitle, e.g. "Beginner 2 · Lessons 1–3". */
   subtitleLabel: string;
   groups: Group[];
   checklist: ChecklistSection;
-  /** Only the first module currently has a "short form" primer. */
+  /** Only the L1–L3 module currently has a "short form" primer. */
   socle?: SocleSection;
+  /** Whether legacy bare-number links (`?n=12`) may resolve into this
+   * module. Set to false for modules whose numbers (1–N) overlap another
+   * module's, so old links keep pointing at the module they were made for. */
+  numericLinks?: boolean;
   /** Which "Test yourself" quizzes this module offers, and in what
    * order they're shown. Omit/empty to hide "Test yourself" entirely
    * for this module. */
@@ -68,6 +72,7 @@ function flatten(groups: Group[]): Notion[] {
 
 function findByNumber(modules: GrammarModule[], n: number) {
   for (const m of modules) {
+    if (m.numericLinks === false) continue;
     const notion = flatten(m.groups).find((notion) => notion.number === n);
     if (notion) return { module: m, notion };
   }
@@ -119,7 +124,7 @@ function resolveState(modules: GrammarModule[], searchParams: URLSearchParams) {
   }
 
   if (rawN === "socle") {
-    const active = moduleFromM ?? modules[0];
+    const active = moduleFromM ?? modules.find((m) => m.socle) ?? modules[0];
     return { module: active, selectedId: active.socle ? "socle" : defaultSelectedId(active) };
   }
 

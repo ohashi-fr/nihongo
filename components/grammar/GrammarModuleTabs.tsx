@@ -36,7 +36,7 @@ export default function GrammarModuleTabs({
   }
 
   return (
-    <div role="tablist" aria-label="Grammar level" className="flex gap-8 border-b border-border">
+    <div role="tablist" aria-label="Grammar level" className="flex gap-8 overflow-x-auto border-b border-border">
       {tabs.map((tab, index) => {
         const active = tab.id === activeId;
         return (
@@ -51,7 +51,7 @@ export default function GrammarModuleTabs({
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(tab.id)}
             onKeyDown={(event) => handleKeyDown(event, index)}
-            className={`relative -mb-px pb-3 text-[11px] font-bold uppercase tracking-[0.09em] transition ${
+            className={`relative -mb-px shrink-0 whitespace-nowrap pb-3 text-[11px] font-bold uppercase tracking-[0.09em] transition ${
               active ? "text-ink" : "text-muted hover:text-ink"
             }`}
           >
