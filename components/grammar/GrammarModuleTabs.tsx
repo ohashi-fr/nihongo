@@ -15,10 +15,12 @@ export default function GrammarModuleTabs({
   tabs,
   activeId,
   onChange,
+  ariaLabel = "Grammar level",
 }: {
   tabs: Tab[];
   activeId: string;
   onChange: (id: string) => void;
+  ariaLabel?: string;
 }) {
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -36,7 +38,7 @@ export default function GrammarModuleTabs({
   }
 
   return (
-    <div role="tablist" aria-label="Grammar level" className="flex gap-8 overflow-x-auto border-b border-border">
+    <div role="tablist" aria-label={ariaLabel} className="flex gap-8 overflow-x-auto border-b border-border pb-px">
       {tabs.map((tab, index) => {
         const active = tab.id === activeId;
         return (
@@ -57,7 +59,7 @@ export default function GrammarModuleTabs({
           >
             {tab.label}
             <span
-              className={`absolute inset-x-0 -bottom-px h-[3px] rounded-full transition ${
+              className={`absolute inset-x-0 bottom-0 h-[3px] rounded-full transition ${
                 active ? "bg-accent-500" : "bg-transparent"
               }`}
             />

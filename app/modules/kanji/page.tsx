@@ -1,18 +1,28 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import KanjiHomeClient, {
+  type KanjiGridGroup,
+  type KanjiLevelRow,
+} from "@/components/KanjiHomeClient";
+import type { Card } from "@/lib/types";
 
 // Cache module + level list (rarely changes).
 export const revalidate = 60;
 
+// Virtual aggregate levels own no cards — kept out of the glyph grid.
+const AGGREGATE_NAMES = new Set(["All kanji - Review"]);
+
 export default async function KanjiHome() {
   const supabase = createClient();
 
-  // Single query — replaces 2 sequential ones.
+  // Single query feeds both the deck list and the "All kanji" grid, so
+  // the two always agree.
   const { data: mod } = await supabase
     .from("modules")
     .select(
-      "id, name, slug, description, module_levels(id, name, order_index, is_exam, cards(id))"
+      "id, name, slug, description, module_levels(id, name, order_index, is_exam, cards(id, fields))"
     )
     .eq("slug", "kanji")
     .order("order_index", {
@@ -22,15 +32,30 @@ export default async function KanjiHome() {
     .maybeSingle();
   if (!mod) notFound();
 
-  const levels = (mod as any).module_levels as
-    | {
-        id: string;
-        name: string;
-        order_index: number;
-        is_exam: boolean;
-        cards: { id: string }[];
-      }[]
-    | null;
+  const rawLevels = ((mod as any).module_levels ?? []) as {
+    id: string;
+    name: string;
+    order_index: number;
+    is_exam: boolean;
+    cards: Pick<Card, "id" | "fields">[];
+  }[];
+
+  const levels: KanjiLevelRow[] = rawLevels.map((lv) => ({
+    id: lv.id,
+    name: lv.name,
+    order_index: lv.order_index,
+    is_exam: !!lv.is_exam,
+    cardCount: lv.cards?.length ?? 0,
+  }));
+
+  const groups: KanjiGridGroup[] = rawLevels
+    .filter((lv) => !lv.is_exam && !AGGREGATE_NAMES.has(lv.name))
+    .map((lv) => ({
+      id: lv.id,
+      name: lv.name,
+      cards: (lv.cards ?? []).filter((c) => (c.fields as any)?.kanji),
+    }))
+    .filter((g) => g.cards.length > 0);
 
   return (
     <section>
@@ -42,68 +67,9 @@ export default async function KanjiHome() {
         <p className="mt-2 max-w-2xl text-muted">{mod.description}</p>
       )}
 
-      {!levels || levels.length === 0 ? (
-        <p className="mt-6 rounded-lg border border-dashed border-border bg-white/50 p-8 text-center text-muted">
-          No levels yet — run <code>seed_kanji.sql</code>.
-        </p>
-      ) : (
-        <ul className="mt-6 divide-y divide-border overflow-hidden rounded-lg border border-border bg-white">
-          {levels.map((lv: any) => {
-            const exam = !!lv.is_exam;
-            const aggregate =
-              lv.name === "All kanji - Review" ||
-              lv.name === "Review - Mid terms - Beginner 1";
-            return (
-              <li key={lv.id}>
-                <Link
-                  href={`/modules/kanji/${lv.id}`}
-                  className={`flex items-center justify-between px-5 py-4 transition ${
-                    exam
-                      ? "border-l-4 border-l-accent bg-accent/[0.04] hover:bg-accent/[0.08]"
-                      : aggregate
-                        ? "border-l-4 border-l-[#2563eb] bg-[#2563eb]/[0.05] hover:bg-[#2563eb]/[0.1]"
-                        : "hover:bg-soft"
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs text-muted">
-                      {String(lv.order_index ?? 0).padStart(2, "0")}
-                    </span>
-                    <span
-                      className={`font-medium ${
-                        exam
-                          ? "text-accent"
-                          : aggregate
-                            ? "text-[#2563eb]"
-                            : ""
-                      }`}
-                    >
-                      {lv.name}
-                    </span>
-                    {exam ? (
-                      <span className="inline-flex items-center rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-accent">
-                        Exam
-                      </span>
-                    ) : aggregate ? (
-                      <span className="inline-flex items-center rounded-full border border-[#2563eb]/40 bg-[#2563eb]/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-[#2563eb]">
-                        All
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="text-sm text-muted">
-                    {exam
-                      ? "20 random questions"
-                      : aggregate
-                        ? "All kanji combined"
-                        : `${lv.cards?.length ?? 0} kanji`}{" "}
-                    →
-                  </div>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      <Suspense fallback={null}>
+        <KanjiHomeClient levels={levels} groups={groups} />
+      </Suspense>
     </section>
   );
 }

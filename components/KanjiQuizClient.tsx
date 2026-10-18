@@ -99,7 +99,7 @@ function shuffle<T>(arr: T[]): T[] {
  * Pure parser used both inside this component and externally by
  * `KanjiExamClient` / `ReviewsClient`. Same shape as before.
  */
-export function parseKanjiFields(c: Card): KanjiFields {
+export function parseKanjiFields(c: Pick<Card, "fields">): KanjiFields {
   const f = c.fields as any;
   return {
     kanji: f.kanji ?? "",
@@ -438,7 +438,7 @@ export default function KanjiQuizClient({
             {item.kind === "word" ? (
               <WordBackContent item={item} />
             ) : (
-              <BackContent fields={item.fields} />
+              <KanjiBackContent fields={item.fields} />
             )}
           </div>
         </button>
@@ -515,7 +515,7 @@ function WordBackContent({ item }: { item: WordItem }) {
 // =============================================================
 // Back-face content — kanji + meanings + readings + examples
 // =============================================================
-function BackContent({ fields }: { fields: KanjiFields }) {
+export function KanjiBackContent({ fields }: { fields: KanjiFields }) {
   return (
     <div className="space-y-4">
       <div className="text-center">

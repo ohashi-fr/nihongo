@@ -12,7 +12,6 @@ export const dynamic = "force-dynamic";
 // optionally restricted to levels at/after `minOrderIndex`.
 const AGGREGATE_LEVELS: Record<string, { minOrderIndex?: number }> = {
   "All kanji - Review": {},
-  "Review - Mid terms - Beginner 1": { minOrderIndex: 7 },
 };
 
 export default async function KanjiLevelPage({
