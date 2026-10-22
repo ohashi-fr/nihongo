@@ -6,6 +6,8 @@ type Props = {
   onSelectTraining?: () => void;
   onSelectChallenge?: () => void;
   onSelectKimatsu?: () => void;
+  onSelectParticles?: () => void;
+  particlesQuestionCount?: number;
   mcqQuestionCount?: number;
   examBlankCount?: number;
   examSectionCount?: number;
@@ -39,8 +41,11 @@ export default function QuizChooser({
   onSelectKimatsu,
   kimatsuQuestionCount,
   kimatsuSectionCount,
+  onSelectParticles,
+  particlesQuestionCount,
 }: Props) {
   const visibleCount = [
+    onSelectParticles,
     onSelectMcq,
     onSelectExam,
     onSelectTraining,
@@ -80,6 +85,52 @@ export default function QuizChooser({
       </div>
 
       <div className={`mt-8 grid gap-4 ${gridCols}`}>
+        {onSelectParticles && (
+          <button
+            type="button"
+            onClick={onSelectParticles}
+            className="card-tile group flex flex-col items-start text-left"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-100">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="h-6 w-6 text-accent-700"
+                aria-hidden
+              >
+                <path
+                  d="M4 19.5V6a2 2 0 012-2h9l5 5v10.5a2 2 0 01-2 2H6a2 2 0 01-2-2z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M9 13h6M9 16.5h4"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+            <h3 className="jp mt-4 text-xs font-semibold uppercase tracking-[0.1em] text-accent-700">
+              1-2課 助詞
+            </h3>
+            <h3 className="text-lg font-bold text-ink">Particles</h3>
+            <p className="mt-1.5 text-sm text-muted">
+              Fill in the missing particle: に, を, で, が, も…
+            </p>
+            <div className="mt-5 flex w-full items-center justify-between border-t border-border pt-4 text-xs">
+              <span className="font-medium text-muted">
+                {particlesQuestionCount} questions
+              </span>
+              <span className="font-semibold text-primary transition group-hover:translate-x-0.5">
+                Start →
+              </span>
+            </div>
+          </button>
+        )}
+
         {onSelectMcq && (
           <button
             type="button"

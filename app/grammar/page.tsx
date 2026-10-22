@@ -17,6 +17,7 @@ const modules: GrammarModule[] = [
     groups: groupsBeginner1,
     checklist: checklistBeginner1,
     numericLinks: false,
+    quizzes: ["particles"],
   },
   {
     id: "l1-l3",

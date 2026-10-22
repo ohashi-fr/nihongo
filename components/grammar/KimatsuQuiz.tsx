@@ -286,9 +286,16 @@ type Props = {
   quiz: KimatsuQuizData;
   onExit: () => void;
   scrollToTop: () => void;
+  /** Heading shown on the setup screen. */
+  quizName?: string;
 };
 
-export default function KimatsuQuiz({ quiz, onExit, scrollToTop }: Props) {
+export default function KimatsuQuiz({
+  quiz,
+  onExit,
+  scrollToTop,
+  quizName = "End-of-term review",
+}: Props) {
   const [phase, setPhase] = useState<Phase>("setup");
   const [startSectionId, setStartSectionId] = useState<string>(quiz.sections[0].section_id);
   const [sectionOrder, setSectionOrder] = useState<KimatsuSection[]>([]);
@@ -437,7 +444,7 @@ export default function KimatsuQuiz({ quiz, onExit, scrollToTop }: Props) {
           <h2 className="jp mt-4 text-xs font-semibold uppercase tracking-[0.1em] text-accent-700">
             {quiz.title}
           </h2>
-          <h2 className="text-2xl font-bold tracking-tight text-ink">End-of-term review</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-ink">{quizName}</h2>
           <p className="mx-auto mt-2 max-w-md text-sm text-muted">{quiz.description}</p>
         </div>
 

@@ -13,6 +13,10 @@ import { examQuiz, totalExamBlankCount } from "@/content/grammar/exam-quiz";
 import { trainingQuizLive, totalTrainingQuestionCount } from "@/content/grammar/training-quiz";
 import { challengeQuiz, totalChallengeQuestionCount } from "@/content/grammar/challenge-quiz";
 import { kimatsuReviewQuiz, totalKimatsuQuestionCount } from "@/content/grammar/kimatsu-quiz";
+import {
+  beginner1ParticleQuiz,
+  totalBeginner1ParticleQuestionCount,
+} from "@/content/grammar/beginner1-particles-quiz";
 import SectionHeader from "@/components/ui/SectionHeader";
 import GrammarModuleTabs from "./GrammarModuleTabs";
 import GrammarSidebar from "./GrammarSidebar";
@@ -44,7 +48,7 @@ export interface GrammarModule {
   quizzes?: QuizType[];
 }
 
-type QuizType = "mcq" | "exam" | "training" | "challenge" | "kimatsu";
+type QuizType = "mcq" | "exam" | "training" | "challenge" | "kimatsu" | "particles";
 
 type Props = {
   modules: GrammarModule[];
@@ -57,6 +61,7 @@ const QUIZ_IDS = new Set([
   "quiz-training",
   "quiz-challenge",
   "quiz-kimatsu",
+  "quiz-particles",
 ]);
 const QUIZ_ID_TYPE: Record<string, QuizType> = {
   "quiz-mcq": "mcq",
@@ -64,6 +69,7 @@ const QUIZ_ID_TYPE: Record<string, QuizType> = {
   "quiz-training": "training",
   "quiz-challenge": "challenge",
   "quiz-kimatsu": "kimatsu",
+  "quiz-particles": "particles",
 };
 
 function flatten(groups: Group[]): Notion[] {
@@ -226,6 +232,8 @@ export default function GrammarClient({ modules }: Props) {
           onSelectTraining={offered.includes("training") ? () => handleSelect("quiz-training") : undefined}
           onSelectChallenge={offered.includes("challenge") ? () => handleSelect("quiz-challenge") : undefined}
           onSelectKimatsu={offered.includes("kimatsu") ? () => handleSelect("quiz-kimatsu") : undefined}
+          onSelectParticles={offered.includes("particles") ? () => handleSelect("quiz-particles") : undefined}
+          particlesQuestionCount={totalBeginner1ParticleQuestionCount}
           mcqQuestionCount={grammarQuizQuestions.length}
           examBlankCount={totalExamBlankCount}
           examSectionCount={examQuiz.sections.length}
@@ -281,6 +289,16 @@ export default function GrammarClient({ modules }: Props) {
       return (
         <KimatsuQuiz
           quiz={kimatsuReviewQuiz}
+          onExit={() => handleSelect(defaultSelectedId(activeModule))}
+          scrollToTop={scrollDetailToTop}
+        />
+      );
+    }
+    if (selectedId === "quiz-particles") {
+      return (
+        <KimatsuQuiz
+          quiz={beginner1ParticleQuiz}
+          quizName="Particles"
           onExit={() => handleSelect(defaultSelectedId(activeModule))}
           scrollToTop={scrollDetailToTop}
         />
