@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "source": "Shinjuku Japanese Language Institute kanji workbook (photos of pp. 45 and the preceding page: '手 からできた漢字' + 扌/寸/殳/攵 page)",
+    "kanjiNumbers": "294–308 — 15 kanji, continuing the existing 236–293 set",
+    "redRule": "red:true when ANY part of the word is printed in red (the key / tested vocabulary). Fully-black words are secondary (red:false).",
+    "readings": "kun = 訓読み (hiragana), on = 音読み (katakana), from the workbook's reading columns. [] = none shown.",
+    "grouping": "Grouped by the workbook's radical sections: 手 (294–298), then the 扌・寸・殳・攵 page (299–308).",
+    "note": "取材する and 受信する have no English gloss in the workbook — meanings were supplied. 反's kun reading is shown as 'そ-' in the book (そる / そらす)."
+  },
+  "groups": [
+    {
+      "label": "Hand",
+      "radical": "手",
+      "kanji": [
+        { "number": 294, "kanji": "友", "kun": ["とも"], "on": ["ユウ"], "words": [
+          { "word": "友達", "reading": "ともだち", "meaning": "friend", "red": true },
+          { "word": "友人", "reading": "ゆうじん", "meaning": "friend", "red": true },
+          { "word": "親友", "reading": "しんゆう", "meaning": "good friend", "red": false }
+        ]},
+        { "number": 295, "kanji": "有", "kun": ["ある"], "on": ["ユウ"], "words": [
+          { "word": "有る", "reading": "ある", "meaning": "to exist, to have", "red": false },
+          { "word": "有名", "reading": "ゆうめい", "meaning": "famous", "red": true },
+          { "word": "有料", "reading": "ゆうりょう", "meaning": "charge, toll", "red": true }
+        ]},
+        { "number": 296, "kanji": "反", "kun": ["そる", "そらす"], "on": ["ハン"], "words": [
+          { "word": "体を反らす", "reading": "からだをそらす", "meaning": "to bend backward", "red": true },
+          { "word": "反対", "reading": "はんたい", "meaning": "the opposite", "red": true },
+          { "word": "反省する", "reading": "はんせいする", "meaning": "to reflect on", "red": true }
+        ]},
+        { "number": 297, "kanji": "取", "kun": ["とる"], "on": ["シュ"], "words": [
+          { "word": "取る", "reading": "とる", "meaning": "to get, to take", "red": true },
+          { "word": "取得する", "reading": "しゅとくする", "meaning": "to acquire", "red": true },
+          { "word": "取材する", "reading": "しゅざいする", "meaning": "to gather material, to cover (a story)", "red": false }
+        ]},
+        { "number": 298, "kanji": "受", "kun": ["うかる", "うける"], "on": ["ジュ"], "words": [
+          { "word": "受かる", "reading": "うかる", "meaning": "to pass the test", "red": true },
+          { "word": "受ける", "reading": "うける", "meaning": "to receive, to get", "red": true },
+          { "word": "受付", "reading": "うけつけ", "meaning": "reception", "red": true },
+          { "word": "受験する", "reading": "じゅけんする", "meaning": "to take an examination", "red": true },
+          { "word": "受信する", "reading": "じゅしんする", "meaning": "to receive", "red": false }
+        ]}
+      ]
+    },
+    {
+      "label": "Hand actions",
+      "radical": "扌・寸・殳・攵",
+      "kanji": [
+        { "number": 299, "kanji": "持", "kun": ["もつ"], "on": ["ジ"], "words": [
+          { "word": "持つ", "reading": "もつ", "meaning": "to hold, to own", "red": true },
+          { "word": "気持ち", "reading": "きもち", "meaning": "feeling", "red": true },
+          { "word": "持参する", "reading": "じさんする", "meaning": "to bring, to take", "red": true }
+        ]},
+        { "number": 300, "kanji": "折", "kun": ["おる", "おれる", "おり"], "on": ["セツ"], "words": [
+          { "word": "折れる", "reading": "おれる", "meaning": "to be folded, to be broken", "red": true },
+          { "word": "折る", "reading": "おる", "meaning": "to fold, to break", "red": true },
+          { "word": "骨折する", "reading": "こっせつする", "meaning": "to break a bone", "red": true },
+          { "word": "右折する", "reading": "うせつする", "meaning": "to turn right", "red": false }
+        ]},
+        { "number": 301, "kanji": "授", "kun": ["さずかる", "さずける"], "on": ["ジュ"], "words": [
+          { "word": "授かる", "reading": "さずかる", "meaning": "to be gifted with, to be awarded", "red": false },
+          { "word": "授ける", "reading": "さずける", "meaning": "to grant, to initiate", "red": false },
+          { "word": "授業", "reading": "じゅぎょう", "meaning": "lesson, class", "red": true }
+        ]},
+        { "number": 302, "kanji": "捨", "kun": ["すてる"], "on": ["シャ"], "words": [
+          { "word": "捨てる", "reading": "すてる", "meaning": "to throw away", "red": true },
+          { "word": "四捨五入", "reading": "ししゃごにゅう", "meaning": "to round off a fraction", "red": false }
+        ]},
+        { "number": 303, "kanji": "拾", "kun": ["ひろう"], "on": ["シュウ", "ジュウ"], "words": [
+          { "word": "拾う", "reading": "ひろう", "meaning": "to pick up, to gather", "red": true },
+          { "word": "拾得物", "reading": "しゅうとくぶつ", "meaning": "something found", "red": false }
+        ]},
+        { "number": 304, "kanji": "指", "kun": ["ゆび", "さす"], "on": ["シ"], "words": [
+          { "word": "指", "reading": "ゆび", "meaning": "finger", "red": true },
+          { "word": "指す", "reading": "さす", "meaning": "to point at", "red": true },
+          { "word": "指定席", "reading": "していせき", "meaning": "reserved seat", "red": true },
+          { "word": "指名する", "reading": "しめいする", "meaning": "to nominate, to designate", "red": true }
+        ]},
+        { "number": 305, "kanji": "寺", "kun": ["てら"], "on": ["ジ"], "words": [
+          { "word": "寺", "reading": "てら", "meaning": "temple", "red": true },
+          { "word": "東大寺", "reading": "とうだいじ", "meaning": "Todaiji Temple", "red": true }
+        ]},
+        { "number": 306, "kanji": "段", "kun": [], "on": ["ダン"], "words": [
+          { "word": "階段", "reading": "かいだん", "meaning": "stairs", "red": true },
+          { "word": "手段", "reading": "しゅだん", "meaning": "means", "red": true }
+        ]},
+        { "number": 307, "kanji": "投", "kun": ["なげる"], "on": ["トウ"], "words": [
+          { "word": "投げる", "reading": "なげる", "meaning": "to throw", "red": true },
+          { "word": "投手", "reading": "とうしゅ", "meaning": "pitcher", "red": true }
+        ]},
+        { "number": 308, "kanji": "放", "kun": ["はなす"], "on": ["ホウ"], "words": [
+          { "word": "放す", "reading": "はなす", "meaning": "to set free", "red": true },
+          { "word": "放送する", "reading": "ほうそうする", "meaning": "to broadcast", "red": true }
+        ]}
+      ]
+    }
+  ]
+}
