@@ -38,7 +38,7 @@
  *
  *    kuromoji ships a ~10MB Japanese dictionary — this only needs
  *    to happen once. If you don't install it, the script still
- *    runs but the `reading` and `furigana` columns stay NULL.
+ *    runs but the `reading` column stays NULL.
  *
  * 3. Add SUPABASE_SERVICE_ROLE_KEY to .env.local (same key you used
  *    for the JMdict import). It bypasses RLS so the ingestion can
@@ -113,8 +113,10 @@ if (COMMIT && (!SUPABASE_URL || !SERVICE_KEY)) {
 
 // ── Optional kuromoji setup ───────────────────────────────────────
 // kuromoji is a big dependency, so we import it lazily. If it's not
-// available, we still produce useful data (jp + en) with NULL reading
-// and furigana. The UI's `<ExampleBlock>` degrades gracefully.
+// available, we still produce useful data (jp + en) with a NULL reading.
+// (Per-token furigana is no longer stored — it was most of the table's
+// weight and nothing read it; see supabase/drop_examples_furigana.sql.)
+// The UI's `<ExampleBlock>` degrades gracefully.
 let tokenizer = null;
 try {
   const kuromoji = await import("kuromoji");
@@ -124,7 +126,7 @@ try {
     console.warn(
       "⚠️  kuromoji installed but dict/ folder missing at " + dicPath
     );
-    console.warn("    Reading and furigana columns will stay NULL.");
+    console.warn("    The reading column will stay NULL.");
   } else {
     tokenizer = await new Promise((resolve, reject) => {
       kbuild.builder({ dicPath }).build((err, t) => {
@@ -136,7 +138,7 @@ try {
   }
 } catch {
   console.warn(
-    "⚠️  kuromoji not installed. Reading and furigana columns will stay NULL."
+    "⚠️  kuromoji not installed. The reading column will stay NULL."
   );
   console.warn("    To enable: npm install kuromoji");
 }
@@ -151,23 +153,20 @@ function katakanaToHiragana(s) {
 
 /**
  * Tokenize a sentence with kuromoji. Returns:
- *   { reading, furigana } — reading = full hiragana of the sentence,
- *                            furigana = [{surface, reading}, ...] per token.
- * If kuromoji is unavailable, returns { reading: null, furigana: null }.
+ *   { reading } — full hiragana of the sentence.
+ * If kuromoji is unavailable, returns { reading: null }.
  */
 function tokenizeSentence(jp) {
-  if (!tokenizer) return { reading: null, furigana: null };
+  if (!tokenizer) return { reading: null };
   const tokens = tokenizer.tokenize(jp);
-  const furigana = tokens.map((t) => ({
-    surface: t.surface_form,
-    reading: t.reading ? katakanaToHiragana(t.reading) : null,
-  }));
-  const reading = furigana
-    .map((f) => f.reading ?? f.surface)
+  const reading = tokens
+    .map((t) =>
+      t.reading ? katakanaToHiragana(t.reading) : t.surface_form
+    )
     .join("")
     // Clean punctuation that kuromoji leaves as `null`+surface.
     .replace(/\s+/g, "");
-  return { reading, furigana };
+  return { reading };
 }
 
 // Pure kana check (hiragana + katakana + long mark ー).
@@ -343,10 +342,10 @@ const rows = []; // { entry_kanji, entry_reading, jp_text, en_text, jp_id }
   );
 }
 
-// ── Tokenize (adds reading + furigana per row) ───────────────────
+// ── Tokenize (adds reading per row) ───────────────────────────────
 if (tokenizer) {
   console.log("Tokenizing with kuromoji…");
-  const seenJp = new Map(); // jp_text → { reading, furigana } to avoid re-tokenizing
+  const seenJp = new Map(); // jp_text → { reading } to avoid re-tokenizing
   for (let i = 0; i < rows.length; i++) {
     const jp = rows[i].jp_text;
     let ann = seenJp.get(jp);
@@ -355,7 +354,6 @@ if (tokenizer) {
       seenJp.set(jp, ann);
     }
     rows[i].reading = ann.reading;
-    rows[i].furigana = ann.furigana;
     if ((i + 1) % 10_000 === 0) {
       process.stdout.write(
         `  ${i + 1}/${rows.length} rows tokenized\r`
@@ -368,7 +366,6 @@ if (tokenizer) {
 } else {
   for (const r of rows) {
     r.reading = null;
-    r.furigana = null;
   }
 }
 
@@ -425,7 +422,6 @@ for (let i = 0; i < rows.length; i += BATCH) {
     jp_text: r.jp_text,
     en_text: r.en_text,
     reading: r.reading,
-    furigana: r.furigana,
     char_len: r.char_len,
   }));
   const { error } = await supabase

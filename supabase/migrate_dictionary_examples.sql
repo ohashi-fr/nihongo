@@ -19,7 +19,6 @@ create table if not exists dictionary_examples (
   jp_text        text not null,
   en_text        text,
   reading        text,                       -- full kana of the sentence, for the "kana line" fallback
-  furigana       jsonb,                      -- per-token annotations [{surface, reading}], nullable
   char_len       int not null,               -- length of jp_text for shortest-first sort
   source         text not null default 'Tatoeba (CC-BY 2.0 FR)',
   created_at     timestamptz not null default now()
