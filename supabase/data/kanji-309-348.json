@@ -1,0 +1,1271 @@
+{
+  "meta": {
+    "source": "Shinjuku Japanese Language Institute kanji workbook (photos of pp. 46–49: 足 / 走・辶 / 頁・口・月 / 心・忄 pages)",
+    "kanjiNumbers": "309–348 — 40 kanji, continuing the existing 294–308 set",
+    "redRule": "red:true when ANY part of the word is printed in red (the key / tested vocabulary). Fully-black words are secondary (red:false).",
+    "readings": "kun = 訓読み (hiragana), on = 音読み (katakana), from the workbook's reading columns. [] = none shown.",
+    "grouping": "Grouped by the workbook's radical sections (red separator lines). 遊 (329) sits at the top of p. 48 but belongs to the 辶 section; 腹 (月) is merged with the 口 kanji to avoid a 1-kanji level.",
+    "note": "連休 has no English gloss in the workbook — supplied. 腹 / お腹 are printed in black (お腹 is ※-flagged)."
+  },
+  "groups": [
+    {
+      "label": "Foot",
+      "radical": "足",
+      "kanji": [
+        {
+          "number": 309,
+          "kanji": "正",
+          "kun": [
+            "ただしい",
+            "まさ"
+          ],
+          "on": [
+            "セイ",
+            "ショウ"
+          ],
+          "words": [
+            {
+              "word": "正しい",
+              "reading": "ただしい",
+              "meaning": "correct, right",
+              "red": true
+            },
+            {
+              "word": "正確",
+              "reading": "せいかく",
+              "meaning": "correct",
+              "red": true
+            },
+            {
+              "word": "お正月",
+              "reading": "おしょうがつ",
+              "meaning": "the New Year",
+              "red": true
+            },
+            {
+              "word": "正直",
+              "reading": "しょうじき",
+              "meaning": "honest",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 310,
+          "kanji": "冬",
+          "kun": [
+            "ふゆ"
+          ],
+          "on": [
+            "トウ"
+          ],
+          "words": [
+            {
+              "word": "冬",
+              "reading": "ふゆ",
+              "meaning": "winter",
+              "red": true
+            },
+            {
+              "word": "真冬",
+              "reading": "まふゆ",
+              "meaning": "the depths of winter",
+              "red": false
+            },
+            {
+              "word": "暖冬",
+              "reading": "だんとう",
+              "meaning": "mild winter",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 311,
+          "kanji": "夏",
+          "kun": [
+            "なつ"
+          ],
+          "on": [
+            "カ",
+            "ゲ"
+          ],
+          "words": [
+            {
+              "word": "夏",
+              "reading": "なつ",
+              "meaning": "summer",
+              "red": true
+            },
+            {
+              "word": "夏休み",
+              "reading": "なつやすみ",
+              "meaning": "summer break",
+              "red": true
+            },
+            {
+              "word": "真夏",
+              "reading": "まなつ",
+              "meaning": "the middle of summer",
+              "red": true
+            },
+            {
+              "word": "冷夏",
+              "reading": "れいか",
+              "meaning": "cool summer",
+              "red": true
+            },
+            {
+              "word": "初夏",
+              "reading": "しょか",
+              "meaning": "early summer",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 312,
+          "kanji": "変",
+          "kun": [
+            "かわる",
+            "かえる"
+          ],
+          "on": [
+            "ヘン"
+          ],
+          "words": [
+            {
+              "word": "変わる",
+              "reading": "かわる",
+              "meaning": "to change itself, vary, turn",
+              "red": true
+            },
+            {
+              "word": "変える",
+              "reading": "かえる",
+              "meaning": "to change something, alter, turn",
+              "red": true
+            },
+            {
+              "word": "変化する",
+              "reading": "へんかする",
+              "meaning": "to change",
+              "red": true
+            },
+            {
+              "word": "大変",
+              "reading": "たいへん",
+              "meaning": "terrible, grave, serious, hard, very",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 313,
+          "kanji": "発",
+          "kun": [],
+          "on": [
+            "ハツ",
+            "ホツ"
+          ],
+          "words": [
+            {
+              "word": "出発する",
+              "reading": "しゅっぱつする",
+              "meaning": "to depart",
+              "red": true
+            },
+            {
+              "word": "発表する",
+              "reading": "はっぴょうする",
+              "meaning": "to announce",
+              "red": false
+            },
+            {
+              "word": "発売する",
+              "reading": "はつばいする",
+              "meaning": "to sell",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 314,
+          "kanji": "登",
+          "kun": [
+            "のぼる"
+          ],
+          "on": [
+            "トウ",
+            "ト"
+          ],
+          "words": [
+            {
+              "word": "登る",
+              "reading": "のぼる",
+              "meaning": "to ascend, to climb",
+              "red": true
+            },
+            {
+              "word": "登録する",
+              "reading": "とうろくする",
+              "meaning": "to register",
+              "red": true
+            },
+            {
+              "word": "登山",
+              "reading": "とざん",
+              "meaning": "mountain climbing",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 315,
+          "kanji": "舞",
+          "kun": [
+            "まう",
+            "まい"
+          ],
+          "on": [
+            "ブ"
+          ],
+          "words": [
+            {
+              "word": "舞う",
+              "reading": "まう",
+              "meaning": "to dance",
+              "red": true
+            },
+            {
+              "word": "見舞い",
+              "reading": "みまい",
+              "meaning": "to visit",
+              "red": false
+            },
+            {
+              "word": "舞台",
+              "reading": "ぶたい",
+              "meaning": "the stage",
+              "red": true
+            },
+            {
+              "word": "歌舞伎",
+              "reading": "かぶき",
+              "meaning": "Kabuki, a classical Japanese drama",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 316,
+          "kanji": "降",
+          "kun": [
+            "おりる",
+            "おろす",
+            "ふる"
+          ],
+          "on": [
+            "コウ"
+          ],
+          "words": [
+            {
+              "word": "雨が降る",
+              "reading": "あめがふる",
+              "meaning": "to fall (rain, snow)",
+              "red": true
+            },
+            {
+              "word": "降りる",
+              "reading": "おりる",
+              "meaning": "to get off",
+              "red": true
+            },
+            {
+              "word": "降ろす",
+              "reading": "おろす",
+              "meaning": "to drop off, to unload",
+              "red": false
+            },
+            {
+              "word": "降車口",
+              "reading": "こうしゃぐち",
+              "meaning": "exit",
+              "red": true
+            },
+            {
+              "word": "降雨量",
+              "reading": "こううりょう",
+              "meaning": "rainfall",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 317,
+          "kanji": "違",
+          "kun": [
+            "ちがう"
+          ],
+          "on": [
+            "イ"
+          ],
+          "words": [
+            {
+              "word": "違う",
+              "reading": "ちがう",
+              "meaning": "to be different",
+              "red": true
+            },
+            {
+              "word": "間違う",
+              "reading": "まちがう",
+              "meaning": "to make a mistake",
+              "red": false
+            },
+            {
+              "word": "違反する",
+              "reading": "いはんする",
+              "meaning": "to violate",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 318,
+          "kanji": "路",
+          "kun": [
+            "じ"
+          ],
+          "on": [
+            "ロ"
+          ],
+          "words": [
+            {
+              "word": "家路",
+              "reading": "いえじ",
+              "meaning": "one's way home",
+              "red": false
+            },
+            {
+              "word": "道路",
+              "reading": "どうろ",
+              "meaning": "road, street",
+              "red": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Running & roads",
+      "radical": "走・辶",
+      "kanji": [
+        {
+          "number": 319,
+          "kanji": "起",
+          "kun": [
+            "おきる",
+            "おこす"
+          ],
+          "on": [
+            "キ"
+          ],
+          "words": [
+            {
+              "word": "起きる",
+              "reading": "おきる",
+              "meaning": "to get up, to rise",
+              "red": true
+            },
+            {
+              "word": "起こす",
+              "reading": "おこす",
+              "meaning": "to wake someone up",
+              "red": true
+            },
+            {
+              "word": "早起きする",
+              "reading": "はやおきする",
+              "meaning": "to wake up early",
+              "red": false
+            },
+            {
+              "word": "起床する",
+              "reading": "きしょうする",
+              "meaning": "to get up",
+              "red": true
+            },
+            {
+              "word": "起源",
+              "reading": "きげん",
+              "meaning": "the origins",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 320,
+          "kanji": "越",
+          "kun": [
+            "こす"
+          ],
+          "on": [
+            "エツ"
+          ],
+          "words": [
+            {
+              "word": "引越す",
+              "reading": "ひっこす",
+              "meaning": "to move",
+              "red": true
+            },
+            {
+              "word": "引越し",
+              "reading": "ひっこし",
+              "meaning": "moving",
+              "red": true
+            },
+            {
+              "word": "優越感",
+              "reading": "ゆうえつかん",
+              "meaning": "sense of superiority",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 321,
+          "kanji": "趣",
+          "kun": [
+            "おもむき"
+          ],
+          "on": [
+            "シュ"
+          ],
+          "words": [
+            {
+              "word": "趣味",
+              "reading": "しゅみ",
+              "meaning": "hobby",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 322,
+          "kanji": "近",
+          "kun": [
+            "ちかい"
+          ],
+          "on": [
+            "キン"
+          ],
+          "words": [
+            {
+              "word": "近い",
+              "reading": "ちかい",
+              "meaning": "near",
+              "red": true
+            },
+            {
+              "word": "近道",
+              "reading": "ちかみち",
+              "meaning": "shortcut",
+              "red": false
+            },
+            {
+              "word": "近所",
+              "reading": "きんじょ",
+              "meaning": "the neighborhood",
+              "red": true
+            },
+            {
+              "word": "最近",
+              "reading": "さいきん",
+              "meaning": "recently, lately",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 323,
+          "kanji": "遠",
+          "kun": [
+            "とおい"
+          ],
+          "on": [
+            "エン"
+          ],
+          "words": [
+            {
+              "word": "遠い",
+              "reading": "とおい",
+              "meaning": "far",
+              "red": true
+            },
+            {
+              "word": "遠足",
+              "reading": "えんそく",
+              "meaning": "excursion",
+              "red": true
+            },
+            {
+              "word": "永遠",
+              "reading": "えいえん",
+              "meaning": "eternity, permanence",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 324,
+          "kanji": "速",
+          "kun": [
+            "はやい",
+            "すみやか"
+          ],
+          "on": [
+            "ソク"
+          ],
+          "words": [
+            {
+              "word": "速い",
+              "reading": "はやい",
+              "meaning": "fast",
+              "red": true
+            },
+            {
+              "word": "速度",
+              "reading": "そくど",
+              "meaning": "speed",
+              "red": true
+            },
+            {
+              "word": "高速道路",
+              "reading": "こうそくどうろ",
+              "meaning": "expressway",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 325,
+          "kanji": "遅",
+          "kun": [
+            "おそい",
+            "おくれる"
+          ],
+          "on": [
+            "チ"
+          ],
+          "words": [
+            {
+              "word": "遅い",
+              "reading": "おそい",
+              "meaning": "late, slow",
+              "red": true
+            },
+            {
+              "word": "遅れる",
+              "reading": "おくれる",
+              "meaning": "to be delayed",
+              "red": true
+            },
+            {
+              "word": "遅刻する",
+              "reading": "ちこくする",
+              "meaning": "to be late",
+              "red": true
+            },
+            {
+              "word": "遅延証明書",
+              "reading": "ちえんしょうめいしょ",
+              "meaning": "delay certificate",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 326,
+          "kanji": "通",
+          "kun": [
+            "とおる",
+            "かよう"
+          ],
+          "on": [
+            "ツウ"
+          ],
+          "words": [
+            {
+              "word": "通る",
+              "reading": "とおる",
+              "meaning": "to pass",
+              "red": true
+            },
+            {
+              "word": "通う",
+              "reading": "かよう",
+              "meaning": "to attend (school, etc.), to go",
+              "red": true
+            },
+            {
+              "word": "交通",
+              "reading": "こうつう",
+              "meaning": "traffic",
+              "red": true
+            },
+            {
+              "word": "通勤する",
+              "reading": "つうきんする",
+              "meaning": "to commute, to go to one's office",
+              "red": true
+            },
+            {
+              "word": "普通",
+              "reading": "ふつう",
+              "meaning": "ordinary",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 327,
+          "kanji": "連",
+          "kun": [
+            "つれる",
+            "つらなる"
+          ],
+          "on": [
+            "レン"
+          ],
+          "words": [
+            {
+              "word": "連れて行く",
+              "reading": "つれていく",
+              "meaning": "to take (a person) along",
+              "red": true
+            },
+            {
+              "word": "連なる",
+              "reading": "つらなる",
+              "meaning": "to stand in a row",
+              "red": true
+            },
+            {
+              "word": "連絡する",
+              "reading": "れんらくする",
+              "meaning": "to connect",
+              "red": true
+            },
+            {
+              "word": "連休",
+              "reading": "れんきゅう",
+              "meaning": "consecutive holidays",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 328,
+          "kanji": "返",
+          "kun": [
+            "かえす"
+          ],
+          "on": [
+            "ヘン"
+          ],
+          "words": [
+            {
+              "word": "返す",
+              "reading": "かえす",
+              "meaning": "to return",
+              "red": true
+            },
+            {
+              "word": "返事",
+              "reading": "へんじ",
+              "meaning": "answer",
+              "red": true
+            },
+            {
+              "word": "返信する",
+              "reading": "へんしんする",
+              "meaning": "to reply (a letter, an email)",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 329,
+          "kanji": "遊",
+          "kun": [
+            "あそぶ"
+          ],
+          "on": [
+            "ユウ"
+          ],
+          "words": [
+            {
+              "word": "遊ぶ",
+              "reading": "あそぶ",
+              "meaning": "to play",
+              "red": true
+            },
+            {
+              "word": "遊園地",
+              "reading": "ゆうえんち",
+              "meaning": "amusement park",
+              "red": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Head & face",
+      "radical": "頁",
+      "kanji": [
+        {
+          "number": 330,
+          "kanji": "顔",
+          "kun": [
+            "かお"
+          ],
+          "on": [
+            "ガン"
+          ],
+          "words": [
+            {
+              "word": "顔",
+              "reading": "かお",
+              "meaning": "face",
+              "red": true
+            },
+            {
+              "word": "顔色",
+              "reading": "かおいろ",
+              "meaning": "complexion",
+              "red": false
+            },
+            {
+              "word": "笑顔",
+              "reading": "えがお",
+              "meaning": "smile",
+              "red": true
+            },
+            {
+              "word": "洗顔する",
+              "reading": "せんがんする",
+              "meaning": "to wash one's face",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 331,
+          "kanji": "頭",
+          "kun": [
+            "あたま"
+          ],
+          "on": [
+            "ズ",
+            "トウ"
+          ],
+          "words": [
+            {
+              "word": "頭",
+              "reading": "あたま",
+              "meaning": "head",
+              "red": true
+            },
+            {
+              "word": "頭痛",
+              "reading": "ずつう",
+              "meaning": "headache",
+              "red": true
+            },
+            {
+              "word": "先頭",
+              "reading": "せんとう",
+              "meaning": "the head of ~",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 332,
+          "kanji": "題",
+          "kun": [],
+          "on": [
+            "ダイ"
+          ],
+          "words": [
+            {
+              "word": "宿題",
+              "reading": "しゅくだい",
+              "meaning": "homework",
+              "red": true
+            },
+            {
+              "word": "問題",
+              "reading": "もんだい",
+              "meaning": "question, a problem",
+              "red": true
+            },
+            {
+              "word": "題名",
+              "reading": "だいめい",
+              "meaning": "title",
+              "red": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Mouth & belly",
+      "radical": "口・月",
+      "kanji": [
+        {
+          "number": 333,
+          "kanji": "古",
+          "kun": [
+            "ふるい"
+          ],
+          "on": [
+            "コ"
+          ],
+          "words": [
+            {
+              "word": "古い",
+              "reading": "ふるい",
+              "meaning": "old",
+              "red": true
+            },
+            {
+              "word": "中古",
+              "reading": "ちゅうこ",
+              "meaning": "secondhand",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 334,
+          "kanji": "台",
+          "kun": [],
+          "on": [
+            "ダイ",
+            "タイ"
+          ],
+          "words": [
+            {
+              "word": "台所",
+              "reading": "だいどころ",
+              "meaning": "kitchen",
+              "red": true
+            },
+            {
+              "word": "台風",
+              "reading": "たいふう",
+              "meaning": "typhoon",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 335,
+          "kanji": "品",
+          "kun": [
+            "しな"
+          ],
+          "on": [
+            "ヒン"
+          ],
+          "words": [
+            {
+              "word": "品物",
+              "reading": "しなもの",
+              "meaning": "goods, items",
+              "red": true
+            },
+            {
+              "word": "品川",
+              "reading": "しながわ",
+              "meaning": "Shinagawa",
+              "red": false
+            },
+            {
+              "word": "商品",
+              "reading": "しょうひん",
+              "meaning": "goods, commodity",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 336,
+          "kanji": "呼",
+          "kun": [
+            "よぶ"
+          ],
+          "on": [
+            "コ"
+          ],
+          "words": [
+            {
+              "word": "呼ぶ",
+              "reading": "よぶ",
+              "meaning": "to call, to hail",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 337,
+          "kanji": "吸",
+          "kun": [
+            "すう"
+          ],
+          "on": [
+            "キュウ"
+          ],
+          "words": [
+            {
+              "word": "吸う",
+              "reading": "すう",
+              "meaning": "to suck, to inhale, to smoke",
+              "red": true
+            },
+            {
+              "word": "呼吸する",
+              "reading": "こきゅうする",
+              "meaning": "to breathe",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 338,
+          "kanji": "腹",
+          "kun": [
+            "はら"
+          ],
+          "on": [
+            "フク"
+          ],
+          "words": [
+            {
+              "word": "腹",
+              "reading": "はら",
+              "meaning": "stomach",
+              "red": false
+            },
+            {
+              "word": "お腹",
+              "reading": "おなか",
+              "meaning": "stomach",
+              "red": false
+            },
+            {
+              "word": "腹痛",
+              "reading": "ふくつう",
+              "meaning": "stomachache",
+              "red": true
+            },
+            {
+              "word": "満腹",
+              "reading": "まんぷく",
+              "meaning": "full stomach",
+              "red": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Heart",
+      "radical": "心・忄",
+      "kanji": [
+        {
+          "number": 339,
+          "kanji": "悲",
+          "kun": [
+            "かなしい",
+            "かなしむ"
+          ],
+          "on": [
+            "ヒ"
+          ],
+          "words": [
+            {
+              "word": "悲しい",
+              "reading": "かなしい",
+              "meaning": "sad",
+              "red": true
+            },
+            {
+              "word": "悲しむ",
+              "reading": "かなしむ",
+              "meaning": "to feel sad",
+              "red": false
+            },
+            {
+              "word": "悲鳴",
+              "reading": "ひめい",
+              "meaning": "scream",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 340,
+          "kanji": "怒",
+          "kun": [
+            "おこる",
+            "いかる"
+          ],
+          "on": [
+            "ド"
+          ],
+          "words": [
+            {
+              "word": "怒る",
+              "reading": "おこる",
+              "meaning": "to get angry",
+              "red": true
+            },
+            {
+              "word": "怒る",
+              "reading": "いかる",
+              "meaning": "to be furious",
+              "red": true
+            },
+            {
+              "word": "喜怒哀楽",
+              "reading": "きどあいらく",
+              "meaning": "one's feelings (emotions)",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 341,
+          "kanji": "忘",
+          "kun": [
+            "わすれる"
+          ],
+          "on": [
+            "ボウ"
+          ],
+          "words": [
+            {
+              "word": "忘れる",
+              "reading": "わすれる",
+              "meaning": "to forget",
+              "red": true
+            },
+            {
+              "word": "忘れ物",
+              "reading": "わすれもの",
+              "meaning": "a thing left behind",
+              "red": false
+            },
+            {
+              "word": "忘年会",
+              "reading": "ぼうねんかい",
+              "meaning": "year-end party",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 342,
+          "kanji": "悪",
+          "kun": [
+            "わるい"
+          ],
+          "on": [
+            "アク",
+            "オ"
+          ],
+          "words": [
+            {
+              "word": "悪い",
+              "reading": "わるい",
+              "meaning": "bad, ill",
+              "red": true
+            },
+            {
+              "word": "最悪",
+              "reading": "さいあく",
+              "meaning": "the worst",
+              "red": false
+            },
+            {
+              "word": "悪寒",
+              "reading": "おかん",
+              "meaning": "chill",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 343,
+          "kanji": "念",
+          "kun": [],
+          "on": [
+            "ネン"
+          ],
+          "words": [
+            {
+              "word": "記念",
+              "reading": "きねん",
+              "meaning": "memory",
+              "red": true
+            },
+            {
+              "word": "残念",
+              "reading": "ざんねん",
+              "meaning": "regrettable",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 344,
+          "kanji": "怖",
+          "kun": [
+            "こわい"
+          ],
+          "on": [
+            "フ"
+          ],
+          "words": [
+            {
+              "word": "怖い",
+              "reading": "こわい",
+              "meaning": "terrible",
+              "red": true
+            },
+            {
+              "word": "恐怖",
+              "reading": "きょうふ",
+              "meaning": "fear",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 345,
+          "kanji": "悔",
+          "kun": [
+            "くやしい",
+            "くやむ"
+          ],
+          "on": [
+            "カイ"
+          ],
+          "words": [
+            {
+              "word": "悔しい",
+              "reading": "くやしい",
+              "meaning": "regrettable",
+              "red": true
+            },
+            {
+              "word": "後悔する",
+              "reading": "こうかいする",
+              "meaning": "to regret",
+              "red": true
+            }
+          ]
+        },
+        {
+          "number": 346,
+          "kanji": "忙",
+          "kun": [
+            "いそがしい"
+          ],
+          "on": [
+            "ボウ"
+          ],
+          "words": [
+            {
+              "word": "忙しい",
+              "reading": "いそがしい",
+              "meaning": "busy",
+              "red": true
+            },
+            {
+              "word": "多忙",
+              "reading": "たぼう",
+              "meaning": "very busy",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 347,
+          "kanji": "性",
+          "kun": [],
+          "on": [
+            "セイ",
+            "ショウ"
+          ],
+          "words": [
+            {
+              "word": "男性",
+              "reading": "だんせい",
+              "meaning": "male, man",
+              "red": true
+            },
+            {
+              "word": "女性",
+              "reading": "じょせい",
+              "meaning": "female, woman",
+              "red": true
+            },
+            {
+              "word": "相性",
+              "reading": "あいしょう",
+              "meaning": "compatibility",
+              "red": false
+            }
+          ]
+        },
+        {
+          "number": 348,
+          "kanji": "必",
+          "kun": [
+            "かならず"
+          ],
+          "on": [
+            "ヒツ"
+          ],
+          "words": [
+            {
+              "word": "必ず",
+              "reading": "かならず",
+              "meaning": "surely, certainly, necessarily",
+              "red": true
+            },
+            {
+              "word": "必要",
+              "reading": "ひつよう",
+              "meaning": "necessary",
+              "red": true
+            },
+            {
+              "word": "必死",
+              "reading": "ひっし",
+              "meaning": "desperate",
+              "red": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
