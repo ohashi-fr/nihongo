@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 const modules: GrammarModule[] = [
   {
     id: "b1-l1-l2",
-    tabLabel: "Beginner 1 · Lessons 1–2",
-    subtitleLabel: "Beginner 1 · Lessons 1–2",
+    tabLabel: "Beginner 2 · Lessons 1–2",
+    subtitleLabel: "Beginner 2 · Lessons 1–2",
     groups: groupsBeginner1,
     checklist: checklistBeginner1,
     numericLinks: false,
@@ -21,8 +21,8 @@ const modules: GrammarModule[] = [
   },
   {
     id: "l1-l3",
-    tabLabel: "Beginner 2 · Lessons 1–3",
-    subtitleLabel: "Beginner 2 · Lessons 1–3",
+    tabLabel: "Beginner 1 · Lessons 1–3",
+    subtitleLabel: "Beginner 1 · Lessons 1–3",
     groups,
     socle,
     checklist,
@@ -30,8 +30,8 @@ const modules: GrammarModule[] = [
   },
   {
     id: "l4-l5",
-    tabLabel: "Beginner 2 · Lessons 4–5–6",
-    subtitleLabel: "Beginner 2 · Lessons 4–5–6",
+    tabLabel: "Beginner 1 · Lessons 4–5–6",
+    subtitleLabel: "Beginner 1 · Lessons 4–5–6",
     groups: groupsL4L5,
     checklist: checklistL4L5,
     quizzes: ["training", "challenge", "kimatsu"],

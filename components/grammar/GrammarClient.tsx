@@ -27,12 +27,12 @@ import ChallengeQuiz from "./ChallengeQuiz";
 import KimatsuQuiz from "./KimatsuQuiz";
 import { NotionDetail, SocleDetail, ChecklistDetail } from "./GrammarDetail";
 
-/** One level of the Grammar page (e.g. Beginner 2 · Lessons 1–3). */
+/** One level of the Grammar page (e.g. Beginner 1 · Lessons 1–3). */
 export interface GrammarModule {
   id: string;
   /** Shown on the tab itself. */
   tabLabel: string;
-  /** Shown in the dynamic page subtitle, e.g. "Beginner 2 · Lessons 1–3". */
+  /** Shown in the dynamic page subtitle, e.g. "Beginner 1 · Lessons 1–3". */
   subtitleLabel: string;
   groups: Group[];
   checklist: ChecklistSection;

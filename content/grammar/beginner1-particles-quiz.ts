@@ -1,5 +1,5 @@
 /**
- * 1-2課 助詞 — Particle quiz for the "Beginner 1 · Lessons 1–2" module.
+ * 1-2課 助詞 — Particle quiz for the "Beginner 2 · Lessons 1–2" module.
  * Faithful transcription of the printed worksheet (18 particle fill-ins).
  * Same format as the existing quiz — reuses the Kimatsu quiz types + renderer.
  *
@@ -11,7 +11,7 @@
 import type { KimatsuQuiz } from "./kimatsu-quiz";
 
 export const beginner1ParticleQuiz: KimatsuQuiz = {
-  title: "1-2課 助詞 — Particles (Beginner 1 · Lessons 1–2)",
+  title: "1-2課 助詞 — Particles (Beginner 2 · Lessons 1–2)",
   description:
     "Transcription de la feuille « 1-2課 助詞 » — 18 questions de particules à compléter. Même format que le quiz existant (fill_blank). Réponses à vérifier contre la clé du cours.",
   sections: [

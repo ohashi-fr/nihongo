@@ -1,13 +1,13 @@
 /**
- * Structured transcription of Docs.pdf — Beginner 1, Lessons 1–2 (1課・2課).
+ * Structured transcription of Docs.pdf — Beginner 2, Lessons 1–2 (1課・2課).
  * Source: Shinjuku Japanese Language Institute (新宿日本語学校) 文法ノート.
  *
- * Companion to the two existing modules (grammar-data.ts = "Beginner 2 ·
- * Lessons 1–3", grammar-l4l5.ts = "Beginner 2 · Lessons 4–5–6"). This file
- * is its own independent module: "Beginner 1 · Lessons 1–2".
+ * Companion to the two existing modules (grammar-data.ts = "Beginner 1 ·
+ * Lessons 1–3", grammar-l4l5.ts = "Beginner 1 · Lessons 4–5–6"). This file
+ * is its own independent module: "Beginner 2 · Lessons 1–2".
  *
  * Numbering: this is a separate textbook level, so `number` runs 1–11 within
- * this module (NOT continuing the Beginner-2 global count). `courseNumber`
+ * this module (NOT continuing the Beginner-1 global count). `courseNumber`
  * holds the real 文法 number (文法1 … 文法11). All slugs are prefixed `b1-`
  * so they never collide with the other modules' slugs. Helpers are suffixed
  * `Beginner1`. Wire this as a third tab with its own helpers, exactly as
@@ -645,13 +645,13 @@ export const groupsBeginner1: Group[] = [
 ];
 
 // ─────────────────────────────────────────────────────────────────
-// CHECKLIST (Beginner 1 · L1–2)
+// CHECKLIST (Beginner 2 · L1–2)
 // ─────────────────────────────────────────────────────────────────
 
 export const checklistBeginner1: ChecklistSection = {
   id: "checklist",
-  title: "✅ Quick checklist — Beginner 1 · Lessons 1–2",
-  sidebarLabel: "✅ Quick checklist (B1 · L1–2)",
+  title: "✅ Quick checklist — Beginner 2 · Lessons 1–2",
+  sidebarLabel: "✅ Quick checklist (B2 · L1–2)",
   items: [
     "**〜ましょうか** = offer your help (ます-stem) ↔ **〜ましょう** = let's (shared action).",
     "**〜なければ ならない** (must): verb ない-stem + なければならない · casual **なくちゃ / なきゃ**.",
