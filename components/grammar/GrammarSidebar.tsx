@@ -2,7 +2,7 @@
 
 import type { ChecklistSection, Group, SocleSection } from "@/content/grammar/grammar-data";
 
-type QuizType = "mcq" | "exam" | "training" | "challenge" | "kimatsu" | "particles";
+type QuizType = "mcq" | "exam" | "training" | "challenge" | "kimatsu" | "particles" | "part2";
 
 type Props = {
   groups: Group[];
@@ -23,6 +23,7 @@ const QUIZ_TYPE_LABEL: Record<QuizType, string> = {
   challenge: "Challenge",
   kimatsu: "Review",
   particles: "Particles",
+  part2: "文法12–26",
 };
 
 /**

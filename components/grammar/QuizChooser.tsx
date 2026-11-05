@@ -8,6 +8,8 @@ type Props = {
   onSelectKimatsu?: () => void;
   onSelectParticles?: () => void;
   particlesQuestionCount?: number;
+  onSelectPart2?: () => void;
+  part2QuestionCount?: number;
   mcqQuestionCount?: number;
   examBlankCount?: number;
   examSectionCount?: number;
@@ -43,9 +45,12 @@ export default function QuizChooser({
   kimatsuSectionCount,
   onSelectParticles,
   particlesQuestionCount,
+  onSelectPart2,
+  part2QuestionCount,
 }: Props) {
   const visibleCount = [
     onSelectParticles,
+    onSelectPart2,
     onSelectMcq,
     onSelectExam,
     onSelectTraining,
@@ -123,6 +128,52 @@ export default function QuizChooser({
             <div className="mt-5 flex w-full items-center justify-between border-t border-border pt-4 text-xs">
               <span className="font-medium text-muted">
                 {particlesQuestionCount} questions
+              </span>
+              <span className="font-semibold text-primary transition group-hover:translate-x-0.5">
+                Start →
+              </span>
+            </div>
+          </button>
+        )}
+
+        {onSelectPart2 && (
+          <button
+            type="button"
+            onClick={onSelectPart2}
+            className="card-tile group flex flex-col items-start text-left"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-100">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                className="h-6 w-6 text-accent-700"
+                aria-hidden
+              >
+                <path
+                  d="M4 19.5V6a2 2 0 012-2h9l5 5v10.5a2 2 0 01-2 2H6a2 2 0 01-2-2z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M9 13h6M9 16.5h4"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </div>
+            <h3 className="jp mt-4 text-xs font-semibold uppercase tracking-[0.1em] text-accent-700">
+              文法12–26 まとめ
+            </h3>
+            <h3 className="text-lg font-bold text-ink">Grammar 12–26 review</h3>
+            <p className="mt-1.5 text-sm text-muted">
+              Fill in the blank: 中, ば・と・ても, やすい・すぎる, ところ, よう・みたい…
+            </p>
+            <div className="mt-5 flex w-full items-center justify-between border-t border-border pt-4 text-xs">
+              <span className="font-medium text-muted">
+                {part2QuestionCount} questions
               </span>
               <span className="font-semibold text-primary transition group-hover:translate-x-0.5">
                 Start →

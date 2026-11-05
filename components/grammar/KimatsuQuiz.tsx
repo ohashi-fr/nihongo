@@ -67,6 +67,26 @@ function RefFooter({ courseRef }: { courseRef?: string }) {
   return <div className="mt-2 text-xs text-muted">{courseRef}</div>;
 }
 
+/** The word/verb to work from (e.g. のむ), shown as a small accent chip
+ * above the sentence. "なつ・よう" renders one chip per part. */
+function WordChips({ hint }: { hint: string }) {
+  return (
+    <div className="mb-2 flex flex-wrap items-center gap-1.5">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.1em] text-muted">
+        Use
+      </span>
+      {hint.split("・").map((w, i) => (
+        <span
+          key={i}
+          className="jp rounded-lg border border-accent-200 bg-accent-50 px-2.5 py-0.5 text-sm font-semibold text-accent-700"
+        >
+          {w}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 /** fill_blank and ordering both type into inline blanks inside the prompt —
  * they only differ in which correctness function graded them (decided by
  * the caller in submitSection), so one row renders both. */
@@ -128,7 +148,6 @@ function FillBlankRow({
   return (
     <QuestionCard
       id={question.id}
-      hint={hint}
       submitted={submitted}
       allCorrect={allCorrect}
       wrongFooter={
@@ -147,6 +166,7 @@ function FillBlankRow({
         </>
       }
     >
+      {hint && <WordChips hint={hint} />}
       <div className="jp flex flex-wrap items-center gap-x-1 gap-y-2 text-base leading-loose text-ink">
         {nodes}
       </div>

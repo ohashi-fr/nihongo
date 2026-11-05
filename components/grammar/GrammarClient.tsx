@@ -17,6 +17,10 @@ import {
   beginner1ParticleQuiz,
   totalBeginner1ParticleQuestionCount,
 } from "@/content/grammar/beginner1-particles-quiz";
+import {
+  beginner1Part2Quiz,
+  totalBeginner1Part2QuestionCount,
+} from "@/content/grammar/beginner1-part2-quiz";
 import SectionHeader from "@/components/ui/SectionHeader";
 import GrammarModuleTabs from "./GrammarModuleTabs";
 import GrammarSidebar from "./GrammarSidebar";
@@ -48,7 +52,7 @@ export interface GrammarModule {
   quizzes?: QuizType[];
 }
 
-type QuizType = "mcq" | "exam" | "training" | "challenge" | "kimatsu" | "particles";
+type QuizType = "mcq" | "exam" | "training" | "challenge" | "kimatsu" | "particles" | "part2";
 
 type Props = {
   modules: GrammarModule[];
@@ -62,6 +66,7 @@ const QUIZ_IDS = new Set([
   "quiz-challenge",
   "quiz-kimatsu",
   "quiz-particles",
+  "quiz-part2",
 ]);
 const QUIZ_ID_TYPE: Record<string, QuizType> = {
   "quiz-mcq": "mcq",
@@ -70,6 +75,7 @@ const QUIZ_ID_TYPE: Record<string, QuizType> = {
   "quiz-challenge": "challenge",
   "quiz-kimatsu": "kimatsu",
   "quiz-particles": "particles",
+  "quiz-part2": "part2",
 };
 
 function flatten(groups: Group[]): Notion[] {
@@ -233,7 +239,9 @@ export default function GrammarClient({ modules }: Props) {
           onSelectChallenge={offered.includes("challenge") ? () => handleSelect("quiz-challenge") : undefined}
           onSelectKimatsu={offered.includes("kimatsu") ? () => handleSelect("quiz-kimatsu") : undefined}
           onSelectParticles={offered.includes("particles") ? () => handleSelect("quiz-particles") : undefined}
+          onSelectPart2={offered.includes("part2") ? () => handleSelect("quiz-part2") : undefined}
           particlesQuestionCount={totalBeginner1ParticleQuestionCount}
+          part2QuestionCount={totalBeginner1Part2QuestionCount}
           mcqQuestionCount={grammarQuizQuestions.length}
           examBlankCount={totalExamBlankCount}
           examSectionCount={examQuiz.sections.length}
@@ -299,6 +307,16 @@ export default function GrammarClient({ modules }: Props) {
         <KimatsuQuiz
           quiz={beginner1ParticleQuiz}
           quizName="Particles"
+          onExit={() => handleSelect(defaultSelectedId(activeModule))}
+          scrollToTop={scrollDetailToTop}
+        />
+      );
+    }
+    if (selectedId === "quiz-part2") {
+      return (
+        <KimatsuQuiz
+          quiz={beginner1Part2Quiz}
+          quizName="文法12–26 review"
           onExit={() => handleSelect(defaultSelectedId(activeModule))}
           scrollToTop={scrollDetailToTop}
         />
