@@ -57,9 +57,33 @@ const SECTION_LABELS: Record<string, string> = {
   会話14: "Memorise & perform",
 };
 
-function NoteLine({ note }: { note?: string }) {
+/** The format hint under a question (e.g. じしょけい＋こともある) is hidden
+ * behind a small "Hint" button so the quiz isn't too easy; each one opens
+ * on its own. `revealed` (after submitting) and `always` (model answers)
+ * show it outright. */
+function NoteLine({
+  note,
+  revealed = false,
+  always = false,
+}: {
+  note?: string;
+  revealed?: boolean;
+  always?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
   if (!note) return null;
-  return <p className="mt-2 text-xs italic text-muted">{note}</p>;
+  if (always || revealed || open) {
+    return <p className="mt-2 text-xs italic text-muted">{note}</p>;
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => setOpen(true)}
+      className="mt-2 inline-flex items-center gap-1 rounded-full border border-border bg-soft px-2.5 py-0.5 text-xs font-medium text-muted transition hover:border-primary-200 hover:text-primary"
+    >
+      <span aria-hidden>💡</span> Hint
+    </button>
+  );
 }
 
 function RefFooter({ courseRef }: { courseRef?: string }) {
@@ -170,7 +194,7 @@ function FillBlankRow({
       <div className="jp flex flex-wrap items-center gap-x-1 gap-y-2 text-base leading-loose text-ink">
         {nodes}
       </div>
-      <NoteLine note={question.note} />
+      <NoteLine note={question.note} revealed={submitted} />
     </QuestionCard>
   );
 }
@@ -254,7 +278,7 @@ function ChoiceRow({
           );
         })}
       </div>
-      <NoteLine note={question.note} />
+      <NoteLine note={question.note} revealed={submitted} />
     </QuestionCard>
   );
 }
@@ -290,12 +314,12 @@ function OpenRow({
               <p className="jp text-sm text-success-700">
                 {question.modelAnswer_hiragana ?? question.modelAnswer}
               </p>
-              <NoteLine note={question.note} />
+              <NoteLine note={question.note} always />
             </div>
           )}
         </div>
       ) : (
-        <NoteLine note={question.note} />
+        <NoteLine note={question.note} always />
       )}
       <RefFooter courseRef={question.courseRef} />
     </QuestionCard>
